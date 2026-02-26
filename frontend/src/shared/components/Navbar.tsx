@@ -1,8 +1,18 @@
-import { Toolbar, Typography, Button, Box, Container } from "@mui/material";
+import { Toolbar, Typography, Button, Box, Container, IconButton, Menu, MenuItem } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate, Link } from "react-router-dom";
+import { useState } from "react";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <Box sx={{ backgroundColor: "#3ab5e6", position: "sticky", top: 0, zIndex: 1100 }}>
@@ -26,8 +36,8 @@ export default function Navbar() {
             KIDAPTIVE
           </Typography>
 
-          {/* Nav Links */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+          {/* Desktop Nav Links */}
+          <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: 0.5 }}>
             {[
               { label: "Home", path: "/" },
               { label: "Features", path: "/#features" },
@@ -68,8 +78,10 @@ export default function Navbar() {
                 {item.label}
               </Button>
             ))}
+          </Box>
 
-            {/* Sign Up Button */}
+          <Box sx={{ display: "flex", alignItems: "center", ml: { xs: 0, md: 1 } }}>
+            {/* Sign Up Button (Visible on all screens) */}
             <Button
               variant="contained"
               onClick={() => navigate("/choose-role")}
@@ -94,6 +106,41 @@ export default function Navbar() {
             >
               Sign up
             </Button>
+
+            {/* Mobile Menu Icon */}
+            <IconButton
+              size="large"
+              edge="end"
+              color="inherit"
+              aria-label="menu"
+              sx={{ display: { xs: "flex", md: "none" }, ml: 1, color: "#fff" }}
+              onClick={handleMenuOpen}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+              sx={{ display: { xs: "block", md: "none" } }}
+            >
+              {[
+                { label: "Home", path: "/" },
+                { label: "Features", path: "/#features" },
+                { label: "Login", path: "/login" },
+              ].map((item) => (
+                <MenuItem
+                  key={item.label}
+                  onClick={() => {
+                    handleMenuClose();
+                    navigate(item.path);
+                  }}
+                  sx={{ fontFamily: "'Poppins', sans-serif", minWidth: 150 }}
+                >
+                  {item.label}
+                </MenuItem>
+              ))}
+            </Menu>
           </Box>
         </Toolbar>
       </Container>

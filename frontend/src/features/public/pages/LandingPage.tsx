@@ -10,6 +10,9 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import kipImg from "../../../assets/images/kip_a.png";
+import butterfliesImg from "../../../assets/images/butterflies.png";
+import rocketImg from "../../../assets/images/rocket.png";
+import duckImg from "../../../assets/images/duck.png";
 import { useRef, useState, useEffect } from "react";
 
 /* ─── Fires once when element enters viewport ─── */
@@ -70,9 +73,9 @@ function StatItem({ target, suffix, label, delay, active, decimals = 0 }: {
 
 /* ─── Static wave: bumps UP ─── */
 const WaveUp = ({ from, to }: { from: string; to: string }) => (
-  <Box sx={{ lineHeight: 0, overflow: "hidden", height: 70, mt: "-1px" }}>
+  <Box sx={{ lineHeight: 0, overflow: "hidden", height: 70, mt: "-2px", mb: "-1px" }}>
     <svg viewBox="0 0 1440 70" xmlns="http://www.w3.org/2000/svg"
-      style={{ display: "block", width: "100%", height: "70px" }}
+      style={{ display: "block", width: "100%", height: "72px" }}
       preserveAspectRatio="none">
       <rect width="1440" height="70" fill={from} />
       <path fill={to}
@@ -84,9 +87,9 @@ const WaveUp = ({ from, to }: { from: string; to: string }) => (
 
 /* ─── Static wave: bumps DOWN ─── */
 const WaveDown = ({ from, to }: { from: string; to: string }) => (
-  <Box sx={{ lineHeight: 0, overflow: "hidden", height: 70, mb: "-1px" }}>
+  <Box sx={{ lineHeight: 0, overflow: "hidden", height: 70, mt: "-1px", mb: "-2px" }}>
     <svg viewBox="0 0 1440 70" xmlns="http://www.w3.org/2000/svg"
-      style={{ display: "block", width: "100%", height: "70px" }}
+      style={{ display: "block", width: "100%", height: "72px" }}
       preserveAspectRatio="none">
       <rect width="1440" height="70" fill={to} />
       <path fill={from}
@@ -126,7 +129,7 @@ export default function LandingPage() {
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography
                 variant="h2"
-                sx={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 900, color: "#1a1a2e", lineHeight: 1.15, fontSize: { xs: "2.6rem", md: "3.2rem" }, mb: 2 }}
+                sx={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 900, color: "#1a1a2e", lineHeight: 1.15, fontSize: { xs: "2.1rem", sm: "2.5rem", md: "3.2rem" }, mb: 2 }}
               >
                 Learn English{" "}
                 <Box component="span" sx={{ display: "block" }}>
@@ -181,7 +184,7 @@ export default function LandingPage() {
                 src={kipImg}
                 alt="Kip the dinosaur"
                 sx={{
-                  width: { xs: 260, md: 380 },
+                  width: { xs: 200, sm: 260, md: 380 },
                   maxWidth: "100%",
                   filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.15))",
                   animation: "kipFloat 3.2s ease-in-out infinite",
@@ -215,109 +218,115 @@ export default function LandingPage() {
               Select your profile to continue your journey
             </Typography>
 
-          <Box sx={{ position: "relative" }}>
-            <Typography sx={{
-              position: "absolute",
-              left: { xs: -10, md: -60 },
-              top: "50%",
-              transform: "translateY(-50%)",
-              fontSize: "2.5rem",
-              display: { xs: "none", sm: "block" },
-              animation: "flutter 2.2s ease-in-out infinite",
-              "@keyframes flutter": {
-                "0%, 100%": { transform: "translateY(-50%) rotate(0deg)" },
-                "25%": { transform: "translateY(-58%) rotate(12deg)" },
-                "75%": { transform: "translateY(-42%) rotate(-12deg)" },
-              },
-            }}>
-              🦋🦋
-            </Typography>
-            <Typography sx={{
-              position: "absolute",
-              right: { xs: -10, md: -60 },
-              top: "50%",
-              transform: "translateY(-50%)",
-              fontSize: "2.5rem",
-              display: { xs: "none", sm: "block" },
-              animation: "rocketFly 1.8s ease-in-out infinite",
-              "@keyframes rocketFly": {
-                "0%, 100%": { transform: "translateY(-50%) rotate(-10deg)" },
-                "50%": { transform: "translateY(-62%) rotate(5deg)" },
-              },
-            }}>
-              🚀
-            </Typography>
+            <Box sx={{ position: "relative" }}>
+              <Box
+                component="img"
+                src={butterfliesImg}
+                alt="Butterflies"
+                sx={{
+                  position: "absolute",
+                  left: { xs: -10, md: -60 },
+                  top: "50%",
+                  width: { xs: 80, md: 120 },
+                  transform: "translateY(-50%)",
+                  display: { xs: "none", sm: "block" },
+                  animation: "flutter 2.2s ease-in-out infinite",
+                  "@keyframes flutter": {
+                    "0%, 100%": { transform: "translateY(-50%) rotate(0deg)" },
+                    "25%": { transform: "translateY(-58%) rotate(12deg)" },
+                    "75%": { transform: "translateY(-42%) rotate(-12deg)" },
+                  },
+                }}
+              />
+              <Box
+                component="img"
+                src={rocketImg}
+                alt="Rocket"
+                sx={{
+                  position: "absolute",
+                  right: { xs: -10, md: -60 },
+                  top: "50%",
+                  width: { xs: 80, md: 120 },
+                  transform: "translateY(-50%)",
+                  display: { xs: "none", sm: "block" },
+                  animation: "rocketFly 1.8s ease-in-out infinite",
+                  "@keyframes rocketFly": {
+                    "0%, 100%": { transform: "translateY(-50%) rotate(-10deg)" },
+                    "50%": { transform: "translateY(-62%) rotate(5deg)" },
+                  },
+                }}
+              />
 
-            <Grid container spacing={3} justifyContent="center">
-              <Grid size={{ xs: 12, sm: 5 }}>
-                <Card
-                  onClick={() => navigate("/child/dashboard")}
-                  sx={{
-                    backgroundColor: "#3ab5e6",
-                    color: "#fff",
-                    borderRadius: 5,
-                    textAlign: "center",
-                    py: 4,
-                    cursor: "pointer",
-                    boxShadow: "0 8px 24px rgba(58,181,230,0.35)",
-                    transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                    "@keyframes iconPop": {
-                      "0%": { transform: "scale(1) rotate(0deg)" },
-                      "30%": { transform: "scale(1.3) rotate(-8deg)" },
-                      "60%": { transform: "scale(0.9) rotate(5deg)" },
-                      "100%": { transform: "scale(1) rotate(0deg)" },
-                    },
-                    "&:hover": {
-                      transform: "scale(1.07) translateY(-8px)",
-                      boxShadow: "0 22px 44px rgba(58,181,230,0.45)",
-                      "& .card-icon": { animation: "iconPop 0.5s cubic-bezier(0.36,0.07,0.19,0.97) both" },
-                    },
-                    "&:active": { transform: "scale(0.97)", transition: "all 0.1s" },
-                  }}
-                >
-                  <CardContent>
-                    <Typography className="card-icon" sx={{ fontSize: "2.5rem", mb: 1, display: "block" }}>🎮</Typography>
-                    <Typography variant="h6" fontWeight={700}>I'm a child</Typography>
-                    <Typography variant="caption" sx={{ opacity: 0.85 }}>Start your adventure!</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
+              <Grid container spacing={3} justifyContent="center">
+                <Grid size={{ xs: 12, sm: 5 }}>
+                  <Card
+                    onClick={() => navigate("/child/dashboard")}
+                    sx={{
+                      backgroundColor: "#3ab5e6",
+                      color: "#fff",
+                      borderRadius: 5,
+                      textAlign: "center",
+                      py: 4,
+                      cursor: "pointer",
+                      boxShadow: "0 8px 24px rgba(58,181,230,0.35)",
+                      transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                      "@keyframes iconPop": {
+                        "0%": { transform: "scale(1) rotate(0deg)" },
+                        "30%": { transform: "scale(1.3) rotate(-8deg)" },
+                        "60%": { transform: "scale(0.9) rotate(5deg)" },
+                        "100%": { transform: "scale(1) rotate(0deg)" },
+                      },
+                      "&:hover": {
+                        transform: "scale(1.07) translateY(-8px)",
+                        boxShadow: "0 22px 44px rgba(58,181,230,0.45)",
+                        "& .card-icon": { animation: "iconPop 0.5s cubic-bezier(0.36,0.07,0.19,0.97) both" },
+                      },
+                      "&:active": { transform: "scale(0.97)", transition: "all 0.1s" },
+                    }}
+                  >
+                    <CardContent>
+                      <Typography className="card-icon" sx={{ fontSize: "2.5rem", mb: 1, display: "block" }}>👦🏻👧🏻</Typography>
+                      <Typography variant="h6" fontWeight={700}>I'm a child</Typography>
+                      <Typography variant="caption" sx={{ opacity: 0.85 }}>Start your adventure!</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
 
-              <Grid size={{ xs: 12, sm: 5 }}>
-                <Card
-                  onClick={() => navigate("/parent/dashboard")}
-                  sx={{
-                    backgroundColor: "#fff",
-                    border: "2px solid #e0e0e0",
-                    borderRadius: 5,
-                    textAlign: "center",
-                    py: 4,
-                    cursor: "pointer",
-                    transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                    "@keyframes iconPop": {
-                      "0%": { transform: "scale(1) rotate(0deg)" },
-                      "30%": { transform: "scale(1.3) rotate(8deg)" },
-                      "60%": { transform: "scale(0.9) rotate(-5deg)" },
-                      "100%": { transform: "scale(1) rotate(0deg)" },
-                    },
-                    "&:hover": {
-                      transform: "scale(1.07) translateY(-8px)",
-                      borderColor: "#3ab5e6",
-                      boxShadow: "0 22px 44px rgba(58,181,230,0.2)",
-                      "& .card-icon": { animation: "iconPop 0.5s cubic-bezier(0.36,0.07,0.19,0.97) both" },
-                    },
-                    "&:active": { transform: "scale(0.97)", transition: "all 0.1s" },
-                  }}
-                >
-                  <CardContent>
-                    <Typography className="card-icon" sx={{ fontSize: "2.5rem", mb: 1, display: "block" }}>👨‍👩‍👧</Typography>
-                    <Typography variant="h6" fontWeight={700} color="#4caf50">I'm a Parent</Typography>
-                    <Typography variant="caption" color="text.secondary">Monitor progress</Typography>
-                  </CardContent>
-                </Card>
+                <Grid size={{ xs: 12, sm: 5 }}>
+                  <Card
+                    onClick={() => navigate("/parent/dashboard")}
+                    sx={{
+                      backgroundColor: "#fff",
+                      border: "2px solid #e0e0e0",
+                      borderRadius: 5,
+                      textAlign: "center",
+                      py: 4,
+                      cursor: "pointer",
+                      transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                      "@keyframes iconPop": {
+                        "0%": { transform: "scale(1) rotate(0deg)" },
+                        "30%": { transform: "scale(1.3) rotate(8deg)" },
+                        "60%": { transform: "scale(0.9) rotate(-5deg)" },
+                        "100%": { transform: "scale(1) rotate(0deg)" },
+                      },
+                      "&:hover": {
+                        transform: "scale(1.07) translateY(-8px)",
+                        borderColor: "#3ab5e6",
+                        boxShadow: "0 22px 44px rgba(58,181,230,0.2)",
+                        "& .card-icon": { animation: "iconPop 0.5s cubic-bezier(0.36,0.07,0.19,0.97) both" },
+                      },
+                      "&:active": { transform: "scale(0.97)", transition: "all 0.1s" },
+                    }}
+                  >
+                    <CardContent>
+                      <Typography className="card-icon" sx={{ fontSize: "2.5rem", mb: 1, display: "block" }}>🧑🏻‍👩🏻‍👦🏻</Typography>
+                      <Typography variant="h6" fontWeight={700} color="#4caf50">I'm a Parent</Typography>
+                      <Typography variant="caption" color="text.secondary">Monitor progress</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
               </Grid>
-            </Grid>
-          </Box>
+            </Box>
           </Box>
         </Container>
       </Box>
@@ -341,42 +350,42 @@ export default function LandingPage() {
               <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "#1a1a2e", mb: 5 }}>
                 Everything to master English
               </Typography>
-            <Grid container spacing={3}>
-              {[
-                { icon: "📚", title: "Grammar Adventures", desc: "Practice grammar with short activities. Lessons adjust to your level as you improve." },
-                { icon: "🏗️", title: "Sentence Builder", desc: "Build sentences step by step. Kip suggests the next task from your progress." },
-                { icon: "✍️", title: "Writing Practice", desc: "Write small sentences and paragraphs. Kip gives feedback to help you grow." },
-                { icon: "🔤", title: "Vocabulary & Spelling", desc: "Learn new words and spelling. Kip focuses on what you find hard." },
-              ].map((f) => (
-                <Grid size={{ xs: 12, sm: 6, md: 3 }} key={f.title}>
-                  <Card sx={{
-                    borderRadius: 4,
-                    p: 1,
-                    height: "100%",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
-                    transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                    cursor: "pointer",
-                    "@keyframes iconSpin": {
-                      "0%": { transform: "rotate(0deg) scale(1)" },
-                      "25%": { transform: "rotate(-15deg) scale(1.25)" },
-                      "75%": { transform: "rotate(15deg) scale(1.15)" },
-                      "100%": { transform: "rotate(0deg) scale(1)" },
-                    },
-                    "&:hover": {
-                      transform: "translateY(-10px) scale(1.03)",
-                      boxShadow: "0 20px 40px rgba(0,0,0,0.14)",
-                      "& .feat-icon": { animation: "iconSpin 0.55s cubic-bezier(0.36,0.07,0.19,0.97) both" },
-                    },
-                  }}>
-                    <CardContent>
-                      <Typography className="feat-icon" sx={{ fontSize: "2rem", mb: 1, display: "block" }}>{f.icon}</Typography>
-                      <Typography variant="subtitle1" fontWeight={700} gutterBottom>{f.title}</Typography>
-                      <Typography variant="body2" color="text.secondary">{f.desc}</Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+              <Grid container spacing={3}>
+                {[
+                  { icon: "📚", title: "Grammar Adventures", desc: "Practice grammar with short activities. Lessons adjust to your level as you improve." },
+                  { icon: "📚", title: "Sentence Builder", desc: "Build sentences step by step. Kip suggests the next task from your progress." },
+                  { icon: "✍️", title: "Writing Practice", desc: "Write small sentences and paragraphs. Kip gives feedback to help you grow." },
+                  { icon: "🔤", title: "Vocabulary & Spelling", desc: "Learn new words and spelling. Kip focuses on what you find hard." },
+                ].map((f) => (
+                  <Grid size={{ xs: 12, sm: 6, md: 3 }} key={f.title}>
+                    <Card sx={{
+                      borderRadius: 4,
+                      p: 1,
+                      height: "100%",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+                      transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                      cursor: "pointer",
+                      "@keyframes iconSpin": {
+                        "0%": { transform: "rotate(0deg) scale(1)" },
+                        "25%": { transform: "rotate(-15deg) scale(1.25)" },
+                        "75%": { transform: "rotate(15deg) scale(1.15)" },
+                        "100%": { transform: "rotate(0deg) scale(1)" },
+                      },
+                      "&:hover": {
+                        transform: "translateY(-10px) scale(1.03)",
+                        boxShadow: "0 20px 40px rgba(0,0,0,0.14)",
+                        "& .feat-icon": { animation: "iconSpin 0.55s cubic-bezier(0.36,0.07,0.19,0.97) both" },
+                      },
+                    }}>
+                      <CardContent>
+                        <Typography className="feat-icon" sx={{ fontSize: "2rem", mb: 1, display: "block" }}>{f.icon}</Typography>
+                        <Typography variant="subtitle1" fontWeight={700} gutterBottom>{f.title}</Typography>
+                        <Typography variant="body2" color="text.secondary">{f.desc}</Typography>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
             </Box>
           </Container>
         </Box>
@@ -400,54 +409,54 @@ export default function LandingPage() {
             <Typography variant="body1" sx={{ fontFamily: "'Poppins', sans-serif", textAlign: "center", color: "#777", mb: 6 }}>
               We prioritize education, safety, and transparency above all else.
             </Typography>
-          <Grid container spacing={3} justifyContent="center">
-            {[
-              { icon: "🎯", title: "Personalized Path", desc: "We use smart learning to adjust lessons to your child's level, focusing more on areas they find difficult." },
-              { icon: "🛡️", title: "Kid-Safe Environment", desc: "Ad-free, COPPA-compliant, and child-safe. A calm space designed for kids to explore and learn." },
-              { icon: "📊", title: "Progress Reports", desc: "Summaries of your child's achievements, strengths, and areas to improve." },
-            ].map((item) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.title}>
-                <Card sx={{
-                  borderRadius: 4,
-                  p: 1,
-                  height: "100%",
-                  backgroundColor: "#f5f9ff",
-                  border: "1px solid #e3effe",
-                  boxShadow: "none",
-                  transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                  cursor: "pointer",
-                  "&:hover": {
-                    transform: "translateY(-8px)",
-                    boxShadow: "0 16px 36px rgba(58,181,230,0.18)",
-                    borderColor: "#3ab5e6",
-                    backgroundColor: "#eaf6fd",
-                  },
-                }}>
-                  <CardContent sx={{ textAlign: "center" }}>
-                    <Box sx={{ width: 56, height: 56, borderRadius: "50%", backgroundColor: "#e3effe", display: "flex", alignItems: "center", justifyContent: "center", mx: "auto", mb: 2, fontSize: "1.6rem", transition: "transform 0.3s", ".MuiCard-root:hover &": { transform: "scale(1.18) rotate(8deg)" } }}>
-                      {item.icon}
-                    </Box>
-                    <Typography variant="subtitle1" fontWeight={700} gutterBottom>{item.title}</Typography>
-                    <Typography variant="body2" color="text.secondary">{item.desc}</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+            <Grid container spacing={3} justifyContent="center">
+              {[
+                { icon: "🎯", title: "Personalized Path", desc: "We use smart learning to adjust lessons to your child's level, focusing more on areas they find difficult." },
+                { icon: "🛡️", title: "Kid-Safe Environment", desc: "Ad-free, COPPA-compliant, and child-safe. A calm space designed for kids to explore and learn." },
+                { icon: "📊", title: "Progress Reports", desc: "Summaries of your child's achievements, strengths, and areas to improve." },
+              ].map((item) => (
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={item.title}>
+                  <Card sx={{
+                    borderRadius: 4,
+                    p: 1,
+                    height: "100%",
+                    backgroundColor: "#f5f9ff",
+                    border: "1px solid #e3effe",
+                    boxShadow: "none",
+                    transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                    cursor: "pointer",
+                    "&:hover": {
+                      transform: "translateY(-8px)",
+                      boxShadow: "0 16px 36px rgba(58,181,230,0.18)",
+                      borderColor: "#3ab5e6",
+                      backgroundColor: "#eaf6fd",
+                    },
+                  }}>
+                    <CardContent sx={{ textAlign: "center" }}>
+                      <Box sx={{ width: 56, height: 56, borderRadius: "50%", backgroundColor: "#e3effe", display: "flex", alignItems: "center", justifyContent: "center", mx: "auto", mb: 2, fontSize: "1.6rem", transition: "transform 0.3s", ".MuiCard-root:hover &": { transform: "scale(1.18) rotate(8deg)" } }}>
+                        {item.icon}
+                      </Box>
+                      <Typography variant="subtitle1" fontWeight={700} gutterBottom>{item.title}</Typography>
+                      <Typography variant="body2" color="text.secondary">{item.desc}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
           </Box>
         </Container>
       </Box>
 
       {/* ═══════════════ STATS ═══════════════ */}
       <Box sx={{ backgroundColor: "#fff", pb: 8 }}>
-        <Container maxWidth="md">
+        <Container maxWidth="md" sx={{ px: { xs: 2, sm: 3, md: 0 } }}>
           <Box
             ref={statsRef}
             sx={{
               backgroundColor: "#1a1a2e",
-              borderRadius: 6,
+              borderRadius: { xs: 4, md: 6 },
               py: { xs: 4, md: 5 },
-              px: { xs: 3, md: 6 },
+              px: { xs: 2, md: 6 },
               position: "relative",
               opacity: statsInView ? 1 : 0,
               transform: statsInView ? "translateY(0)" : "translateY(50px)",
@@ -456,10 +465,10 @@ export default function LandingPage() {
           >
             <Grid container spacing={2} justifyContent="center">
               {([
-                { target: 100, suffix: "+", label: "Kids Learning",  delay: 0,   decimals: 0 },
-                { target: 50,  suffix: "+", label: "Happy Parents",  delay: 150, decimals: 0 },
-                { target: 4.8, suffix: "/5",label: "Average Rating", delay: 300, decimals: 1 },
-                { target: 50,  suffix: "+", label: "Lessons",         delay: 450, decimals: 0 },
+                { target: 100, suffix: "+", label: "Kids Learning", delay: 0, decimals: 0 },
+                { target: 50, suffix: "+", label: "Happy Parents", delay: 150, decimals: 0 },
+                { target: 4.8, suffix: "/5", label: "Average Rating", delay: 300, decimals: 1 },
+                { target: 50, suffix: "+", label: "Lessons", delay: 450, decimals: 0 },
               ] as const).map((stat) => (
                 <Grid size={{ xs: 6, md: 3 }} key={stat.label}>
                   <StatItem
@@ -473,9 +482,18 @@ export default function LandingPage() {
                 </Grid>
               ))}
             </Grid>
-            <Typography sx={{ position: "absolute", bottom: -8, right: { xs: 16, md: 32 }, fontSize: "2.5rem" }}>
-              🐥
-            </Typography>
+            <Box
+              component="img"
+              src={duckImg}
+              alt="Duck"
+              sx={{
+                position: "absolute",
+                bottom: -8,
+                right: { xs: 16, md: 32 },
+                width: { xs: 50, md: 70 },
+                zIndex: 2,
+              }}
+            />
           </Box>
         </Container>
       </Box>
@@ -493,49 +511,49 @@ export default function LandingPage() {
                 transition: "opacity 0.7s ease, transform 0.7s cubic-bezier(0.34,1.56,0.64,1)",
               }}
             >
-              <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "#1a1a2e", mb: 5 }}>
+              <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "#1a1a2e", mb: 5, fontSize: { xs: "2rem", md: "2.5rem" } }}>
                 Loved By Parents
               </Typography>
-            <Grid container spacing={3}>
-              {[
-                { rating: 5, name: "Lorem Ipsum" },
-                { rating: 4.5, name: "Lorem Ipsum" },
-                { rating: 4, name: "Lorem Ipsum" },
-              ].map((review, i) => (
-                <Grid size={{ xs: 12, md: 4 }} key={i}>
-                  <Card sx={{
-                    borderRadius: 4,
-                    p: 1,
-                    height: "100%",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.07)",
-                    transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                    "&:hover": {
-                      transform: "translateY(-8px) scale(1.02)",
-                      boxShadow: "0 18px 36px rgba(0,0,0,0.13)",
-                    },
-                  }}>
-                    <CardContent>
-                      <Stars rating={review.rating} />
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.7 }}>
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
-                      </Typography>
-                      <Stack direction="row" alignItems="center" spacing={1.5}>
-                        <Box sx={{ width: 40, height: 40, borderRadius: "50%", backgroundColor: "#ccc", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>
-                          👤
-                        </Box>
-                        <Typography variant="body2" fontWeight={600} color="text.secondary">
-                          {review.name}
+              <Grid container spacing={3}>
+                {[
+                  { rating: 5, name: "Lorem Ipsum" },
+                  { rating: 4.5, name: "Lorem Ipsum" },
+                  { rating: 4, name: "Lorem Ipsum" },
+                ].map((review, i) => (
+                  <Grid size={{ xs: 12, md: 4 }} key={i}>
+                    <Card sx={{
+                      borderRadius: 4,
+                      p: 1,
+                      height: "100%",
+                      boxShadow: "0 4px 16px rgba(0,0,0,0.07)",
+                      transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                      "&:hover": {
+                        transform: "translateY(-8px) scale(1.02)",
+                        boxShadow: "0 18px 36px rgba(0,0,0,0.13)",
+                      },
+                    }}>
+                      <CardContent>
+                        <Stars rating={review.rating} />
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.7 }}>
+                          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
                         </Typography>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+                        <Stack direction="row" alignItems="center" spacing={1.5}>
+                          <Box sx={{ width: 40, height: 40, borderRadius: "50%", backgroundColor: "#ccc", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>
+                            👤
+                          </Box>
+                          <Typography variant="body2" fontWeight={600} color="text.secondary">
+                            {review.name}
+                          </Typography>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
             </Box>
           </Container>
         </Box>
-        <WaveDown from="#deeefe" to="#0f0f0f" />
+        <WaveDown from="#deeefe" to="#1a1a2e" />
       </Box>
     </Box>
   );
