@@ -260,7 +260,7 @@ export default function LandingPage() {
               <Grid container spacing={3} justifyContent="center">
                 <Grid size={{ xs: 12, sm: 5 }}>
                   <Card
-                    onClick={() => navigate("/child/dashboard")}
+                    onClick={() => navigate("/auth/child/pin")}
                     sx={{
                       backgroundColor: "#3ab5e6",
                       color: "#fff",
@@ -294,7 +294,7 @@ export default function LandingPage() {
 
                 <Grid size={{ xs: 12, sm: 5 }}>
                   <Card
-                    onClick={() => navigate("/parent/dashboard")}
+                    onClick={() => navigate("/auth/login")}
                     sx={{
                       backgroundColor: "#fff",
                       border: "2px solid #e0e0e0",
