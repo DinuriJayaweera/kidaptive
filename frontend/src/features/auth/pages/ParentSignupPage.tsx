@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-    Box, Container, Typography, Alert, Grid, InputAdornment,
+    Box, Container, Typography, Alert, Grid, InputAdornment, Divider
 } from "@mui/material";
 import {
     Person as PersonIcon,
@@ -17,6 +17,15 @@ import PillButton from "../../../components/ui/PillButton";
 import RoundCheckbox from "../../../components/ui/RoundCheckbox";
 import AnimatedPage, { AnimatedItem } from "../components/AnimatedPage";
 import kipImg from "../../../assets/images/kip_b.png";
+
+const GoogleColorIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 18 18" style={{ marginRight: 8 }}>
+        <path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.8 2.7v2.24h2.91c1.7-1.57 2.69-3.89 2.69-6.57z" />
+        <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.91-2.24c-.8.54-1.84.87-3.05.87-2.35 0-4.33-1.59-5.05-3.73H.96v2.3C2.44 15.96 5.48 18 9 18z" />
+        <path fill="#FBBC05" d="M3.95 10.73c-.18-.54-.28-1.12-.28-1.73s.1-1.19.28-1.73V4.97H.96c-.61 1.22-.96 2.6-.96 4.03s.35 2.81.96 4.03l2.99-2.3z" />
+        <path fill="#EA4335" d="M9 3.57c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.89 11.43 0 9 0 5.48 0 2.44 2.04.96 4.97l2.99 2.3c.72-2.14 2.7-3.73 5.05-3.73z" />
+    </svg>
+);
 
 export default function ParentSignupPage() {
     const navigate = useNavigate();
@@ -101,47 +110,59 @@ export default function ParentSignupPage() {
                                 {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>{error}</Alert>}
 
                                 <AnimatedItem index={1}>
+                                    <PillButton fullWidth colorScheme="google" startIcon={<GoogleColorIcon />} sx={{ mb: 2 }}>
+                                        Continue with Google
+                                    </PillButton>
+                                </AnimatedItem>
+
+                                <AnimatedItem index={2}>
+                                    <Divider sx={{ mb: 2 }}>
+                                        <Typography variant="caption" color="text.secondary">Or sign up with email</Typography>
+                                    </Divider>
+                                </AnimatedItem>
+
+                                <AnimatedItem index={3}>
                                     <RoundedInput label="Full Name" placeholder="e.g. Jane Doe" value={form.name} onChange={set("name")}
                                         error={!!fieldErrors.name} helperText={fieldErrors.name}
                                         slotProps={{ input: { startAdornment: <InputAdornment position="start"><PersonIcon sx={{ color: "#bbb" }} /></InputAdornment> } }}
                                         sx={{ mb: 2 }} />
                                 </AnimatedItem>
 
-                                <AnimatedItem index={2}>
+                                <AnimatedItem index={4}>
                                     <RoundedInput label="Email Address" placeholder="parent@example.com" value={form.email} onChange={set("email")}
                                         error={!!fieldErrors.email} helperText={fieldErrors.email}
                                         slotProps={{ input: { startAdornment: <InputAdornment position="start"><EmailIcon sx={{ color: "#bbb" }} /></InputAdornment> } }}
                                         sx={{ mb: 2 }} />
                                 </AnimatedItem>
 
-                                <AnimatedItem index={3}>
+                                <AnimatedItem index={5}>
                                     <RoundedInput label="Password" type="password" value={form.password} onChange={set("password")}
                                         error={!!fieldErrors.password} helperText={fieldErrors.password || "Min 8 chars, 1 uppercase, 1 number, 1 special"}
                                         slotProps={{ input: { startAdornment: <InputAdornment position="start"><LockIcon sx={{ color: "#bbb" }} /></InputAdornment> } }}
                                         sx={{ mb: 2 }} />
                                 </AnimatedItem>
 
-                                <AnimatedItem index={4}>
+                                <AnimatedItem index={6}>
                                     <RoundedInput label="Confirm Password" type="password" value={form.confirmPassword} onChange={set("confirmPassword")}
                                         error={!!fieldErrors.confirmPassword} helperText={fieldErrors.confirmPassword}
                                         slotProps={{ input: { startAdornment: <InputAdornment position="start"><LockIcon sx={{ color: "#bbb" }} /></InputAdornment> } }}
                                         sx={{ mb: 2 }} />
                                 </AnimatedItem>
 
-                                <AnimatedItem index={5}>
+                                <AnimatedItem index={7}>
                                     <RoundCheckbox id="terms" checked={terms} onChange={setTerms}
                                         label="I agree to the Terms of Service and Privacy Policy." />
                                     <RoundCheckbox id="guardian" checked={guardian} onChange={setGuardian}
                                         label="I confirm I am a parent or legal guardian." />
                                 </AnimatedItem>
 
-                                <AnimatedItem index={6} sx={{ mt: 3 }}>
+                                <AnimatedItem index={8} sx={{ mt: 3 }}>
                                     <PillButton type="submit" fullWidth colorScheme="primary" loading={loading} startIcon={<HowToRegIcon />}>
                                         Create account
                                     </PillButton>
                                 </AnimatedItem>
 
-                                <AnimatedItem index={7}>
+                                <AnimatedItem index={9}>
                                     <Typography variant="body2" sx={{ textAlign: "center", mt: 2.5, color: "#888" }}>
                                         Already have an account?{" "}
                                         <Box component={Link} to="/auth/login" sx={{ color: "#e74c3c", fontWeight: 600, textDecoration: "none", transition: "all 0.2s", "&:hover": { textDecoration: "underline" } }}>

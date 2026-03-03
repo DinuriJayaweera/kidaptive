@@ -5,7 +5,7 @@ import {
 } from "@mui/material";
 import {
     Visibility, VisibilityOff, Email as EmailIcon, Lock as LockIcon,
-    Login as LoginIcon, Google as GoogleIcon, PersonAdd as PersonAddIcon,
+    Login as LoginIcon, PersonAdd as PersonAddIcon,
     LockReset as LockResetIcon,
 } from "@mui/icons-material";
 import { useNavigate, Link, useLocation } from "react-router-dom";
@@ -16,6 +16,15 @@ import RoundedInput from "../../../components/ui/RoundedInput";
 import PillButton from "../../../components/ui/PillButton";
 import AnimatedPage, { AnimatedItem } from "../components/AnimatedPage";
 import kipImg from "../../../assets/images/kip_b.png";
+
+const GoogleColorIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 18 18" style={{ marginRight: 8 }}>
+        <path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.8 2.7v2.24h2.91c1.7-1.57 2.69-3.89 2.69-6.57z" />
+        <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.91-2.24c-.8.54-1.84.87-3.05.87-2.35 0-4.33-1.59-5.05-3.73H.96v2.3C2.44 15.96 5.48 18 9 18z" />
+        <path fill="#FBBC05" d="M3.95 10.73c-.18-.54-.28-1.12-.28-1.73s.1-1.19.28-1.73V4.97H.96c-.61 1.22-.96 2.6-.96 4.03s.35 2.81.96 4.03l2.99-2.3z" />
+        <path fill="#EA4335" d="M9 3.57c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.47.89 11.43 0 9 0 5.48 0 2.44 2.04.96 4.97l2.99 2.3c.72-2.14 2.7-3.73 5.05-3.73z" />
+    </svg>
+);
 
 export default function ParentLoginPage() {
     const navigate = useNavigate();
@@ -109,7 +118,7 @@ export default function ParentLoginPage() {
                                 )}
 
                                 <AnimatedItem index={1}>
-                                    <PillButton fullWidth colorScheme="google" startIcon={<GoogleIcon />} disabled sx={{ mb: 2 }}>
+                                    <PillButton fullWidth colorScheme="google" startIcon={<GoogleColorIcon />} sx={{ mb: 2 }}>
                                         Continue with Google
                                     </PillButton>
                                 </AnimatedItem>

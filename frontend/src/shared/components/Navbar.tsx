@@ -92,19 +92,19 @@ export default function Navbar() {
                 onClick={() => navigate("/auth/signup")}
                 sx={{
                   ml: 1,
-                  backgroundColor: "#3ab5e6",
+                  backgroundColor: "#f5a623",
                   color: "#fff",
                   fontFamily: "'Poppins', sans-serif",
                   fontWeight: 700,
                   borderRadius: "50px",
                   textTransform: "none",
                   px: 3,
-                  boxShadow: "0 4px 14px rgba(58,181,230,0.45)",
+                  boxShadow: "0 4px 14px rgba(245,166,35,0.45)",
                   transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
                   "&:hover": {
-                    backgroundColor: "#1ea0d0",
+                    backgroundColor: "#e09010",
                     transform: "scale(1.12) rotate(-3deg)",
-                    boxShadow: "0 8px 24px rgba(58,181,230,0.6)",
+                    boxShadow: "0 8px 24px rgba(245,166,35,0.6)",
                   },
                   "&:active": { transform: "scale(0.95) rotate(0deg)", transition: "all 0.1s" },
                 }}
