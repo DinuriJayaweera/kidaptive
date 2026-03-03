@@ -22,7 +22,7 @@ export function authenticate(
 }
 
 // ── Require specific role(s) ─────────────────────────────────────────────────
-export function requireRole(...roles: Array<"parent" | "child">) {
+export function requireRole(...roles: Array<"parent" | "child" | "admin">) {
     return (req: Request, res: Response, next: NextFunction): void => {
         const user = (req as Request & { user?: TokenPayload }).user;
         if (!user || !roles.includes(user.role)) {

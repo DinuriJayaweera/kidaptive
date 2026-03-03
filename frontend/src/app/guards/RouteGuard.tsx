@@ -16,7 +16,9 @@ export function ParentRoute({ children }: { children: ReactNode }) {
     const location = useLocation();
     if (loading) return <Loading />;
     if (!isAuthenticated) return <Navigate to="/auth/login" state={{ from: location }} replace />;
-    if (role !== "parent") return <Navigate to="/child/dashboard" replace />;
+    if (role === "child") return <Navigate to="/child/dashboard" replace />;
+    if (role === "admin") return <Navigate to="/admin-dashboard" replace />;
+    if (role !== "parent") return <Navigate to="/" replace />;
     return <>{children}</>;
 }
 
@@ -25,7 +27,20 @@ export function ChildRoute({ children }: { children: ReactNode }) {
     const location = useLocation();
     if (loading) return <Loading />;
     if (!isAuthenticated) return <Navigate to="/auth/child/pin" state={{ from: location }} replace />;
-    if (role !== "child") return <Navigate to="/parent/dashboard" replace />;
+    if (role === "parent") return <Navigate to="/parent/dashboard" replace />;
+    if (role === "admin") return <Navigate to="/admin-dashboard" replace />;
+    if (role !== "child") return <Navigate to="/" replace />;
+    return <>{children}</>;
+}
+
+export function AdminRoute({ children }: { children: ReactNode }) {
+    const { isAuthenticated, role, loading } = useAuth();
+    const location = useLocation();
+    if (loading) return <Loading />;
+    if (!isAuthenticated) return <Navigate to="/admin" state={{ from: location }} replace />;
+    if (role === "parent") return <Navigate to="/parent/dashboard" replace />;
+    if (role === "child") return <Navigate to="/child/dashboard" replace />;
+    if (role !== "admin") return <Navigate to="/" replace />;
     return <>{children}</>;
 }
 
@@ -33,7 +48,10 @@ export function PublicOnlyRoute({ children }: { children: ReactNode }) {
     const { isAuthenticated, role, loading } = useAuth();
     if (loading) return <Loading />;
     if (isAuthenticated) {
-        return <Navigate to={role === "parent" ? "/parent/dashboard" : "/child/dashboard"} replace />;
+        if (role === "admin") return <Navigate to="/admin-dashboard" replace />;
+        if (role === "parent") return <Navigate to="/parent/dashboard" replace />;
+        if (role === "child") return <Navigate to="/child/dashboard" replace />;
+        return <Navigate to="/" replace />;
     }
     return <>{children}</>;
 }

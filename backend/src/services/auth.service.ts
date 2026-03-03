@@ -420,3 +420,32 @@ export async function getCurrentUser(userId: string) {
     if (!user) throw NotFound("User not found");
     return user;
 }
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ADMIN LOGIN
+// ═══════════════════════════════════════════════════════════════════════════════
+export async function loginAdmin(
+    data: { email: string; password: string },
+    res: Response,
+) {
+    const user = await User.findOne({ email: data.email, role: "admin" });
+    if (!user) throw Unauthorized("Invalid email or password");
+
+    const valid = await user.comparePassword(data.password);
+    if (!valid) throw Unauthorized("Invalid email or password");
+
+    const accessToken = signAccessToken({ userId: user._id.toString(), role: user.role });
+    const refreshToken = signRefreshToken({
+        userId: user._id.toString(),
+        role: user.role,
+        tokenVersion: user.tokenVersion,
+    });
+    setTokenCookies(res, refreshToken);
+
+    return {
+        message: "Admin login successful",
+        user: sanitizeUser(user),
+        accessToken,
+    };
+}

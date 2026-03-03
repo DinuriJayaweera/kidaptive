@@ -22,6 +22,7 @@ import {
     getChildren,
     loginChild,
     getCurrentUser,
+    loginAdmin,
 } from "../services/auth.service.js";
 import type { TokenPayload } from "../utils/jwt.js";
 
@@ -114,5 +115,12 @@ export const listChildren = wrap(async (req, res) => {
 export const childLoginHandler = wrap(async (req, res) => {
     const data = parseBody(childLoginSchema, req.body);
     const result = await loginChild(data, res);
+    res.json(result);
+});
+
+// ── Admin Login ──────────────────────────────────────────────────────────────
+export const adminLoginHandler = wrap(async (req, res) => {
+    const data = parseBody(loginSchema, req.body);
+    const result = await loginAdmin(data, res);
     res.json(result);
 });

@@ -4,7 +4,7 @@ import Footer from "./shared/components/Footer";
 import AppRoutes from "./routes/AppRoutes";
 import { Box } from "@mui/material";
 
-const hideShellPaths = ["/auth/", "/parent/", "/child/"];
+const hideShellPaths = ["/auth/", "/parent/", "/child/", "/admin"];
 
 function App() {
   const location = useLocation();

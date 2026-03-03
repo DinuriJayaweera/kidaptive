@@ -7,7 +7,7 @@ export interface IUser {
     name: string;
     email: string;
     password: string;
-    role: "parent" | "child";
+    role: "parent" | "child" | "admin";
     authProvider: "local" | "google";
     emailVerified: boolean;
     tokenVersion: number;
@@ -53,7 +53,7 @@ const userSchema = new Schema<IUser>(
             trim: true,
         },
         password: { type: String, required: true },
-        role: { type: String, enum: ["parent", "child"], required: true },
+        role: { type: String, enum: ["parent", "child", "admin"], required: true },
         authProvider: { type: String, enum: ["local", "google"], default: "local" },
         emailVerified: { type: Boolean, default: false },
         tokenVersion: { type: Number, default: 0 },

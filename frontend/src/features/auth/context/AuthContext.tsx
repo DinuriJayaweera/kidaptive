@@ -12,7 +12,7 @@ import { getMe } from "../api/authApi";
 interface AuthState {
     user: AuthUser | null;
     isAuthenticated: boolean;
-    role: "parent" | "child" | null;
+    role: "parent" | "child" | "admin" | null;
     loading: boolean;
     login: (user: AuthUser, accessToken: string) => void;
     logout: () => void;

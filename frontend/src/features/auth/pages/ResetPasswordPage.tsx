@@ -29,7 +29,8 @@ export default function ResetPasswordPage() {
         setError("");
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e?: React.FormEvent) => {
+        e?.preventDefault();
         setLoading(true);
         setError("");
         try {
@@ -55,7 +56,7 @@ export default function ResetPasswordPage() {
 
             <Container maxWidth="xs">
                 <AnimatedPage shake={shakeForm}>
-                    <Box sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 4 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", textAlign: "center" }}>
+                    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 4 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", textAlign: "center" }}>
                         <AnimatedItem index={0}>
                             <LockOpenIcon sx={{ fontSize: 56, color: "#e74c3c", mb: 1 }} />
                             <Typography variant="h5" sx={{ fontWeight: 800, mb: 0.5 }}>Reset Password</Typography>
@@ -90,7 +91,7 @@ export default function ResetPasswordPage() {
                         </AnimatedItem>
 
                         <AnimatedItem index={5}>
-                            <PillButton fullWidth loading={loading} onClick={handleSubmit} startIcon={<LockOpenIcon />}>
+                            <PillButton type="submit" fullWidth loading={loading} startIcon={<LockOpenIcon />}>
                                 Reset Password
                             </PillButton>
                         </AnimatedItem>

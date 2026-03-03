@@ -39,7 +39,8 @@ export default function ParentSignupPage() {
         setTimeout(() => setShakeForm(false), 600);
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e?: React.FormEvent) => {
+        e?.preventDefault();
         if (!terms || !guardian) {
             setError("Please accept the terms and confirm you are a parent/guardian.");
             triggerShake();
@@ -88,7 +89,7 @@ export default function ParentSignupPage() {
                     {/* Right — form */}
                     <Grid size={{ xs: 12, md: 6 }}>
                         <AnimatedPage shake={shakeForm}>
-                            <Box sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 5 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", maxWidth: 460, mx: "auto" }}>
+                            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 5 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", maxWidth: 460, mx: "auto" }}>
                                 <AnimatedItem index={0}>
                                     <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
                                         <HowToRegIcon sx={{ color: "#3ab5e6", fontSize: 28 }} />
@@ -135,7 +136,7 @@ export default function ParentSignupPage() {
                                 </AnimatedItem>
 
                                 <AnimatedItem index={6} sx={{ mt: 3 }}>
-                                    <PillButton fullWidth loading={loading} onClick={handleSubmit} startIcon={<HowToRegIcon />}>
+                                    <PillButton type="submit" fullWidth loading={loading} startIcon={<HowToRegIcon />}>
                                         Create account
                                     </PillButton>
                                 </AnimatedItem>

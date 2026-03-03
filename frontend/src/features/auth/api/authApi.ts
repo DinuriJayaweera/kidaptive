@@ -5,7 +5,7 @@ export interface AuthUser {
     _id: string;
     name: string;
     email: string;
-    role: "parent" | "child";
+    role: "parent" | "child" | "admin";
     emailVerified: boolean;
     username?: string;
     age?: number;
@@ -133,5 +133,14 @@ export async function createChild(data: {
 
 export async function getMyChildren(): Promise<ChildProfile[]> {
     const res = await api.get("/parents/children");
+    return res.data;
+}
+
+// ── Admin Auth ───────────────────────────────────────────────────────────────
+export async function adminLogin(data: {
+    email: string;
+    password: string;
+}): Promise<LoginResult> {
+    const res = await api.post("/auth/admin/login", data);
     return res.data;
 }

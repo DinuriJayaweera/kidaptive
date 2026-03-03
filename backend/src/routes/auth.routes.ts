@@ -13,6 +13,7 @@ import {
     addChild,
     listChildren,
     childLoginHandler,
+    adminLoginHandler,
 } from "../controllers/auth.controller.js";
 
 const router = Router();
@@ -53,6 +54,7 @@ router.post("/auth/login", authLimiter, login);
 router.post("/auth/forgot-password", otpLimiter, forgotPwd);
 router.post("/auth/reset-password", otpLimiter, resetPwd);
 router.post("/auth/child/login", authLimiter, childLoginHandler);
+router.post("/auth/admin/login", authLimiter, adminLoginHandler);
 
 // ── Token management ─────────────────────────────────────────────────────────
 router.post("/auth/refresh", refresh);
@@ -64,5 +66,10 @@ router.get("/auth/me", authenticate, me);
 // ── Parent-only routes ───────────────────────────────────────────────────────
 router.post("/parents/children", authenticate, requireRole("parent"), addChild);
 router.get("/parents/children", authenticate, requireRole("parent"), listChildren);
+
+// ── Admin-only routes ────────────────────────────────────────────────────────
+router.get("/admin/me", authenticate, requireRole("admin"), (req, res) => {
+    res.json({ message: "Welcome admin", user: (req as any).user });
+});
 
 export default router;

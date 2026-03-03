@@ -11,8 +11,19 @@ dotenv.config();
 const app = express();
 
 // ── Middleware ───────────────────────────────────────────────────────────────
+const allowedOrigins = (process.env.CLIENT_ORIGIN ?? "http://localhost:5173")
+    .split(",")
+    .map((o) => o.trim());
+
 app.use(cors({
-    origin: process.env.CLIENT_ORIGIN ?? "http://localhost:5173",
+    origin: (origin, callback) => {
+        // Allow requests with no origin (e.g. curl, Postman)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error(`CORS: origin '${origin}' not allowed`));
+        }
+    },
     credentials: true,
 }));
 app.use(express.json());

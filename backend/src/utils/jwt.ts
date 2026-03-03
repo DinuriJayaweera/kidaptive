@@ -7,7 +7,7 @@ const REFRESH_EXPIRES = "7d";
 
 export interface TokenPayload {
     userId: string;
-    role: "parent" | "child";
+    role: "parent" | "child" | "admin";
     tokenVersion?: number;
 }
 

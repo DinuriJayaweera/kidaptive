@@ -51,7 +51,8 @@ export default function VerifyEmailPage() {
         if (e.key === "Backspace" && !otp[idx] && idx > 0) refs.current[idx - 1]?.focus();
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (e?: React.FormEvent) => {
+        e?.preventDefault();
         const code = otp.join("");
         if (code.length !== 6) { setError("Please enter all 6 digits."); triggerShake(); return; }
         setLoading(true);
@@ -118,7 +119,7 @@ export default function VerifyEmailPage() {
                     {/* Right — form */}
                     <Grid size={{ xs: 12, md: 6 }}>
                         <AnimatedPage shake={shakeForm}>
-                            <Box sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 5 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", maxWidth: 460, mx: "auto", textAlign: "center" }}>
+                            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 5 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", maxWidth: 460, mx: "auto", textAlign: "center" }}>
                                 <AnimatedItem index={0}>
                                     <MarkEmailReadIcon sx={{ fontSize: 56, color: "#3ab5e6", mb: 1 }} />
                                     <Typography variant="h5" sx={{ fontWeight: 800, mb: 0.5 }}>Check your email</Typography>
@@ -162,7 +163,7 @@ export default function VerifyEmailPage() {
                                             {remainingAttempts} attempt(s) remaining
                                         </Typography>
                                     )}
-                                    <PillButton fullWidth loading={loading} disabled={disabled} onClick={handleSubmit} startIcon={<VerifiedIcon />} sx={{ mb: 2 }}>
+                                    <PillButton type="submit" fullWidth loading={loading} disabled={disabled} startIcon={<VerifiedIcon />} sx={{ mb: 2 }}>
                                         Verify Email
                                     </PillButton>
                                 </AnimatedItem>

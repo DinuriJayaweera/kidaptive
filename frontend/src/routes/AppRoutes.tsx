@@ -11,7 +11,9 @@ import ChildPinPage from "../features/auth/pages/ChildPinPage";
 import ParentDashboardPage from "../features/parent/pages/ParentDashboardPage";
 import CreateChildPage from "../features/parent/pages/CreateChildPage";
 import ChildDashboardPage from "../features/child/pages/ChildDashboardPage";
-import { PublicOnlyRoute, ParentRoute, ChildRoute } from "../app/guards/RouteGuard";
+import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage";
+import { PublicOnlyRoute, ParentRoute, ChildRoute, AdminRoute } from "../app/guards/RouteGuard";
+import AdminLoginPage from "../features/auth/pages/AdminLoginPage";
 
 export default function AppRoutes() {
     return (
@@ -21,6 +23,7 @@ export default function AppRoutes() {
 
             {/* Auth — public only */}
             <Route path="/auth/role" element={<PublicOnlyRoute><RoleSelectPage /></PublicOnlyRoute>} />
+            <Route path="/admin" element={<PublicOnlyRoute><AdminLoginPage /></PublicOnlyRoute>} />
             <Route path="/auth/signup" element={<PublicOnlyRoute><ParentSignupPage /></PublicOnlyRoute>} />
             <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
             <Route path="/auth/login" element={<PublicOnlyRoute><ParentLoginPage /></PublicOnlyRoute>} />
@@ -44,6 +47,9 @@ export default function AppRoutes() {
 
             {/* Child — protected */}
             <Route path="/child/dashboard" element={<ChildRoute><ChildDashboardPage /></ChildRoute>} />
+
+            {/* Admin — protected */}
+            <Route path="/admin-dashboard" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
 
             {/* Catch-all */}
             <Route path="*" element={<Navigate to="/" replace />} />

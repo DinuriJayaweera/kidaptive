@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc",
+    "seed:admin": "tsx src/scripts/seedAdmin.ts",
+    "lint": "eslint \"src/**/*.ts\"",
     "start": "node dist/server.js",
     "format": "prettier --write src/",
     "format:check": "prettier --check src/"
@@ -35,8 +36,8 @@
     "@types/node": "^25.3.0",
     "@types/nodemailer": "^7.0.11",
     "nodemon": "^3.1.14",
-    "prettier": "^3.8.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }
