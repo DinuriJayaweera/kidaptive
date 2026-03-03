@@ -10,26 +10,12 @@ export default function Navbar() {
   const { isAuthenticated, user, role, logout } = useAuth();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleMenuClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setUserMenuAnchor(event.currentTarget);
-  };
-  const handleUserMenuClose = () => {
-    setUserMenuAnchor(null);
-  };
-
-  const handleLogout = () => {
-    logout();
-    handleUserMenuClose();
-    navigate("/");
   };
 
   const dashboardPath = role === "parent" ? "/parent/dashboard" : "/child/dashboard";
@@ -128,86 +114,17 @@ export default function Navbar() {
               </Button>
             ) : (
               <>
-                <Button
-                  sx={{
-                    display: { xs: "none", md: "block" },
-                    color: "#3ab5e6",
-                    bgcolor: "#fff",
-                    borderRadius: 5,
-                    px: 3,
-                    py: 0.8,
-                    mr: 2,
-                    textTransform: "none",
-                    fontWeight: 700,
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                    "&:hover": { bgcolor: "#f8faff", transform: "translateY(-2px)", boxShadow: "0 6px 16px rgba(0,0,0,0.15)" },
-                    transition: "all 0.2s"
-                  }}
-                  onClick={() => navigate(dashboardPath)}
-                >
-                  Go to Dashboard
-                </Button>
-                <Tooltip title="Account settings">
+                <Tooltip title="Go to Dashboard">
                   <IconButton
-                    onClick={handleUserMenuOpen}
+                    onClick={() => navigate(dashboardPath)}
                     size="small"
                     sx={{ ml: 1, transition: "transform 0.2s", "&:hover": { transform: "scale(1.05)" } }}
-                    aria-controls={Boolean(userMenuAnchor) ? 'account-menu' : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={Boolean(userMenuAnchor) ? 'true' : undefined}
                   >
                     <Avatar sx={{ width: 38, height: 38, bgcolor: "#f5a623", fontWeight: 700, border: "2px solid #fff" }}>
                       {user?.name?.[0]?.toUpperCase() || "U"}
                     </Avatar>
                   </IconButton>
                 </Tooltip>
-                <Menu
-                  anchorEl={userMenuAnchor}
-                  id="account-menu"
-                  open={Boolean(userMenuAnchor)}
-                  onClose={handleUserMenuClose}
-                  onClick={handleUserMenuClose}
-                  slotProps={{
-                    paper: {
-                      elevation: 0,
-                      sx: {
-                        overflow: 'visible',
-                        filter: 'drop-shadow(0px 12px 32px rgba(0,0,0,0.12))',
-                        mt: 1.5,
-                        borderRadius: '20px',
-                        minWidth: 220,
-                        p: 1,
-                        border: '1px solid rgba(255, 255, 255, 0.4)',
-                        background: 'linear-gradient(145deg, #ffffff 0%, #fcfcfc 100%)',
-                        backdropFilter: 'blur(10px)'
-                      }
-                    }
-                  }}
-                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                >
-                  <MenuItem onClick={() => navigate(dashboardPath)} sx={{ py: 1.2, px: 2, borderRadius: '12px', mb: 0.5, transition: 'all 0.2s', '&:hover': { backgroundColor: '#f0f9ff', transform: 'translateX(4px)' } }}>
-                    <ListItemIcon sx={{ minWidth: 36 }}>
-                      <Dashboard fontSize="small" sx={{ color: "#3ab5e6" }} />
-                    </ListItemIcon>
-                    <Typography variant="body2" sx={{ fontWeight: 600, fontFamily: "'Poppins', sans-serif", color: "#2d3748" }}>Dashboard</Typography>
-                  </MenuItem>
-                  {role === "parent" && (
-                    <MenuItem onClick={() => navigate("/parent/profile")} sx={{ py: 1.2, px: 2, borderRadius: '12px', mb: 0.5, transition: 'all 0.2s', '&:hover': { backgroundColor: '#f8f9fa', transform: 'translateX(4px)' } }}>
-                      <ListItemIcon sx={{ minWidth: 36 }}>
-                        <Person fontSize="small" sx={{ color: "#718096" }} />
-                      </ListItemIcon>
-                      <Typography variant="body2" sx={{ fontWeight: 600, fontFamily: "'Poppins', sans-serif", color: "#2d3748" }}>Profile</Typography>
-                    </MenuItem>
-                  )}
-                  <Divider sx={{ my: 1, borderColor: 'rgba(0,0,0,0.06)' }} />
-                  <MenuItem onClick={handleLogout} sx={{ py: 1.2, px: 2, borderRadius: '12px', transition: 'all 0.2s', '&:hover': { backgroundColor: '#fff5f5', transform: 'translateX(4px)' } }}>
-                    <ListItemIcon sx={{ minWidth: 36 }}>
-                      <Logout fontSize="small" sx={{ color: "#e53e3e" }} />
-                    </ListItemIcon>
-                    <Typography variant="body2" sx={{ fontWeight: 600, fontFamily: "'Poppins', sans-serif", color: "#e53e3e" }}>Logout</Typography>
-                  </MenuItem>
-                </Menu>
               </>
             )}
 

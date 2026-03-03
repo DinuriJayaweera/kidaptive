@@ -23,9 +23,11 @@ export interface ChildProfile {
 }
 
 interface AuthResponse {
+    success?: boolean;
+    remainingAttempts?: number;
     message: string;
-    user: AuthUser;
-    accessToken: string;
+    user?: AuthUser;
+    accessToken?: string;
 }
 
 interface SignupResponse {

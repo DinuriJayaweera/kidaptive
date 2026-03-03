@@ -1,6 +1,7 @@
 import "dotenv/config";
 import app from "./app.js";
 import { connectDB } from "./config/db.js";
+import { verifySmtpConnection } from "./utils/email.js";
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 5000;
 
@@ -13,3 +14,6 @@ app.listen(PORT, () => {
 connectDB().catch((err) => {
     console.error("❌ MongoDB failed:", err.message ?? err);
 });
+
+// Verify SMTP in background
+verifySmtpConnection();

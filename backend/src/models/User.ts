@@ -2,19 +2,21 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 
 // ── Types ────────────────────────────────────────────────────────────────────
-export interface IUser extends Document {
+export interface IUser {
     _id: Types.ObjectId;
     name: string;
     email: string;
     password: string;
     role: "parent" | "child";
+    authProvider: "local" | "google";
     emailVerified: boolean;
     tokenVersion: number;
 
     // OTP – email verification
     emailOtp?: string;
     emailOtpExpiry?: Date;
-    emailOtpAttempts: number;
+    verificationAttempts: number;
+    lastVerificationSentAt?: Date;
 
     // OTP – password reset
     resetOtp?: string;
@@ -52,13 +54,15 @@ const userSchema = new Schema<IUser>(
         },
         password: { type: String, required: true },
         role: { type: String, enum: ["parent", "child"], required: true },
+        authProvider: { type: String, enum: ["local", "google"], default: "local" },
         emailVerified: { type: Boolean, default: false },
         tokenVersion: { type: Number, default: 0 },
 
         // OTP fields
         emailOtp: { type: String },
         emailOtpExpiry: { type: Date },
-        emailOtpAttempts: { type: Number, default: 0 },
+        verificationAttempts: { type: Number, default: 0 },
+        lastVerificationSentAt: { type: Date },
 
         resetOtp: { type: String },
         resetOtpExpiry: { type: Date },

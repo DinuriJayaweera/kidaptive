@@ -92,7 +92,20 @@ export default function ParentLoginPage() {
                                 </AnimatedItem>
 
                                 {resetSuccess && <Alert severity="success" sx={{ mb: 2, borderRadius: 3 }}>Password reset successful! Log in with your new password.</Alert>}
-                                {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>{error}</Alert>}
+                                {error && (
+                                    <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>
+                                        {error}
+                                        {error.toLowerCase().includes("verify your email") && (
+                                            <Box sx={{ mt: 1 }}>
+                                                <Typography variant="body2">
+                                                    <Box component={Link} to="/auth/verify-email" state={{ email: form.email }} sx={{ color: "inherit", fontWeight: 700, textDecoration: "underline" }}>
+                                                        Go to verification page
+                                                    </Box>
+                                                </Typography>
+                                            </Box>
+                                        )}
+                                    </Alert>
+                                )}
 
                                 <AnimatedItem index={1}>
                                     <PillButton fullWidth colorScheme="google" startIcon={<GoogleIcon />} disabled sx={{ mb: 2 }}>

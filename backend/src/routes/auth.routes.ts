@@ -43,7 +43,7 @@ function createRateLimiter(windowMs: number, max: number) {
 }
 
 const authLimiter = createRateLimiter(15 * 60 * 1000, 20); // 20 req / 15 min
-const otpLimiter = createRateLimiter(10 * 60 * 1000, 5);   // 5 req / 10 min
+const otpLimiter = createRateLimiter(10 * 60 * 1000, 15);  // 15 req / 10 min
 
 // ── Public auth routes ───────────────────────────────────────────────────────
 router.post("/auth/signup", authLimiter, signup);

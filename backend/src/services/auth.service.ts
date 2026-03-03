@@ -15,6 +15,7 @@ import {
 import {
     BadRequest,
     Unauthorized,
+    Forbidden,
     Conflict,
     NotFound,
     TooManyRequests,
@@ -40,6 +41,7 @@ function sanitizeUser(user: InstanceType<typeof User>) {
         name: user.name,
         email: user.email,
         role: user.role,
+        authProvider: user.authProvider,
         emailVerified: user.emailVerified,
         username: user.username,
         age: user.age,
@@ -67,9 +69,11 @@ export async function signupParent(
         email: data.email,
         password: data.password,
         role: "parent",
+        authProvider: "local",
         emailOtp: hashedOtp,
         emailOtpExpiry: new Date(Date.now() + OTP_EXPIRY_MS),
-        emailOtpAttempts: 0,
+        verificationAttempts: 0,
+        lastVerificationSentAt: new Date(),
     });
 
     // Log OTP to console for local development since SMTP isn't configured
@@ -98,26 +102,34 @@ export async function verifyEmailOtp(
 
     if (user.emailVerified) throw BadRequest("Email is already verified");
 
-    if (!user.emailOtp || !user.emailOtpExpiry)
-        throw BadRequest("No OTP pending. Request a new one.");
+    if (!user.emailOtp || !user.emailOtpExpiry) {
+        return { success: false, message: "No OTP pending. Request a new one." };
+    }
 
-    if (user.emailOtpAttempts >= MAX_OTP_ATTEMPTS)
-        throw TooManyRequests("Too many attempts. Request a new OTP.");
+    if (user.verificationAttempts >= 5) {
+        return { success: false, message: "Too many failed attempts. Please request a new verification code." };
+    }
 
-    if (new Date() > user.emailOtpExpiry) throw BadRequest("OTP has expired. Request a new one.");
+    if (new Date() > user.emailOtpExpiry) {
+        return { success: false, message: "Verification code expired. Please resend." };
+    }
 
     const isValid = await compareOtp(data.otp, user.emailOtp);
     if (!isValid) {
-        user.emailOtpAttempts += 1;
+        user.verificationAttempts += 1;
         await user.save();
-        throw Unauthorized("Invalid OTP");
+        return {
+            success: false,
+            message: "Invalid verification code",
+            remainingAttempts: 5 - user.verificationAttempts,
+        };
     }
 
     // Mark verified & clear OTP fields
     user.emailVerified = true;
     user.emailOtp = undefined;
     user.emailOtpExpiry = undefined;
-    user.emailOtpAttempts = 0;
+    user.verificationAttempts = 0;
     await user.save();
 
     // Issue tokens
@@ -130,6 +142,7 @@ export async function verifyEmailOtp(
     setTokenCookies(res, refreshToken);
 
     return {
+        success: true,
         message: "Email verified!",
         user: sanitizeUser(user),
         accessToken,
@@ -144,10 +157,22 @@ export async function resendEmailOtp(data: { email: string }) {
     if (!user) throw NotFound("Account not found");
     if (user.emailVerified) throw BadRequest("Email is already verified");
 
+    // 60-second cooldown between resend requests
+    if (user.lastVerificationSentAt) {
+        const secondsSinceLast = (Date.now() - user.lastVerificationSentAt.getTime()) / 1000;
+        if (secondsSinceLast < 60) {
+            const waitSeconds = Math.ceil(60 - secondsSinceLast);
+            throw TooManyRequests(
+                `Please wait ${waitSeconds} seconds before requesting a new code.`,
+            );
+        }
+    }
+
     const otp = generateOtp();
     user.emailOtp = await hashOtp(otp);
     user.emailOtpExpiry = new Date(Date.now() + OTP_EXPIRY_MS);
-    user.emailOtpAttempts = 0;
+    user.verificationAttempts = 0;
+    user.lastVerificationSentAt = new Date();
     await user.save();
 
     console.log(`\n\n🎯 [DEV ONLY] Resent OTP for ${data.email} is: ${otp}\n\n`);
@@ -171,23 +196,9 @@ export async function loginParent(
     const valid = await user.comparePassword(data.password);
     if (!valid) throw Unauthorized("Invalid email or password");
 
-    // If not verified, re-send OTP
-    if (!user.emailVerified) {
-        const otp = generateOtp();
-        user.emailOtp = await hashOtp(otp);
-        user.emailOtpExpiry = new Date(Date.now() + OTP_EXPIRY_MS);
-        user.emailOtpAttempts = 0;
-        await user.save();
-
-        sendVerificationEmail(data.email, otp, user.name).catch((err) =>
-            console.error("Email send failed:", err.message),
-        );
-
-        return {
-            requiresVerification: true,
-            message: "Please verify your email first. A new code has been sent.",
-            email: user.email,
-        };
+    // Block login if local user and not verified
+    if (user.authProvider === "local" && !user.emailVerified) {
+        throw Forbidden("Please verify your email before logging in.");
     }
 
     // Issue tokens
