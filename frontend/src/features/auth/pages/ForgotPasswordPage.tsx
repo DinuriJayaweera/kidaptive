@@ -38,14 +38,14 @@ export default function ForgotPasswordPage() {
     };
 
     return (
-        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: { xs: "flex-start", md: "center" }, justifyContent: "center", position: "relative", py: { xs: 10, md: 0 } }}>
             <AuthHeader />
 
             <Container maxWidth="xs">
                 <AnimatedPage shake={shakeForm}>
                     <Box component="form" noValidate onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 4 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", textAlign: "center" }}>
                         <AnimatedItem index={0}>
-                            <LockResetIcon sx={{ fontSize: 56, color: "#f5a623", mb: 1 }} />
+                            <LockResetIcon sx={{ fontSize: 56, color: "#3ab5e6", mb: 1 }} />
                             <Typography variant="h5" sx={{ fontWeight: 800, mb: 0.5 }}>Forgot Password?</Typography>
                             <Typography variant="body2" sx={{ color: "#888", mb: 3 }}>
                                 Enter your email and we'll send you a reset code.
@@ -75,7 +75,7 @@ export default function ForgotPasswordPage() {
                                 </AnimatedItem>
 
                                 <AnimatedItem index={2}>
-                                    <PillButton type="submit" fullWidth loading={loading} startIcon={<SendIcon />}>
+                                    <PillButton type="submit" fullWidth colorScheme="primary" loading={loading} startIcon={<SendIcon />}>
                                         Send Reset Code
                                     </PillButton>
                                 </AnimatedItem>

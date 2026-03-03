@@ -99,7 +99,7 @@ export default function VerifyEmailPage() {
     };
 
     return (
-        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: "center", position: "relative" }}>
+        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: { xs: "flex-start", md: "center" }, position: "relative", py: { xs: 10, md: 0 } }}>
             <AuthHeader />
 
             <Container maxWidth="lg" sx={{ pt: { xs: 8, md: 0 } }}>
@@ -163,7 +163,7 @@ export default function VerifyEmailPage() {
                                             {remainingAttempts} attempt(s) remaining
                                         </Typography>
                                     )}
-                                    <PillButton type="submit" fullWidth loading={loading} disabled={disabled} startIcon={<VerifiedIcon />} sx={{ mb: 2 }}>
+                                    <PillButton type="submit" fullWidth colorScheme="primary" loading={loading} disabled={disabled} startIcon={<VerifiedIcon />} sx={{ mb: 2 }}>
                                         Verify Email
                                     </PillButton>
                                 </AnimatedItem>

@@ -55,7 +55,7 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: "center", position: "relative" }}>
+        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: { xs: "flex-start", md: "center" }, position: "relative", py: { xs: 10, md: 0 } }}>
             <AuthHeader />
 
             <Container maxWidth="lg" sx={{ pt: { xs: 8, md: 0 } }}>
@@ -79,7 +79,7 @@ export default function AdminLoginPage() {
                             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 5 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", maxWidth: 440, mx: "auto" }}>
                                 <AnimatedItem index={0}>
                                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, mb: 0.5 }}>
-                                        <LoginIcon sx={{ color: "#f5a623", fontSize: 28 }} />
+                                        <LoginIcon sx={{ color: "#3ab5e6", fontSize: 28 }} />
                                         <Typography variant="h5" sx={{ fontWeight: 800 }}>Admin Login</Typography>
                                     </Box>
                                     <Typography variant="body2" sx={{ color: "#888", textAlign: "center", mb: 3 }}>
@@ -121,7 +121,7 @@ export default function AdminLoginPage() {
                                 </AnimatedItem>
 
                                 <AnimatedItem index={6}>
-                                    <PillButton type="submit" fullWidth colorScheme="accent" loading={loading} startIcon={<LoginIcon />}>
+                                    <PillButton type="submit" fullWidth colorScheme="primary" loading={loading} startIcon={<LoginIcon />}>
                                         Log In
                                     </PillButton>
                                 </AnimatedItem>

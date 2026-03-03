@@ -48,7 +48,7 @@ export default function ChildSelectPage() {
                 <Box sx={{ textAlign: "center", mb: 3 }}>
                     <Box component="img" src={kipImg} alt="Kip mascot" sx={{ width: { xs: 120, md: 180 }, mb: 2 }} />
                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, mb: 1 }}>
-                        <SmileyIcon sx={{ fontSize: 32, color: "#f5a623" }} />
+                        <SmileyIcon sx={{ fontSize: 32, color: "#3ab5e6" }} />
                         <Typography variant="h4" sx={{ fontWeight: 800, color: "#1a1a2e", fontSize: { xs: "1.6rem", md: "2.2rem" } }}>
                             Hi! Let's learn together!
                         </Typography>

@@ -42,7 +42,7 @@ export default function RoleSelectPage() {
                                     <Typography variant="caption" sx={{ color: "#888", mt: 1, display: "block" }}>Access your dashboard</Typography>
                                 </Grid>
                                 <Grid size={{ xs: 12, sm: 6 }}>
-                                    <PillButton fullWidth colorScheme="outline" startIcon={<ChildCareIcon />} onClick={() => navigate("/auth/child/pin")} sx={{ py: 1.8 }}>
+                                    <PillButton fullWidth colorScheme="primary" startIcon={<ChildCareIcon />} onClick={() => navigate("/auth/child/pin")} sx={{ py: 1.8 }}>
                                         I'm a Child
                                     </PillButton>
                                     <Typography variant="caption" sx={{ color: "#888", mt: 1, display: "block" }}>Start your adventure</Typography>
@@ -54,7 +54,7 @@ export default function RoleSelectPage() {
                             <Typography variant="body2" sx={{ mt: 4, color: "#aaa", fontSize: "0.8rem" }}>
                                 Don't have an account?{" "}
                                 <Box component="span" onClick={() => navigate("/auth/signup")}
-                                    sx={{ cursor: "pointer", color: "#e74c3c", fontWeight: 600, transition: "all 0.2s", "&:hover": { textDecoration: "underline" } }}>
+                                    sx={{ cursor: "pointer", color: "#3ab5e6", fontWeight: 600, transition: "all 0.2s", "&:hover": { textDecoration: "underline" } }}>
                                     <PersonAddIcon sx={{ fontSize: 14, verticalAlign: "middle", mr: 0.3 }} />Sign up
                                 </Box>
                             </Typography>

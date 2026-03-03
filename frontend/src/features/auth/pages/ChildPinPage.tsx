@@ -49,9 +49,11 @@ export default function ChildPinPage() {
                 pin: emojiPassword.join(""),
                 password: emojiPassword.join(""),
             });
-            login(result.user, result.accessToken);
-            sessionStorage.removeItem("selectedChild");
-            navigate("/child/dashboard", { replace: true });
+            if (result.user && result.accessToken) {
+                login(result.user, result.accessToken);
+                sessionStorage.removeItem("selectedChild");
+                navigate("/child/dashboard", { replace: true });
+            }
         } catch (err: any) {
             setError(err.response?.data?.message ?? "Wrong pattern. Try again!");
             setEmojiPassword([]);
@@ -62,7 +64,7 @@ export default function ChildPinPage() {
     };
 
     return (
-        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#deeefe,#e8f4fd,#f0f6ff)", display: "flex", alignItems: "center", justifyContent: "center", py: 4, position: "relative" }}>
+        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#deeefe,#e8f4fd,#f0f6ff)", display: "flex", alignItems: { xs: "flex-start", md: "center" }, justifyContent: "center", py: { xs: 10, md: 4 }, position: "relative" }}>
             <AuthHeader />
 
             <Container maxWidth="xs">
@@ -112,7 +114,7 @@ export default function ChildPinPage() {
                         </AnimatedItem>
 
                         <AnimatedItem index={2}>
-                            <PillButton fullWidth colorScheme="accent" loading={loading} onClick={handleSubmit}
+                            <PillButton fullWidth colorScheme="primary" loading={loading} onClick={handleSubmit}
                                 disabled={emojiPassword.length !== 4} startIcon={<PlayIcon />}>
                                 Let's go!
                             </PillButton>

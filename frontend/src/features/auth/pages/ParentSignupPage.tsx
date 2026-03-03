@@ -68,7 +68,7 @@ export default function ParentSignupPage() {
     };
 
     return (
-        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: "center", position: "relative" }}>
+        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: { xs: "flex-start", md: "center" }, position: "relative", py: { xs: 10, md: 0 } }}>
             <AuthHeader />
 
             <Container maxWidth="lg" sx={{ pt: { xs: 8, md: 0 } }}>
@@ -136,7 +136,7 @@ export default function ParentSignupPage() {
                                 </AnimatedItem>
 
                                 <AnimatedItem index={6} sx={{ mt: 3 }}>
-                                    <PillButton type="submit" fullWidth loading={loading} startIcon={<HowToRegIcon />}>
+                                    <PillButton type="submit" fullWidth colorScheme="primary" loading={loading} startIcon={<HowToRegIcon />}>
                                         Create account
                                     </PillButton>
                                 </AnimatedItem>

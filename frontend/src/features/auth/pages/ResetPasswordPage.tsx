@@ -51,7 +51,7 @@ export default function ResetPasswordPage() {
     };
 
     return (
-        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: { xs: "flex-start", md: "center" }, justifyContent: "center", position: "relative", py: { xs: 10, md: 0 } }}>
             <AuthHeader />
 
             <Container maxWidth="xs">
@@ -91,7 +91,7 @@ export default function ResetPasswordPage() {
                         </AnimatedItem>
 
                         <AnimatedItem index={5}>
-                            <PillButton type="submit" fullWidth loading={loading} startIcon={<LockOpenIcon />}>
+                            <PillButton type="submit" fullWidth colorScheme="primary" loading={loading} startIcon={<LockOpenIcon />}>
                                 Reset Password
                             </PillButton>
                         </AnimatedItem>
