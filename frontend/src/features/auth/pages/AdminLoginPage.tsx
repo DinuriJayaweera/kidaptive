@@ -43,7 +43,7 @@ export default function AdminLoginPage() {
             const result = await adminLogin(form);
             if (result.user && result.accessToken) {
                 login(result.user, result.accessToken);
-                const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? "/admin-dashboard";
+                const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? "/admin/dashboard";
                 navigate(from, { replace: true });
             }
         } catch (err: any) {

@@ -26,7 +26,7 @@ api.interceptors.response.use(
             error.response?.status === 401 &&
             !original._retry &&
             !original.url?.includes("/auth/refresh") &&
-            !original.url?.includes("/auth/login")
+            !original.url?.includes("/login")
         ) {
             original._retry = true;
             try {

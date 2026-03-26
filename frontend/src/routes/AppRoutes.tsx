@@ -11,9 +11,19 @@ import ChildPinPage from "../features/auth/pages/ChildPinPage";
 import ParentDashboardPage from "../features/parent/pages/ParentDashboardPage";
 import CreateChildPage from "../features/parent/pages/CreateChildPage";
 import ChildDashboardPage from "../features/child/pages/ChildDashboardPage";
-import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage";
-import { PublicOnlyRoute, ParentRoute, ChildRoute, AdminRoute } from "../app/guards/RouteGuard";
 import AdminLoginPage from "../features/auth/pages/AdminLoginPage";
+import { PublicOnlyRoute, ParentRoute, ChildRoute, AdminRoute } from "../app/guards/RouteGuard";
+
+// Admin layout + pages
+import AdminLayout from "../features/admin/layouts/AdminLayout";
+import AdminDashboardPage from "../features/admin/pages/AdminDashboardPage";
+import AgeGroupsPage from "../features/admin/pages/AgeGroupsPage";
+import PlacementTestsPage from "../features/admin/pages/PlacementTestsPage";
+import QuizzesPage from "../features/admin/pages/QuizzesPage";
+import CategoriesPage from "../features/admin/pages/CategoriesPage";
+import UserManagementPage from "../features/admin/pages/UserManagementPage";
+import PerformancePage from "../features/admin/pages/PerformancePage";
+import SettingsPage from "../features/admin/pages/SettingsPage";
 
 export default function AppRoutes() {
     return (
@@ -23,7 +33,7 @@ export default function AppRoutes() {
 
             {/* Auth — public only */}
             <Route path="/auth/role" element={<PublicOnlyRoute><RoleSelectPage /></PublicOnlyRoute>} />
-            <Route path="/admin" element={<PublicOnlyRoute><AdminLoginPage /></PublicOnlyRoute>} />
+            <Route path="/auth/admin-login" element={<PublicOnlyRoute><AdminLoginPage /></PublicOnlyRoute>} />
             <Route path="/auth/signup" element={<PublicOnlyRoute><ParentSignupPage /></PublicOnlyRoute>} />
             <Route path="/auth/verify-email" element={<VerifyEmailPage />} />
             <Route path="/auth/login" element={<PublicOnlyRoute><ParentLoginPage /></PublicOnlyRoute>} />
@@ -37,6 +47,9 @@ export default function AppRoutes() {
             {/* Legacy redirects */}
             <Route path="/choose-role" element={<Navigate to="/auth/role" replace />} />
             <Route path="/login" element={<Navigate to="/auth/login" replace />} />
+            <Route path="/admin-dashboard" element={<Navigate to="/admin/dashboard" replace />} />
+            {/* Keep /admin as a legacy redirect to the login page */}
+            <Route path="/admin" element={<Navigate to="/auth/admin-login" replace />} />
 
             {/* Parent — protected */}
             <Route path="/parent/dashboard" element={<ParentRoute><ParentDashboardPage /></ParentRoute>} />
@@ -48,8 +61,17 @@ export default function AppRoutes() {
             {/* Child — protected */}
             <Route path="/child/dashboard" element={<ChildRoute><ChildDashboardPage /></ChildRoute>} />
 
-            {/* Admin — protected */}
-            <Route path="/admin-dashboard" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
+            {/* Admin — protected (nested routes under layout) */}
+            <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>
+                <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+                <Route path="/admin/age-groups" element={<AgeGroupsPage />} />
+                <Route path="/admin/placement-tests" element={<PlacementTestsPage />} />
+                <Route path="/admin/quizzes" element={<QuizzesPage />} />
+                <Route path="/admin/categories" element={<CategoriesPage />} />
+                <Route path="/admin/users" element={<UserManagementPage />} />
+                <Route path="/admin/performance" element={<PerformancePage />} />
+                <Route path="/admin/settings" element={<SettingsPage />} />
+            </Route>
 
             {/* Catch-all */}
             <Route path="*" element={<Navigate to="/" replace />} />
