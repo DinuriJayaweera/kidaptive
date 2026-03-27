@@ -7,10 +7,10 @@ export function errorHandler(
     res: Response,
     _next: NextFunction,
 ): void {
-    if (err instanceof AppError) {
-        res.status(err.statusCode).json({
+    if (err instanceof AppError || (err as any).isOperational) {
+        res.status((err as any).statusCode || 400).json({
             message: err.message,
-            ...(err.errors && { errors: err.errors }),
+            ...((err as any).errors && { errors: (err as any).errors }),
         });
         return;
     }

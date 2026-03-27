@@ -1,13 +1,20 @@
+import { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/context/AuthContext";
 import { logout as apiLogout } from "../../auth/api/authApi";
 import AdminSidebar from "../components/AdminSidebar";
 import AdminHeader from "../components/AdminHeader";
+import { Box } from "@mui/material";
 import "../styles/adminLayout.css";
 
 export default function AdminLayout() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const [mobileOpen, setMobileOpen] = useState(false);
+
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen);
+    };
 
     const handleLogout = async () => {
         try {
@@ -28,16 +35,34 @@ export default function AdminLayout() {
             .slice(0, 2) ?? "A";
 
     return (
-        <div className="admin-layout">
-            <AdminSidebar onLogout={handleLogout} />
+        <Box className="admin-layout" sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f7f8fc", width: "100%", overflowX: "hidden" }}>
+            <AdminSidebar 
+                onLogout={handleLogout} 
+                mobileOpen={mobileOpen} 
+                onDrawerToggle={handleDrawerToggle} 
+            />
 
-            <div className="admin-main-wrapper">
-                <AdminHeader userInitials={initials} />
+            <Box 
+                className="admin-main-wrapper" 
+                sx={{ 
+                    flexGrow: 1, 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    width: { xs: "100%", md: `calc(100% - 240px)` },
+                    marginLeft: "0px !important", 
+                    minHeight: "100vh",
+                    overflowX: "hidden"
+                }}
+            >
+                <AdminHeader 
+                    userInitials={initials} 
+                    onDrawerToggle={handleDrawerToggle} 
+                />
 
-                <main className="admin-content">
+                <Box component="main" className="admin-content" sx={{ flexGrow: 1, p: { xs: 2, md: 3 }, overflowY: "auto" }}>
                     <Outlet />
-                </main>
-            </div>
-        </div>
+                </Box>
+            </Box>
+        </Box>
     );
 }

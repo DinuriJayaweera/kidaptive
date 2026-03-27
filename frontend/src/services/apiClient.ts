@@ -17,6 +17,23 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+let isRefreshing = false;
+let failedQueue: Array<{
+    resolve: (token: string) => void;
+    reject: (err: any) => void;
+}> = [];
+
+const processQueue = (error: any, token: string | null = null) => {
+    failedQueue.forEach((prom) => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token as string);
+        }
+    });
+    failedQueue = [];
+};
+
 // Auto-refresh on 401
 api.interceptors.response.use(
     (res) => res,
@@ -28,16 +45,51 @@ api.interceptors.response.use(
             !original.url?.includes("/auth/refresh") &&
             !original.url?.includes("/login")
         ) {
+            if (isRefreshing) {
+                return new Promise(function (resolve, reject) {
+                    failedQueue.push({ resolve, reject });
+                })
+                    .then((token) => {
+                        if (original.headers && typeof original.headers.set === "function") {
+                            original.headers.set("Authorization", `Bearer ${token}`);
+                        } else {
+                            original.headers.Authorization = `Bearer ${token}`;
+                        }
+                        return api(original);
+                    })
+                    .catch((err) => {
+                        return Promise.reject(err);
+                    });
+            }
+
             original._retry = true;
+            isRefreshing = true;
+
             try {
                 const { data } = await api.post("/auth/refresh");
                 localStorage.setItem("accessToken", data.accessToken);
-                original.headers.Authorization = `Bearer ${data.accessToken}`;
+                
+                if (original.headers && typeof original.headers.set === "function") {
+                    original.headers.set("Authorization", `Bearer ${data.accessToken}`);
+                } else {
+                    original.headers.Authorization = `Bearer ${data.accessToken}`;
+                }
+                
+                processQueue(null, data.accessToken);
                 return api(original);
-            } catch {
+            } catch (refreshError) {
+                processQueue(refreshError, null);
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("user");
-                window.location.href = "/auth/login";
+                
+                if (window.location.pathname.startsWith("/admin")) {
+                    window.location.href = "/auth/admin-login";
+                } else {
+                    window.location.href = "/auth/login";
+                }
+                return Promise.reject(refreshError);
+            } finally {
+                isRefreshing = false;
             }
         }
         return Promise.reject(error);

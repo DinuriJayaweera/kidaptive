@@ -29,9 +29,12 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
+import placementRoutes from "./routes/placement.routes.js";
+
 // ── Routes ───────────────────────────────────────────────────────────────────
 app.use("/api", healthRoutes);
 app.use("/api", authRoutes);
+app.use("/api/placement-questions", placementRoutes);
 
 // ── Centralized Error Handler ────────────────────────────────────────────────
 app.use(errorHandler);
