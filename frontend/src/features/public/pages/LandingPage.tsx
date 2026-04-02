@@ -9,10 +9,14 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import kipImg from "../../../assets/images/kip_a.png";
-import butterfliesImg from "../../../assets/images/butterflies.png";
-import rocketImg from "../../../assets/images/rocket.png";
-import duckImg from "../../../assets/images/duck.png";
+import kipImg from "../../../assets/kip_a.png";
+import butterfliesImg from "../../../assets/butterflies.png";
+import rocketImg from "../../../assets/rocket.png";
+import duckImg from "../../../assets/duck.png";
+import dino3 from "../../../assets/5.png";
+import dino5 from "../../../assets/6.png";
+import dino6 from "../../../assets/3.png";
+import dino7 from "../../../assets/7.png";
 import { useRef, useState, useEffect } from "react";
 
 /* ─── Fires once when element enters viewport ─── */
@@ -333,9 +337,10 @@ export default function LandingPage() {
 
       {/* ═══════════════ FEATURES ═══════════════ */}
       <Box>
-        <WaveUp from="#ffffff" to="#f5c842" />
-        <Box sx={{ backgroundColor: "#f5c842", py: 6 }}>
-          <Container maxWidth="lg">
+        <WaveUp from="#ffffff" to="#E0F2FE" />
+        <Box sx={{ backgroundColor: "#E0F2FE", py: 6 }}>
+          {/* Narrow centered wrapper — stops cards from stretching wall-to-wall */}
+          <Box sx={{ maxWidth: 900, mx: "auto", px: { xs: 2, sm: 3 } }}>
             <Box
               ref={featuresRef}
               sx={{
@@ -344,52 +349,180 @@ export default function LandingPage() {
                 transition: "opacity 0.7s ease, transform 0.7s cubic-bezier(0.34,1.56,0.64,1)",
               }}
             >
-              <Typography variant="overline" sx={{ fontFamily: "'Poppins', sans-serif", display: "block", textAlign: "center", color: "#7a5800", fontWeight: 700, letterSpacing: 2 }}>
+              {/* ── Heading ── */}
+              <Typography
+                variant="overline"
+                sx={{
+                  fontFamily: "'Poppins', sans-serif",
+                  display: "block",
+                  textAlign: "center",
+                  color: "#0369a1",
+                  fontWeight: 700,
+                  letterSpacing: 3,
+                  fontSize: "0.66rem",
+                  mb: 0.5,
+                }}
+              >
                 Inside KIDAPTIVE
               </Typography>
-              <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "#1a1a2e", mb: 5 }}>
+              <Typography
+                sx={{
+                  fontFamily: "'Baloo 2', sans-serif",
+                  textAlign: "center",
+                  fontWeight: 900,
+                  color: "#1a1a2e",
+                  mb: 3.5,
+                  fontSize: { xs: "1.6rem", md: "2rem" },
+                  lineHeight: 1.2,
+                }}
+              >
                 Everything to master English
               </Typography>
-              <Grid container spacing={3}>
+
+              {/* ── Cards row ── */}
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: { xs: 2, sm: 2.5 },
+                  justifyContent: "center",
+                  alignItems: "stretch",
+                }}
+              >
                 {[
-                  { icon: "📚", title: "Grammar Adventures", desc: "Practice grammar with short activities. Lessons adjust to your level as you improve." },
-                  { icon: "📚", title: "Sentence Builder", desc: "Build sentences step by step. Kip suggests the next task from your progress." },
-                  { icon: "✍️", title: "Writing Practice", desc: "Write small sentences and paragraphs. Kip gives feedback to help you grow." },
-                  { icon: "🔤", title: "Vocabulary & Spelling", desc: "Learn new words and spelling. Kip focuses on what you find hard." },
+                  {
+                    color: "#5BC8F5",
+                    textBg: "rgba(0,100,160,0.20)",
+                    img: dino3,
+                    title: "Grammar Adventures",
+                    desc: "Practice grammar with short activities. Lessons adjust to your level as you improve.",
+                  },
+                  {
+                    color: "#FFD44E",
+                    textBg: "rgba(130,80,0,0.17)",
+                    img: dino5,
+                    title: "Sentence Builder",
+                    desc: "Build sentences step by step. Kip suggests the next task from your progress.",
+                  },
+                  {
+                    color: "#7DD95A",
+                    textBg: "rgba(20,100,0,0.17)",
+                    img: dino6,
+                    title: "Writing Practice",
+                    desc: "Write small sentences and paragraphs. Kip gives feedback to help you grow.",
+                  },
+                  {
+                    color: "#FF9447",
+                    textBg: "rgba(140,50,0,0.17)",
+                    img: dino7,
+                    title: "Vocabulary & Spelling",
+                    desc: "Learn new words and spelling. Kip focuses on what you find hard.",
+                  },
                 ].map((f) => (
-                  <Grid size={{ xs: 12, sm: 6, md: 3 }} key={f.title}>
-                    <Card sx={{
-                      borderRadius: 4,
-                      p: 1,
-                      height: "100%",
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
-                      transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                      cursor: "pointer",
-                      "@keyframes iconSpin": {
-                        "0%": { transform: "rotate(0deg) scale(1)" },
-                        "25%": { transform: "rotate(-15deg) scale(1.25)" },
-                        "75%": { transform: "rotate(15deg) scale(1.15)" },
-                        "100%": { transform: "rotate(0deg) scale(1)" },
-                      },
-                      "&:hover": {
-                        transform: "translateY(-10px) scale(1.03)",
-                        boxShadow: "0 20px 40px rgba(0,0,0,0.14)",
-                        "& .feat-icon": { animation: "iconSpin 0.55s cubic-bezier(0.36,0.07,0.19,0.97) both" },
-                      },
-                    }}>
-                      <CardContent>
-                        <Typography className="feat-icon" sx={{ fontSize: "2rem", mb: 1, display: "block" }}>{f.icon}</Typography>
-                        <Typography variant="subtitle1" fontWeight={700} gutterBottom>{f.title}</Typography>
-                        <Typography variant="body2" color="text.secondary">{f.desc}</Typography>
-                      </CardContent>
+                  <Box
+                    key={f.title}
+                    sx={{
+                      flex: "0 0 auto",
+                      width: { xs: "78%", sm: "calc(50% - 14px)", md: "calc(25% - 20px)" },
+                      maxWidth: 200,
+                      minWidth: 160,
+                      minHeight: { xs: "auto", md: 300 },
+                      display: "flex",
+                    }}
+                  >
+                    <Card
+                      sx={{
+                        borderRadius: "22px",
+                        overflow: "hidden",
+                        boxShadow: "0 4px 16px rgba(0,0,0,0.09)",
+                        cursor: "pointer",
+                        backgroundColor: f.color,
+                        display: "flex",
+                        flexDirection: "column",
+                        width: "100%",
+                        height: "100%",
+                      }}
+                    >
+                      {/* ── Mascot image area (hover targets only the avatar) ── */}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          pt: 3,
+                          px: 1.5,
+                          pb: 1.5,
+                          height: 190,
+                          flexShrink: 0,
+                          /* Avatar-only hover */
+                          "&:hover .dino-img": {
+                            transform: "translateY(-10px) scale(1.10)",
+                            filter: "drop-shadow(0 8px 14px rgba(0,0,0,0.18))",
+                          },
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={f.img}
+                          alt={f.title}
+                          className="dino-img"
+                          sx={{
+                            height: "100%",
+                            maxHeight: 155,
+                            width: "auto",
+                            maxWidth: "92%",
+                            objectFit: "contain",
+                            transition: "transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.28s ease",
+                            filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.12))",
+                          }}
+                        />
+                      </Box>
+
+                      {/* ── Text panel ── */}
+                      <Box
+                        sx={{
+                          backgroundColor: f.textBg,
+                          borderRadius: "14px",
+                          px: 1.6,
+                          pt: 1.1,
+                          pb: 1.3,
+                          mx: 0.8,
+                          mb: 0.8,
+                          mt: "auto",
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontFamily: "'Poppins', sans-serif",
+                            fontWeight: 700,
+                            color: "#fff",
+                            fontSize: "0.8rem",
+                            mb: 0.35,
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          {f.title}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontFamily: "'Poppins', sans-serif",
+                            color: "rgba(255,255,255,0.9)",
+                            fontSize: "0.66rem",
+                            lineHeight: 1.55,
+                            display: "block",
+                          }}
+                        >
+                          {f.desc}
+                        </Typography>
+                      </Box>
                     </Card>
-                  </Grid>
+                  </Box>
                 ))}
-              </Grid>
+              </Box>
             </Box>
-          </Container>
+          </Box>
         </Box>
-        <WaveDown from="#f5c842" to="#ffffff" />
+        <WaveDown from="#E0F2FE" to="#ffffff" />
       </Box>
 
       {/* ═══════════════ WHY PARENTS ═══════════════ */}

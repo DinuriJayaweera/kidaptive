@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { getMyChildren, type ChildProfile } from "../api/authApi";
 import AuthHeader from "../components/AuthHeader";
 import AnimatedPage, { AnimatedItem } from "../components/AnimatedPage";
-import kipImg from "../../../assets/images/kip_a.png";
+import kipImg from "../../../assets/kip_a.png";
 
 const avatarEmojis: Record<string, string> = {
     default: "🦖", dino: "🦕", rocket: "🚀", star: "⭐", bear: "🐻", cat: "🐱", dog: "🐶", unicorn: "🦄",

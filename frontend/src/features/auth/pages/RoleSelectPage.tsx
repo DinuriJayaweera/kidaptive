@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import AuthHeader from "../components/AuthHeader";
 import PillButton from "../../../components/ui/PillButton";
 import AnimatedPage, { AnimatedItem } from "../components/AnimatedPage";
-import kipImg from "../../../assets/images/kip.png";
+import kipImg from "../../../assets/kip.png";
 
 export default function RoleSelectPage() {
     const navigate = useNavigate();

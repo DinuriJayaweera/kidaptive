@@ -14,7 +14,7 @@ import AuthHeader from "../components/AuthHeader";
 import RoundedInput from "../../../components/ui/RoundedInput";
 import PillButton from "../../../components/ui/PillButton";
 import AnimatedPage, { AnimatedItem } from "../components/AnimatedPage";
-import kipImg from "../../../assets/images/kip_b.png";
+import kipImg from "../../../assets/kip_b.png";
 
 export default function AdminLoginPage() {
     const navigate = useNavigate();
