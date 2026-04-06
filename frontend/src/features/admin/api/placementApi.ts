@@ -6,6 +6,7 @@ export interface PlacementQuestion {
   ageGroup: string;
   category: string;
   questionType: string;
+  difficulty: 'easy' | 'medium' | 'hard';
   options: string[];
   correctAnswer: string;
   createdAt: string;
@@ -18,7 +19,19 @@ export interface FetchQuestionsResponse {
   pages: number;
 }
 
-export const getQuestions = async (params: { page?: number; limit?: number; ageGroup?: string; category?: string; search?: string }) => {
+export interface PlacementStats {
+  total: number;
+  easy: number;
+  medium: number;
+  hard: number;
+}
+
+export const getStats = async (): Promise<PlacementStats> => {
+  const { data } = await api.get<PlacementStats>('/placement-questions/stats');
+  return data;
+};
+
+export const getQuestions = async (params: { page?: number; limit?: number; ageGroup?: string; category?: string; difficulty?: string; search?: string }) => {
   const { data } = await api.get<FetchQuestionsResponse>('/placement-questions', { params });
   return data;
 };

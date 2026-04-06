@@ -79,7 +79,7 @@ export default function AdminSidebar({ onLogout, mobileOpen, onDrawerToggle }: A
                 variant="permanent"
                 sx={{
                     display: { xs: "none", md: "block" },
-                    "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240, borderRight: "1px solid #e8ecf1" },
+                    "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240, borderRight: "1px solid #e8ecf1", overflow: "hidden" },
                 }}
                 open
             >

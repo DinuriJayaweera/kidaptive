@@ -7,7 +7,8 @@ body, html {
 /* ─── Admin Layout ─────────────────────────────────────────── */
 .admin-layout {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     background: #f7f8fc;
     font-family: 'Inter', 'Segoe UI', sans-serif;
 }
@@ -23,9 +24,9 @@ body, html {
     position: fixed;
     top: 0;
     left: 0;
-    bottom: 0;
+    height: 100vh;
     z-index: 100;
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 .admin-sidebar__brand {
@@ -39,7 +40,7 @@ body, html {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: #3498db;
+    background: #25AFF4;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -51,7 +52,7 @@ body, html {
     height: 14px;
     border-radius: 50%;
     background: #1a1a2e;
-    border: 2px solid #3498db;
+    border: 2px solid #25AFF4;
 }
 
 .admin-sidebar__title {
@@ -105,19 +106,19 @@ body, html {
 }
 
 .admin-sidebar__nav-item:hover {
-    background: #f0f6ff;
-    color: #3498db;
+    background: #e8f7fe;
+    color: #25AFF4;
 }
 
 .admin-sidebar__nav-item--active {
-    background: #3498db;
+    background: #25AFF4;
     color: #ffffff;
     font-weight: 600;
     border-radius: 100px;
 }
 
 .admin-sidebar__nav-item--active:hover {
-    background: #2d87c4;
+    background: #0fa8ef;
     color: #ffffff;
 }
 
@@ -165,7 +166,8 @@ body, html {
     margin-left: 240px;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 /* ─── Header / Navbar ─────────────────────────────────────── */
@@ -221,8 +223,8 @@ body, html {
 }
 
 .admin-header__notification-btn:hover {
-    background: #f0f6ff;
-    color: #3498db;
+    background: #e8f7fe;
+    color: #25AFF4;
 }
 
 .admin-header__notification-dot {
@@ -240,7 +242,7 @@ body, html {
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background: #3498db;
+    background: #25AFF4;
     color: #ffffff;
     display: flex;
     align-items: center;
@@ -252,14 +254,14 @@ body, html {
 }
 
 .admin-header__avatar:hover {
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+    box-shadow: 0 0 0 3px rgba(37, 175, 244, 0.2);
 }
 
 /* ─── Content area ────────────────────────────────────────── */
 .admin-content {
     flex: 1;
     padding: 28px;
-    overflow-y: auto;
+    /* content itself shouldn't restrict overflow since wrapper scrolls it now */
 }
 
 

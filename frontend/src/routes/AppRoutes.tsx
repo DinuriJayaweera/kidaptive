@@ -11,6 +11,11 @@ import ChildPinPage from "../features/auth/pages/ChildPinPage";
 import ParentDashboardPage from "../features/parent/pages/ParentDashboardPage";
 import CreateChildPage from "../features/parent/pages/CreateChildPage";
 import ChildDashboardPage from "../features/child/pages/ChildDashboardPage";
+import ChildIntroPage from "../features/child/pages/ChildIntroPage";
+import ChildIntroAchievements from "../features/child/pages/ChildIntroAchievements";
+import ChildIntroFindLevel from "../features/child/pages/ChildIntroFindLevel";
+import ChildIntroPlacement from "../features/child/pages/ChildIntroPlacement";
+import ChildIntroLoading from "../features/child/pages/ChildIntroLoading";
 import AdminLoginPage from "../features/auth/pages/AdminLoginPage";
 import { PublicOnlyRoute, ParentRoute, ChildRoute, AdminRoute } from "../app/guards/RouteGuard";
 
@@ -59,6 +64,11 @@ export default function AppRoutes() {
             <Route path="/parent/profile" element={<ParentRoute><ParentDashboardPage /></ParentRoute>} />
 
             {/* Child — protected */}
+            <Route path="/child/intro" element={<ChildRoute><ChildIntroPage /></ChildRoute>} />
+            <Route path="/child/intro/achievements" element={<ChildRoute><ChildIntroAchievements /></ChildRoute>} />
+            <Route path="/child/intro/find-level" element={<ChildRoute><ChildIntroFindLevel /></ChildRoute>} />
+            <Route path="/child/intro/placement" element={<ChildRoute><ChildIntroPlacement /></ChildRoute>} />
+            <Route path="/child/intro/loading" element={<ChildRoute><ChildIntroLoading /></ChildRoute>} />
             <Route path="/child/dashboard" element={<ChildRoute><ChildDashboardPage /></ChildRoute>} />
 
             {/* Admin — protected (nested routes under layout) */}

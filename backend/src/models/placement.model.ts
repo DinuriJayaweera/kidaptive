@@ -5,6 +5,7 @@ export interface IPlacementQuestion extends Document {
   ageGroup: string;
   category: string;
   questionType: string;
+  difficulty: 'easy' | 'medium' | 'hard';
   options: string[];
   correctAnswer: string;
   createdAt: Date;
@@ -17,6 +18,7 @@ const placementQuestionSchema = new Schema<IPlacementQuestion>(
     ageGroup: { type: String, required: true },
     category: { type: String, required: true },
     questionType: { type: String, required: true },
+    difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },
     options: { type: [String], default: [] },
     correctAnswer: { type: String, required: true },
   },

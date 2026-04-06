@@ -14,14 +14,14 @@ import {
     Select,
     MenuItem,
     FormControl,
-    InputLabel,
     Pagination,
-    Chip,
     CircularProgress,
     Tooltip,
     TextField,
     InputAdornment,
     Fab,
+    Stack,
+    Chip,
 } from "@mui/material";
 import {
     Add as AddIcon,
@@ -29,102 +29,155 @@ import {
     Delete as DeleteIcon,
     Visibility as VisibilityIcon,
     Search as SearchIcon,
+    QuizOutlined as QuizIcon,
+    Bolt as BoltIcon,
+    SignalCellularAlt as EasyIcon,
 } from "@mui/icons-material";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getQuestions, createQuestion, updateQuestion, deleteQuestion } from "../api/placementApi";
+import { getQuestions, getStats, createQuestion, updateQuestion, deleteQuestion } from "../api/placementApi";
 import type { PlacementQuestion } from "../api/placementApi";
 import QuestionModal, { AGE_GROUPS, AGE_GROUP_CATEGORIES, ALL_CATEGORIES } from "../components/QuestionModal";
 
-const AgeGroupBadge = ({ ageGroup }: { ageGroup: string }) => {
-    let bgColor = "#eff6ff";
-    let textColor = "#2563eb";
+// Custom style objects will be embedded inside Chips.
+// ─────────────────── Stat Card ────────────────────────────────────
 
-    switch (ageGroup) {
-        case "5-6":
-            bgColor = "#fee2e2";
-            textColor = "#dc2626";
-            break;
-        case "7-8":
-            bgColor = "#fef3c7";
-            textColor = "#d97706";
-            break;
-        case "9-10":
-            bgColor = "#dcfce7";
-            textColor = "#15803d";
-            break;
-        default: break;
-    }
-
-    return (
-        <Chip
-            label={ageGroup}
-            size="small"
+const StatCard = ({
+    label,
+    value,
+    icon,
+    accent,
+    isActive = false,
+    onClick,
+}: {
+    label: string;
+    value: number | string;
+    icon: React.ReactNode;
+    accent: string;
+    isActive?: boolean;
+    onClick?: () => void;
+}) => (
+    <Box
+        onClick={onClick}
+        sx={{
+            flex: "1 1 0",
+            minWidth: { xs: "calc(50% - 6px)", sm: 140 },
+            background: isActive ? "#eef6ff" : "#fff",
+            border: isActive ? "1px solid #4da3ff" : "1px solid #eee",
+            borderRadius: "16px",
+            px: { xs: 2, md: 2.5 },
+            py: { xs: 1.75, md: 2 },
+            display: "flex",
+            alignItems: "center",
+            gap: 1.75,
+            boxShadow: isActive ? "0 4px 14px rgba(77, 163, 255, 0.15)" : "0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)",
+            cursor: onClick ? "pointer" : "default",
+            transition: "all 0.2s ease",
+            "&:hover": onClick ? {
+                boxShadow: "0 6px 16px rgba(0,0,0,0.08)",
+                transform: "translateY(-2px)"
+            } : {},
+        }}
+    >
+        <Box
             sx={{
-                background: bgColor,
-                color: textColor,
-                fontWeight: 600,
-                borderRadius: "100px",
-                minWidth: "64px",
-                "& .MuiChip-label": {
-                    px: 1.5,
-                }
+                width: 40,
+                height: 40,
+                borderRadius: "12px",
+                background: `${accent}18`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: accent,
+                flexShrink: 0,
             }}
-        />
-    );
+        >
+            {icon}
+        </Box>
+        <Box>
+            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontSize: { xs: "1.35rem", md: "1.6rem" }, fontWeight: 700, color: "#111827", lineHeight: 1 }}>
+                {value}
+            </Typography>
+            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.72rem", color: "#9ca3af", fontWeight: 500, mt: 0.3, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                {label}
+            </Typography>
+        </Box>
+    </Box>
+);
+
+// ─────────────────── Shared select sx ────────────────────────────
+
+const pillSelectSx = {
+    borderRadius: "999px",
+    bgcolor: "#fafafa",
+    "& .MuiOutlinedInput-notchedOutline": { borderColor: "#eee", transition: "all 0.2s ease" },
+    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#d1d5db" },
+    "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#25AFF4", borderWidth: 1, boxShadow: "0 0 0 3px rgba(37,175,244,0.1)" },
+    "& .MuiSelect-select": { py: "8px", px: "16px", fontSize: "0.875rem" },
 };
+
+// ─────────────────── Page ─────────────────────────────────────────
 
 export default function PlacementTestsPage() {
     const queryClient = useQueryClient();
     const [page, setPage] = useState(1);
     const [ageGroupFilter, setAgeGroupFilter] = useState("All");
+    const [difficultyFilter, setDifficultyFilter] = useState<string>("");
     const [categoryFilter, setCategoryFilter] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Modal states
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isViewMode, setIsViewMode] = useState(false);
     const [editingQuestion, setEditingQuestion] = useState<PlacementQuestion | null>(null);
+    const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
-    // Dynamic categories based on selected age filter
-    const availableCategories = ageGroupFilter === "All" ? ALL_CATEGORIES : (AGE_GROUP_CATEGORIES[ageGroupFilter] || []);
+    const availableCategories =
+        ageGroupFilter === "All" ? ALL_CATEGORIES : (AGE_GROUP_CATEGORIES[ageGroupFilter] || []);
 
-    // Filter update handling to prevent invalid category combinations
     const handleAgeFilterChange = (newAge: string) => {
         setAgeGroupFilter(newAge);
         setPage(1);
         if (newAge !== "All" && categoryFilter !== "All") {
             const valid = AGE_GROUP_CATEGORIES[newAge] || [];
-            if (!valid.includes(categoryFilter)) {
-                setCategoryFilter("All");
-            }
+            if (!valid.includes(categoryFilter)) setCategoryFilter("All");
         }
     };
 
-    // Fetch questions
+    // Paginated questions
     const { data, isLoading, error } = useQuery({
-        queryKey: ["placementQuestions", page, ageGroupFilter, categoryFilter, searchTerm],
-        queryFn: () => getQuestions({
-            page,
-            limit: 8,
-            ageGroup: ageGroupFilter !== "All" ? ageGroupFilter : undefined,
-            category: categoryFilter !== "All" ? categoryFilter : undefined,
-            search: searchTerm || undefined
-        }),
+        queryKey: ["placementQuestions", page, ageGroupFilter, categoryFilter, difficultyFilter, searchTerm],
+        queryFn: () =>
+            getQuestions({
+                page,
+                limit: 8,
+                ageGroup: ageGroupFilter !== "All" ? ageGroupFilter : undefined,
+                category: categoryFilter !== "All" ? categoryFilter : undefined,
+                difficulty: difficultyFilter ? difficultyFilter : undefined,
+                search: searchTerm || undefined,
+            }),
     });
 
-    // Mutations
+    // Global stats (real totals across all pages)
+    const { data: stats } = useQuery({
+        queryKey: ["placementStats"],
+        queryFn: getStats,
+        staleTime: 30_000,
+    });
+
     const createMutation = useMutation({
         mutationFn: createQuestion,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["placementQuestions"] });
+            queryClient.invalidateQueries({ queryKey: ["placementStats"] });
             setIsModalOpen(false);
         },
     });
 
     const updateMutation = useMutation({
-        mutationFn: ({ id, payload }: { id: string; payload: Partial<PlacementQuestion> }) => updateQuestion(id, payload),
+        mutationFn: ({ id, payload }: { id: string; payload: Partial<PlacementQuestion> }) =>
+            updateQuestion(id, payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["placementQuestions"] });
+            queryClient.invalidateQueries({ queryKey: ["placementStats"] });
             setIsModalOpen(false);
         },
     });
@@ -133,174 +186,448 @@ export default function PlacementTestsPage() {
         mutationFn: deleteQuestion,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["placementQuestions"] });
+            queryClient.invalidateQueries({ queryKey: ["placementStats"] });
         },
     });
 
-    const handleOpenAdd = () => {
-        setIsViewMode(false);
-        setEditingQuestion(null);
-        setIsModalOpen(true);
-    };
-
-    const handleOpenEdit = (q: PlacementQuestion) => {
-        setIsViewMode(false);
-        setEditingQuestion(q);
-        setIsModalOpen(true);
-    };
-
-    const handleOpenView = (q: PlacementQuestion) => {
-        setIsViewMode(true);
-        setEditingQuestion(q);
-        setIsModalOpen(true);
-    };
-
-    const handleDelete = (id: string) => {
-        if (window.confirm("Are you sure you want to delete this question?")) {
-            deleteMutation.mutate(id);
-        }
-    };
-
+    const handleOpenAdd = () => { setIsViewMode(false); setEditingQuestion(null); setIsModalOpen(true); };
+    const handleOpenEdit = (q: PlacementQuestion) => { setIsViewMode(false); setEditingQuestion(q); setIsModalOpen(true); };
+    const handleOpenView = (q: PlacementQuestion) => { setIsViewMode(true); setEditingQuestion(q); setIsModalOpen(true); };
+    const handleDelete = (id: string) => { if (window.confirm("Delete this question?")) deleteMutation.mutate(id); };
     const handleSave = (formData: Partial<PlacementQuestion>) => {
-        if (editingQuestion) {
-            updateMutation.mutate({ id: editingQuestion._id, payload: formData });
-        } else {
-            createMutation.mutate(formData);
-        }
+        if (editingQuestion) updateMutation.mutate({ id: editingQuestion._id, payload: formData });
+        else createMutation.mutate(formData);
     };
+
+    const toggleRow = (id: string) => setExpandedRow((prev) => (prev === id ? null : id));
 
     return (
-        <Box sx={{ maxWidth: 1200, margin: "0 auto", p: { xs: 1.5, md: 3 } }}>
-            <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, justifyContent: "space-between", alignItems: { xs: "stretch", md: "center" }, gap: { xs: 2, md: 3 }, mb: { xs: 2.5, md: 4 } }}>
-                
-                {/* Filters Region */}
-                <Box sx={{ display: "flex", flexDirection: "row", gap: 1.5, width: { xs: "100%", md: "auto" }, order: { xs: 2, md: 1 } }}>
-                    <FormControl size="small" sx={{ flex: 1, minWidth: { md: 160 }, background: "#fff", borderRadius: 1 }}>
-                        <InputLabel>Age Group</InputLabel>
-                        <Select
-                            value={ageGroupFilter}
-                            label="Age Group"
-                            onChange={(e) => handleAgeFilterChange(e.target.value)}
-                        >
-                            <MenuItem value="All">All Ages</MenuItem>
-                            {AGE_GROUPS.map((a) => <MenuItem key={a} value={a}>Age {a}</MenuItem>)}
-                        </Select>
-                    </FormControl>
-
-                    <FormControl size="small" sx={{ flex: 1, minWidth: { md: 160 }, background: "#fff", borderRadius: 1 }}>
-                        <InputLabel>Category</InputLabel>
-                        <Select
-                            value={categoryFilter}
-                            label="Category"
-                            onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
-                        >
-                            <MenuItem value="All">All</MenuItem>
-                            {availableCategories.map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
-                        </Select>
-                    </FormControl>
-                </Box>
-
-                {/* Actions Region */}
-                <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, alignItems: { xs: "stretch", md: "center" }, gap: { xs: 1.5, md: 2 }, width: { xs: "100%", md: "auto" }, order: { xs: 1, md: 2 } }}>
-                    <TextField 
-                        size="small" 
-                        placeholder="Search questions..." 
-                        value={searchTerm} 
-                        onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
-                        InputProps={{
-                            startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: "#9ba3af", fontSize: 20 }}/></InputAdornment>,
-                            sx: { borderRadius: "100px", bgcolor: "#fff", "& fieldset": { borderColor: "#e2e8f0" } }
-                        }}
-                        sx={{ width: "100%", minWidth: { md: 280 } }}
-                    />
-
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={handleOpenAdd}
+        <Box sx={{ width: "100%", fontFamily: "'Poppins', sans-serif" }}>
+            {/* Header Area */}
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", mb: { xs: 2.5, md: 3 }, flexWrap: "wrap", gap: 2 }}>
+                <Box>
+                    <Typography
+                        variant="h4"
                         sx={{
-                            display: { xs: "none", md: "flex" },
-                            background: "#3498db",
-                            borderRadius: "24px",
-                            textTransform: "none",
-                            px: 3,
-                            py: 1,
-                            boxShadow: "0 4px 14px 0 rgba(52,152,219,0.39)",
-                            "&:hover": { background: "#2980b9", boxShadow: "0 6px 20px rgba(52,152,219,0.23)" },
-                            width: "auto",
-                            whiteSpace: "nowrap",
-                            flexShrink: 0
+                            fontFamily: "'Baloo 2', cursive",
+                            fontWeight: 700,
+                            color: "#111827",
+                            letterSpacing: "-0.02em",
+                            fontSize: { xs: "1.5rem", md: "1.85rem" },
+                            mb: 0.5,
                         }}
                     >
-                        Add New Question
-                    </Button>
+                        Placement Tests
+                    </Typography>
+                    <Typography sx={{ color: "#6b7280", fontSize: { xs: "0.875rem", md: "0.95rem" }, fontFamily: "'Poppins', sans-serif" }}>
+                        Manage the adaptive question pool perfectly.
+                    </Typography>
                 </Box>
+
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={handleOpenAdd}
+                    sx={{
+                        fontFamily: "'Poppins', sans-serif",
+                        borderRadius: "999px",
+                        textTransform: "none",
+                        fontWeight: 600,
+                        background: "#25AFF4",
+                        px: 3,
+                        py: 1,
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                            background: "#1EA0E6",
+                            transform: "translateY(-1px)",
+                            boxShadow: "0 6px 16px rgba(0,0,0,0.1)",
+                        },
+                    }}
+                >
+                    Add New Question
+                </Button>
             </Box>
 
-            <Paper elevation={0} sx={{ border: "1px solid #e2e8f0", borderRadius: 3, overflow: "hidden", boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)" }}>
+            {/* ── Stat Cards ── */}
+            <Box sx={{ display: "flex", gap: { xs: 1.5, md: 2 }, flexWrap: "wrap", mb: 3 }}>
+                <StatCard
+                    label="TOTAL"
+                    value={stats?.total || 0}
+                    icon={<QuizIcon />}
+                    accent="#25AFF4"
+                    isActive={false} // Total represents no specific filter, never active
+                    onClick={() => { setDifficultyFilter(""); setPage(1); }}
+                />
+                <StatCard
+                    label="EASY"
+                    value={stats?.easy || 0}
+                    icon={<EasyIcon />}
+                    accent="#8EE870"
+                    isActive={difficultyFilter === "easy"}
+                    onClick={() => { setDifficultyFilter(difficultyFilter === "easy" ? "" : "easy"); setPage(1); }}
+                />
+                <StatCard
+                    label="MEDIUM"
+                    value={stats?.medium || 0}
+                    icon={<BoltIcon />}
+                    accent="#FFCC35"
+                    isActive={difficultyFilter === "medium"}
+                    onClick={() => { setDifficultyFilter(difficultyFilter === "medium" ? "" : "medium"); setPage(1); }}
+                />
+                <StatCard
+                    label="HARD"
+                    value={stats?.hard || 0}
+                    icon={<BoltIcon sx={{ color: "#FF5144" }} />}
+                    accent="#FF5144"
+                    isActive={difficultyFilter === "hard"}
+                    onClick={() => { setDifficultyFilter(difficultyFilter === "hard" ? "" : "hard"); setPage(1); }}
+                />
+            </Box>
+
+            {/* ── Filters + Search — right-aligned row ── */}
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
+                    gap: 1.25,
+                    mb: 2.5,
+                    alignItems: { sm: "center" },
+                    justifyContent: { sm: "flex-end" },
+                    flexWrap: "wrap",
+                }}
+            >
+                {/* Search pill */}
+                <TextField
+                    size="small"
+                    placeholder="Search questions…"
+                    value={searchTerm}
+                    onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon sx={{ color: "#9ca3af", fontSize: 17 }} />
+                            </InputAdornment>
+                        ),
+                        sx: {
+                            borderRadius: "999px",
+                            bgcolor: "#fff",
+                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e8ecf1" },
+                            "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#c6d0dc" },
+                            "& input": { py: "8px", px: "4px", fontSize: "0.875rem" },
+                        },
+                    }}
+                    sx={{ width: { xs: "100%", sm: "220px" } }}
+                />
+
+                {/* Age Group */}
+                <FormControl size="small" sx={{ width: { xs: "100%", sm: "140px" } }}>
+                    <Select
+                        value={ageGroupFilter}
+                        displayEmpty
+                        onChange={(e) => handleAgeFilterChange(e.target.value)}
+                        sx={pillSelectSx}
+                        renderValue={(v) => v === "All" ? "All Ages" : `Age ${v}`}
+                    >
+                        <MenuItem value="All">All Ages</MenuItem>
+                        {AGE_GROUPS.map((a) => <MenuItem key={a} value={a}>Age {a}</MenuItem>)}
+                    </Select>
+                </FormControl>
+
+                {/* Category */}
+                <FormControl size="small" sx={{ width: { xs: "100%", sm: "160px" } }}>
+                    <Select
+                        value={categoryFilter}
+                        displayEmpty
+                        onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
+                        sx={pillSelectSx}
+                        renderValue={(v) => v === "All" ? "All Categories" : v as string}
+                    >
+                        <MenuItem value="All">All Categories</MenuItem>
+                        {availableCategories.map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+                    </Select>
+                </FormControl>
+            </Box>
+
+            {/* ── Questions Table ── */}
+            <Paper
+                elevation={0}
+                sx={{
+                    borderRadius: "16px",
+                    overflow: "hidden",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+                    background: "#fff",
+                }}
+            >
                 {isLoading ? (
-                    <Box sx={{ p: 5, display: "flex", justifyContent: "center" }}>
-                        <CircularProgress />
+                    <Box sx={{ p: 6, display: "flex", justifyContent: "center" }}>
+                        <CircularProgress size={32} />
                     </Box>
                 ) : error ? (
-                    <Box sx={{ p: 5, textAlign: "center", color: "error.main" }}>
+                    <Box sx={{ p: 6, textAlign: "center", color: "#ef4444", fontSize: 14 }}>
                         Failed to load questions. Please verify backend is running.
                     </Box>
                 ) : (
                     <>
                         <TableContainer sx={{ overflowX: "auto" }}>
-                            <Table sx={{ minWidth: { xs: 300, md: 700 } }}>
-                                <TableHead sx={{ background: "#f8fafc" }}>
-                                    <TableRow>
-                                        <TableCell sx={{ color: "#64748b", fontWeight: 700, fontSize: 12, borderBottom: "1px solid #e2e8f0" }}>QUESTION</TableCell>
-                                        <TableCell sx={{ color: "#64748b", fontWeight: 700, fontSize: 12, borderBottom: "1px solid #e2e8f0", width: { xs: 80, md: 130 }, whiteSpace: "nowrap" }}>AGE</TableCell>
-                                        <TableCell sx={{ display: { xs: "none", md: "table-cell" }, color: "#64748b", fontWeight: 700, fontSize: 12, borderBottom: "1px solid #e2e8f0", width: 140 }}>CATEGORY</TableCell>
-                                        <TableCell sx={{ display: { xs: "none", md: "table-cell" }, color: "#64748b", fontWeight: 700, fontSize: 12, borderBottom: "1px solid #e2e8f0", width: 140 }}>TYPE</TableCell>
-                                        <TableCell align="right" sx={{ color: "#64748b", fontWeight: 700, fontSize: 12, borderBottom: "1px solid #e2e8f0", width: { xs: 100, md: 140 }, whiteSpace: "nowrap" }}>ACTIONS</TableCell>
+                            <Table sx={{ minWidth: { xs: 320, md: 640 } }}>
+                                <TableHead>
+                                    <TableRow sx={{ background: "#f9fafb", height: 60 }}>
+                                        <TableCell
+                                            sx={{
+                                                fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
+                                                borderBottom: "1px solid #f3f4f6", padding: "12px 16px",
+                                                verticalAlign: "middle", maxWidth: 220, width: "100%"
+                                            }}
+                                        >
+                                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-start", height: "100%" }}>
+                                                QUESTION
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell
+                                            sx={{
+                                                fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
+                                                borderBottom: "1px solid #f3f4f6", padding: "12px 16px",
+                                                verticalAlign: "middle", width: 100, textAlign: "center",
+                                            }}
+                                        >
+                                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                                                AGE
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell
+                                            sx={{
+                                                display: { xs: "none", md: "table-cell" },
+                                                fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
+                                                borderBottom: "1px solid #f3f4f6", padding: "12px 16px",
+                                                verticalAlign: "middle", width: 140, textAlign: "center",
+                                            }}
+                                        >
+                                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                                                CATEGORY
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell
+                                            sx={{
+                                                fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
+                                                borderBottom: "1px solid #f3f4f6", padding: "12px 16px",
+                                                verticalAlign: "middle", width: 120, textAlign: "center",
+                                            }}
+                                        >
+                                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                                                DIFFICULTY
+                                            </Box>
+                                        </TableCell>
+                                        <TableCell
+                                            sx={{
+                                                fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
+                                                borderBottom: "1px solid #f3f4f6", padding: "12px 16px",
+                                                verticalAlign: "middle", width: 120, textAlign: "center",
+                                            }}
+                                        >
+                                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                                                ACTIONS
+                                            </Box>
+                                        </TableCell>
                                     </TableRow>
                                 </TableHead>
+
                                 <TableBody>
-                                    {data?.questions.map((q) => (
-                                        <TableRow key={q._id} hover sx={{ "&:last-child td, &:last-child th": { border: 0 }, transition: "background 0.2s" }}>
-                                            <TableCell sx={{ py: { xs: 1.5, md: 2.5 }, color: "#334155", borderBottom: "1px solid #e2e8f0" }}>
-                                                <Typography sx={{ display: "-webkit-box", WebkitLineClamp: { xs: 1, md: 2 }, WebkitBoxOrient: "vertical", overflow: "hidden", fontSize: { xs: 13, md: 14 } }}>
-                                                    {q.questionText}
-                                                </Typography>
-                                            </TableCell>
-                                            <TableCell sx={{ borderBottom: "1px solid #e2e8f0" }}>
-                                                <AgeGroupBadge ageGroup={q.ageGroup} />
-                                            </TableCell>
-                                            <TableCell sx={{ display: { xs: "none", md: "table-cell" }, color: "#475569", borderBottom: "1px solid #e2e8f0", fontSize: 14 }}>
-                                                {q.category}
-                                            </TableCell>
-                                            <TableCell sx={{ display: { xs: "none", md: "table-cell" }, color: "#64748b", borderBottom: "1px solid #e2e8f0", fontSize: 13, textTransform: "capitalize" }}>
-                                                {q.questionType === 'tf' ? 'True / False' : q.questionType}
-                                            </TableCell>
-                                            <TableCell align="right" sx={{ borderBottom: "1px solid #e2e8f0", whiteSpace: "nowrap" }}>
-                                                <Tooltip title="View">
-                                                    <IconButton size="small" onClick={() => handleOpenView(q)} sx={{ color: "#94a3b8", "&:hover": { color: "#3498db", background: "#f0f9ff" }, mr: { xs: 1, md: 0.5 }, p: { xs: 1, md: 0.5 } }}>
-                                                        <VisibilityIcon fontSize="small" />
-                                                    </IconButton>
-                                                </Tooltip>
-                                                <Tooltip title="Edit">
-                                                    <IconButton size="small" onClick={() => handleOpenEdit(q)} sx={{ color: "#94a3b8", "&:hover": { color: "#10b981", background: "#ecfdf5" }, mr: { xs: 1, md: 0.5 }, p: { xs: 1, md: 0.5 } }}>
-                                                        <EditIcon fontSize="small" />
-                                                    </IconButton>
-                                                </Tooltip>
-                                                <Tooltip title="Delete">
-                                                    <IconButton size="small" onClick={() => handleDelete(q._id)} sx={{ color: "#94a3b8", "&:hover": { color: "#ef4444", background: "#fef2f2" }, p: { xs: 1, md: 0.5 } }}>
-                                                        <DeleteIcon fontSize="small" />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
+                                    {data?.questions.map((q) => {
+                                        const isExpanded = expandedRow === q._id;
+                                        return (
+                                            <TableRow
+                                                hover
+                                                key={q._id}
+                                                sx={{
+                                                    cursor: "pointer",
+                                                    height: 60,
+                                                    "&:last-child td": { border: 0 },
+                                                    transition: "all 0.2s ease",
+                                                    "&:hover": {
+                                                        backgroundColor: "#f9fafb",
+                                                        transform: "scale(1.005)",
+                                                    },
+                                                    "&:hover .actions": {
+                                                        opacity: 1,
+                                                    }
+                                                }}
+                                                onClick={() => toggleRow(q._id)}
+                                            >
+                                                {/* Question cell — truncate with ellipsis + tooltip */}
+                                                <TableCell
+                                                    sx={{
+                                                        padding: "12px 16px",
+                                                        borderBottom: "1px solid #f3f4f6",
+                                                        maxWidth: 200,
+                                                        verticalAlign: "middle",
+                                                    }}
+                                                >
+                                                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-start", height: "100%" }}>
+                                                        <Tooltip
+                                                            title={q.questionText}
+                                                            placement="top-start"
+                                                            disableHoverListener={isExpanded}
+                                                            arrow
+                                                        >
+                                                            <Typography
+                                                                sx={{
+                                                                    fontFamily: "'Poppins', sans-serif",
+                                                                    fontSize: { xs: 13, md: 14 },
+                                                                    color: "#374151",
+                                                                    fontWeight: 500,
+                                                                    lineHeight: 1.45,
+                                                                    width: "100%",
+                                                                    // Single-line truncation
+                                                                    ...(isExpanded
+                                                                        ? {}
+                                                                        : {
+                                                                            whiteSpace: "nowrap",
+                                                                            overflow: "hidden",
+                                                                            textOverflow: "ellipsis",
+                                                                        }),
+                                                                }}
+                                                            >
+                                                                {q.questionText}
+                                                            </Typography>
+                                                        </Tooltip>
+                                                    </Box>
+                                                </TableCell>
+
+                                                {/* Age — centered, minimal pill */}
+                                                <TableCell
+                                                    sx={{
+                                                        padding: "12px 16px",
+                                                        borderBottom: "1px solid #f3f4f6",
+                                                        verticalAlign: "middle",
+                                                        width: 100,
+                                                    }}
+                                                >
+                                                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                                                        <Chip label={`${q.ageGroup} yrs`} variant="outlined" size="small" sx={{ fontFamily: "'Poppins', sans-serif", minWidth: 80 }} />
+                                                    </Box>
+                                                </TableCell>
+
+                                                {/* Category */}
+                                                <TableCell
+                                                    sx={{
+                                                        display: { xs: "none", md: "table-cell" },
+                                                        padding: "12px 16px",
+                                                        borderBottom: "1px solid #f3f4f6",
+                                                        verticalAlign: "middle",
+                                                        width: 140,
+                                                    }}
+                                                >
+                                                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                                                        <Chip label={q.category} size="small" sx={{ fontFamily: "'Poppins', sans-serif", background: "#f1f5f9", minWidth: 80, fontWeight: 500 }} />
+                                                    </Box>
+                                                </TableCell>
+
+                                                {/* Difficulty — color-coded badge */}
+                                                <TableCell
+                                                    sx={{
+                                                        padding: "12px 16px",
+                                                        borderBottom: "1px solid #f3f4f6",
+                                                        verticalAlign: "middle",
+                                                        width: 120,
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                                                        <Chip 
+                                                            label={q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1)} 
+                                                            size="small" 
+                                                            variant="outlined"
+                                                            sx={{ 
+                                                                fontFamily: "'Poppins', sans-serif",
+                                                                minWidth: 80, 
+                                                                fontWeight: 600,
+                                                                color: q.difficulty === "easy" ? "#2f8a15" : q.difficulty === "medium" ? "#b38900" : "#cc1810", 
+                                                                border: `1px solid ${q.difficulty === "easy" ? "#8EE870" : q.difficulty === "medium" ? "#FFCC35" : "#FF5144"}`
+                                                            }}
+                                                        />
+                                                    </Box>
+                                                </TableCell>
+
+                                                {/* Actions — visible on hover */}
+                                                <TableCell
+                                                    sx={{
+                                                        padding: "12px 16px",
+                                                        borderBottom: "1px solid #f3f4f6",
+                                                        verticalAlign: "middle",
+                                                        width: 120,
+                                                    }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                                                        <Stack
+                                                            className="actions"
+                                                            direction="row"
+                                                            justifyContent="center"
+                                                            spacing={1}
+                                                            sx={{
+                                                                opacity: 0,
+                                                                transition: "0.2s ease",
+                                                            }}
+                                                        >
+                                                            <Tooltip title="View" arrow>
+                                                                <IconButton
+                                                                    size="small"
+                                                                    onClick={() => handleOpenView(q)}
+                                                                    sx={{
+                                                                        color: "#d1d5db",
+                                                                        transition: "all 0.2s ease",
+                                                                        "&:hover": { color: "#25AFF4", background: "#e8f7fe", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(37,175,244,0.15)" },
+                                                                        p: 0.75,
+                                                                    }}
+                                                                >
+                                                                    <VisibilityIcon sx={{ fontSize: 16 }} />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                            <Tooltip title="Edit" arrow>
+                                                                <IconButton
+                                                                    size="small"
+                                                                    onClick={() => handleOpenEdit(q)}
+                                                                    sx={{
+                                                                        color: "#d1d5db",
+                                                                        transition: "all 0.2s ease",
+                                                                        "&:hover": { color: "#10b981", background: "#f0fdf4", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(16,185,129,0.15)" },
+                                                                        p: 0.75,
+                                                                    }}
+                                                                >
+                                                                    <EditIcon sx={{ fontSize: 16 }} />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                            <Tooltip title="Delete" arrow>
+                                                                <IconButton
+                                                                    size="small"
+                                                                    onClick={() => handleDelete(q._id)}
+                                                                    sx={{
+                                                                        color: "#d1d5db",
+                                                                        transition: "all 0.2s ease",
+                                                                        "&:hover": { color: "#ef4444", background: "#fef2f2", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(239,68,68,0.15)" },
+                                                                        p: 0.75,
+                                                                    }}
+                                                                >
+                                                                    <DeleteIcon sx={{ fontSize: 16 }} />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                        </Stack>
+                                                    </Box>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+
                                     {(!data?.questions || data.questions.length === 0) && (
                                         <TableRow>
-                                            <TableCell colSpan={5} align="center" sx={{ py: 8, color: "#94a3b8" }}>
-                                                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
-                                                    <Typography variant="h6" sx={{ color: "#475569" }}>No questions yet</Typography>
-                                                    <Typography variant="body2">Click the "Add New Question" button to get started.</Typography>
-                                                </Box>
+                                            <TableCell colSpan={5} align="center" sx={{ py: 10, border: 0 }}>
+                                                <QuizIcon sx={{ fontSize: 38, color: "#e5e7eb", mb: 1, display: "block", mx: "auto" }} />
+                                                <Typography sx={{ color: "#6b7280", fontWeight: 600, mb: 0.5, fontSize: "0.95rem" }}>
+                                                    No questions yet
+                                                </Typography>
+                                                <Typography sx={{ color: "#9ca3af", fontSize: "0.85rem" }}>
+                                                    Click "Add New Question" to get started.
+                                                </Typography>
                                             </TableCell>
                                         </TableRow>
                                     )}
@@ -310,16 +637,48 @@ export default function PlacementTestsPage() {
 
                         {/* Pagination Footer */}
                         {data && data.total > 0 && (
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2, borderTop: "1px solid #e2e8f0", background: "#fff" }}>
-                                <Typography sx={{ color: "#64748b", fontSize: 14 }}>
-                                    Showing <Box component="span" sx={{ fontWeight: 600, color: "#334155" }}>{data.questions.length}</Box> of <Box component="span" sx={{ fontWeight: 600, color: "#334155" }}>{data.total}</Box> questions
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    alignItems: "center",
+                                    px: 3,
+                                    py: 1.75,
+                                    borderTop: "1px solid #f3f4f6",
+                                    flexWrap: "wrap",
+                                    gap: 1,
+                                }}
+                            >
+                                <Typography sx={{ color: "#9ca3af", fontSize: 13 }}>
+                                    Showing{" "}
+                                    <Box component="span" sx={{ fontWeight: 700, color: "#374151" }}>
+                                        {data.questions.length}
+                                    </Box>{" "}
+                                    of{" "}
+                                    <Box component="span" sx={{ fontWeight: 700, color: "#374151" }}>
+                                        {data.total}
+                                    </Box>{" "}
+                                    questions
                                 </Typography>
                                 <Pagination
                                     count={data.pages}
                                     page={page}
-                                    onChange={(_, newPage) => setPage(newPage)}
-                                    color="primary"
-                                    shape="rounded"
+                                    onChange={(_, p) => setPage(p)}
+                                    shape="circular"
+                                    size="small"
+                                    sx={{
+                                        "& .MuiPaginationItem-root": {
+                                            fontSize: 13,
+                                            transition: "all 0.2s ease",
+                                            "&:hover": { background: "#f3f4f6" },
+                                        },
+                                        "& .MuiPaginationItem-root.Mui-selected": {
+                                            background: "#3b82f6",
+                                            color: "white",
+                                            borderRadius: "50%",
+                                            "&:hover": { background: "#2563eb" },
+                                        },
+                                    }}
                                 />
                             </Box>
                         )}
@@ -327,6 +686,7 @@ export default function PlacementTestsPage() {
                 )}
             </Paper>
 
+            {/* ── Modal ── */}
             <QuestionModal
                 open={isModalOpen}
                 initialData={editingQuestion}
@@ -335,18 +695,19 @@ export default function PlacementTestsPage() {
                 readOnly={isViewMode}
             />
 
-            <Fab 
-                color="primary" 
-                aria-label="add" 
+            {/* ── Mobile FAB ── */}
+            <Fab
+                color="primary"
+                aria-label="add question"
                 onClick={handleOpenAdd}
-                sx={{ 
-                    display: { xs: "flex", md: "none" }, 
-                    position: "fixed", 
-                    bottom: 24, 
-                    right: 24, 
-                    bgcolor: "#3498db",
-                    boxShadow: "0 6px 20px rgba(52,152,219,0.39)",
-                    "&:hover": { bgcolor: "#2980b9" }
+                sx={{
+                    display: { xs: "flex", md: "none" },
+                    position: "fixed",
+                    bottom: 24,
+                    right: 24,
+                    background: "#25AFF4",
+                    boxShadow: "0 6px 20px rgba(37,175,244,0.45)",
+                    "&:hover": { background: "#0fa8ef" },
                 }}
             >
                 <AddIcon />

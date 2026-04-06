@@ -52,7 +52,8 @@ export default function ChildPinPage() {
             if (result.user && result.accessToken) {
                 login(result.user, result.accessToken);
                 sessionStorage.removeItem("selectedChild");
-                navigate("/child/dashboard", { replace: true });
+                const introSeen = localStorage.getItem(`introSeen_${result.user._id}`);
+                navigate(introSeen ? "/child/dashboard" : "/child/intro", { replace: true });
             }
         } catch (err: any) {
             setError(err.response?.data?.message ?? "Wrong pattern. Try again!");

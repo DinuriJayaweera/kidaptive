@@ -1,16 +1,46 @@
 import { Request, Response } from 'express';
 import PlacementQuestion from '../models/placement.model.js';
 
+export const getStats = async (_req: Request, res: Response): Promise<void> => {
+    try {
+        // Backfill any existing docs that don't have a difficulty set yet
+        await PlacementQuestion.updateMany(
+            { difficulty: { $exists: false } },
+            { $set: { difficulty: 'medium' } }
+        );
+
+        const [total, diffCounts] = await Promise.all([
+            PlacementQuestion.countDocuments(),
+            PlacementQuestion.aggregate([
+                // Treat missing/null difficulty as 'medium'
+                { $group: { _id: { $ifNull: ['$difficulty', 'medium'] }, count: { $sum: 1 } } }
+            ])
+        ]);
+        const stats = { total, easy: 0, medium: 0, hard: 0 };
+        for (const entry of diffCounts) {
+            if (entry._id === 'easy')   stats.easy   = entry.count;
+            if (entry._id === 'medium') stats.medium = entry.count;
+            if (entry._id === 'hard')   stats.hard   = entry.count;
+        }
+        res.json(stats);
+    } catch (error) {
+        console.error('Error fetching stats:', error);
+        res.status(500).json({ message: 'Failed to fetch stats' });
+    }
+};
+
 export const getQuestions = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { ageGroup, category, page = '1', limit = '8', search } = req.query;
+        const { ageGroup, category, difficulty, page = '1', limit = '8', search } = req.query;
         const query: any = {};
         
         if (ageGroup && ageGroup !== 'All') query.ageGroup = ageGroup;
         if (category && category !== 'All') query.category = category;
+        if (difficulty && difficulty !== 'All') query.difficulty = difficulty;
         if (search) {
             query.questionText = { $regex: search, $options: 'i' };
         }
+
 
         const p = parseInt(page as string, 10) || 1;
         const l = parseInt(limit as string, 10) || 8;

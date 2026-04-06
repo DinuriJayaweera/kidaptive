@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getQuestions, createQuestion, updateQuestion, deleteQuestion } from '../controllers/placement.controller.js';
+import { getStats, getQuestions, createQuestion, updateQuestion, deleteQuestion } from '../controllers/placement.controller.js';
 import { authenticate, requireRole } from '../middleware/auth.middleware.js';
 
 const router = Router();
@@ -8,6 +8,7 @@ const router = Router();
 router.use(authenticate);
 router.use(requireRole('admin'));
 
+router.get('/stats', getStats);
 router.get('/', getQuestions);
 router.post('/', createQuestion);
 router.put('/:id', updateQuestion);

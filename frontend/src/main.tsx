@@ -1,3 +1,14 @@
+/* ── Self-hosted fonts (replaces Google Fonts CDN) ── */
+import "@fontsource/baloo-2/400.css";
+import "@fontsource/baloo-2/500.css";
+import "@fontsource/baloo-2/600.css";
+import "@fontsource/baloo-2/700.css";
+import "@fontsource/baloo-2/800.css";
+import "@fontsource/poppins/300.css";
+import "@fontsource/poppins/400.css";
+import "@fontsource/poppins/500.css";
+import "@fontsource/poppins/600.css";
+import "@fontsource/poppins/700.css";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
