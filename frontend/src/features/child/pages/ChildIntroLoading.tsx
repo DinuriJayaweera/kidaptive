@@ -14,9 +14,9 @@ export default function ChildIntroLoading() {
       localStorage.setItem(`introSeen_${user._id}`, "true");
     }
 
-    // Auto-navigate to dashboard after loading animation
+    // Auto-navigate to placement test after loading animation
     const timer = setTimeout(() => {
-      navigate("/child/dashboard", { replace: true });
+      navigate("/child/placement", { replace: true });
     }, 3000);
 
     return () => clearTimeout(timer);

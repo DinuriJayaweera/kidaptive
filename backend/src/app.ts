@@ -30,11 +30,15 @@ app.use(express.json());
 app.use(cookieParser());
 
 import placementRoutes from "./routes/placement.routes.js";
+import placementTestRoutes from "./routes/placement-test.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
 
 // ── Routes ───────────────────────────────────────────────────────────────────
 app.use("/api", healthRoutes);
 app.use("/api", authRoutes);
 app.use("/api/placement-questions", placementRoutes);
+app.use("/api/placement-test", placementTestRoutes);
+app.use("/api/categories", categoryRoutes);
 
 // ── Centralized Error Handler ────────────────────────────────────────────────
 app.use(errorHandler);

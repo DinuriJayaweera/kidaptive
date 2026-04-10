@@ -13,7 +13,7 @@ export default function ChildIntroPlacement() {
   }, []);
 
   const handleStart = () => {
-    navigate("/child/intro/loading", { replace: true });
+    navigate("/child/placement", { replace: true });
   };
 
   const handleBack = () => {

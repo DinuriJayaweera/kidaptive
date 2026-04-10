@@ -22,6 +22,11 @@ import {
     Fab,
     Stack,
     Chip,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    Zoom,
 } from "@mui/material";
 import {
     Add as AddIcon,
@@ -36,7 +41,9 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getQuestions, getStats, createQuestion, updateQuestion, deleteQuestion } from "../api/placementApi";
 import type { PlacementQuestion } from "../api/placementApi";
-import QuestionModal, { AGE_GROUPS, AGE_GROUP_CATEGORIES, ALL_CATEGORIES } from "../components/QuestionModal";
+import QuestionModal, { AGE_GROUPS } from "../components/QuestionModal";
+import { getCategories } from "../api/categoryApi";
+import { Badge } from "../../../components/ui/Badge";
 
 // Custom style objects will be embedded inside Chips.
 // ─────────────────── Stat Card ────────────────────────────────────
@@ -115,6 +122,51 @@ const pillSelectSx = {
     "& .MuiSelect-select": { py: "8px", px: "16px", fontSize: "0.875rem" },
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// DELETE DIALOG COMPONENT
+// ─────────────────────────────────────────────────────────────────────────────
+interface DeleteDialogProps {
+    open: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+    loading: boolean;
+}
+
+function DeleteDialog({ open, onClose, onConfirm, loading }: DeleteDialogProps) {
+    return (
+        <Dialog
+            open={open}
+            onClose={onClose}
+            maxWidth="xs"
+            fullWidth
+            TransitionComponent={Zoom as any}
+            PaperProps={{ sx: { borderRadius: "16px" } }}
+        >
+            <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, color: "#1a1a2e", pb: 1 }}>
+                Delete Question?
+            </DialogTitle>
+            <DialogContent>
+                <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#64748b", fontSize: 14 }}>
+                    Are you sure you want to delete this question? This action cannot be undone.
+                </Typography>
+            </DialogContent>
+            <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
+                <Button onClick={onClose} sx={{ fontFamily: "'Poppins', sans-serif", textTransform: "none", borderRadius: "10px", color: "#64748b" }}>
+                    Cancel
+                </Button>
+                <Button
+                    onClick={onConfirm}
+                    variant="contained"
+                    disabled={loading}
+                    sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, textTransform: "none", borderRadius: "999px", px: 3.5, background: "#FF5144", "&:hover": { background: "#e84a3e" } }}
+                >
+                    {loading ? <CircularProgress size={16} sx={{ color: "#fff" }} /> : "Delete"}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+}
+
 // ─────────────────── Page ─────────────────────────────────────────
 
 export default function PlacementTestsPage() {
@@ -129,15 +181,25 @@ export default function PlacementTestsPage() {
     const [isViewMode, setIsViewMode] = useState(false);
     const [editingQuestion, setEditingQuestion] = useState<PlacementQuestion | null>(null);
     const [expandedRow, setExpandedRow] = useState<string | null>(null);
+    const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
+    const { data: dbCategories = [] } = useQuery({
+        queryKey: ["categories"],
+        queryFn: getCategories,
+    });
+    
+    const activeDbCategories = dbCategories.filter((c) => c.status === "active");
 
     const availableCategories =
-        ageGroupFilter === "All" ? ALL_CATEGORIES : (AGE_GROUP_CATEGORIES[ageGroupFilter] || []);
+        ageGroupFilter === "All" 
+            ? activeDbCategories.map((c) => c.name) 
+            : activeDbCategories.filter((c) => c.ageGroups.includes(ageGroupFilter)).map((c) => c.name);
 
     const handleAgeFilterChange = (newAge: string) => {
         setAgeGroupFilter(newAge);
         setPage(1);
         if (newAge !== "All" && categoryFilter !== "All") {
-            const valid = AGE_GROUP_CATEGORIES[newAge] || [];
+            const valid = activeDbCategories.filter((c) => c.ageGroups.includes(newAge)).map((c) => c.name);
             if (!valid.includes(categoryFilter)) setCategoryFilter("All");
         }
     };
@@ -187,13 +249,14 @@ export default function PlacementTestsPage() {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["placementQuestions"] });
             queryClient.invalidateQueries({ queryKey: ["placementStats"] });
+            setDeleteTargetId(null);
         },
     });
 
     const handleOpenAdd = () => { setIsViewMode(false); setEditingQuestion(null); setIsModalOpen(true); };
     const handleOpenEdit = (q: PlacementQuestion) => { setIsViewMode(false); setEditingQuestion(q); setIsModalOpen(true); };
     const handleOpenView = (q: PlacementQuestion) => { setIsViewMode(true); setEditingQuestion(q); setIsModalOpen(true); };
-    const handleDelete = (id: string) => { if (window.confirm("Delete this question?")) deleteMutation.mutate(id); };
+    const handleDelete = (id: string) => { setDeleteTargetId(id); };
     const handleSave = (formData: Partial<PlacementQuestion>) => {
         if (editingQuestion) updateMutation.mutate({ id: editingQuestion._id, payload: formData });
         else createMutation.mutate(formData);
@@ -368,8 +431,8 @@ export default function PlacementTestsPage() {
                     </Box>
                 ) : (
                     <>
-                        <TableContainer sx={{ overflowX: "auto" }}>
-                            <Table sx={{ minWidth: { xs: 320, md: 640 } }}>
+                        <TableContainer sx={{ overflowX: { xs: "auto", md: "hidden" } }}>
+                            <Table sx={{ minWidth: { xs: 320, md: "100%" }, tableLayout: "fixed" }}>
                                 <TableHead>
                                     <TableRow sx={{ background: "#f9fafb", height: 60 }}>
                                         <TableCell
@@ -447,9 +510,6 @@ export default function PlacementTestsPage() {
                                                         backgroundColor: "#f9fafb",
                                                         transform: "scale(1.005)",
                                                     },
-                                                    "&:hover .actions": {
-                                                        opacity: 1,
-                                                    }
                                                 }}
                                                 onClick={() => toggleRow(q._id)}
                                             >
@@ -533,18 +593,7 @@ export default function PlacementTestsPage() {
                                                     onClick={(e) => e.stopPropagation()}
                                                 >
                                                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-                                                        <Chip 
-                                                            label={q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1)} 
-                                                            size="small" 
-                                                            variant="outlined"
-                                                            sx={{ 
-                                                                fontFamily: "'Poppins', sans-serif",
-                                                                minWidth: 80, 
-                                                                fontWeight: 600,
-                                                                color: q.difficulty === "easy" ? "#2f8a15" : q.difficulty === "medium" ? "#b38900" : "#cc1810", 
-                                                                border: `1px solid ${q.difficulty === "easy" ? "#8EE870" : q.difficulty === "medium" ? "#FFCC35" : "#FF5144"}`
-                                                            }}
-                                                        />
+                                                        <Badge type="difficulty" label={q.difficulty} />
                                                     </Box>
                                                 </TableCell>
 
@@ -560,12 +609,10 @@ export default function PlacementTestsPage() {
                                                 >
                                                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
                                                         <Stack
-                                                            className="actions"
                                                             direction="row"
                                                             justifyContent="center"
                                                             spacing={1}
                                                             sx={{
-                                                                opacity: 0,
                                                                 transition: "0.2s ease",
                                                             }}
                                                         >
@@ -590,7 +637,7 @@ export default function PlacementTestsPage() {
                                                                     sx={{
                                                                         color: "#d1d5db",
                                                                         transition: "all 0.2s ease",
-                                                                        "&:hover": { color: "#10b981", background: "#f0fdf4", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(16,185,129,0.15)" },
+                                                                        "&:hover": { color: "#8EE870", background: "#f0fdf4", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(142,232,112,0.15)" },
                                                                         p: 0.75,
                                                                     }}
                                                                 >
@@ -604,7 +651,7 @@ export default function PlacementTestsPage() {
                                                                     sx={{
                                                                         color: "#d1d5db",
                                                                         transition: "all 0.2s ease",
-                                                                        "&:hover": { color: "#ef4444", background: "#fef2f2", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(239,68,68,0.15)" },
+                                                                        "&:hover": { color: "#FF5144", background: "#fef2f2", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(255,81,68,0.15)" },
                                                                         p: 0.75,
                                                                     }}
                                                                 >
@@ -695,23 +742,30 @@ export default function PlacementTestsPage() {
                 readOnly={isViewMode}
             />
 
-            {/* ── Mobile FAB ── */}
-            <Fab
-                color="primary"
-                aria-label="add question"
-                onClick={handleOpenAdd}
-                sx={{
-                    display: { xs: "flex", md: "none" },
-                    position: "fixed",
-                    bottom: 24,
-                    right: 24,
-                    background: "#25AFF4",
-                    boxShadow: "0 6px 20px rgba(37,175,244,0.45)",
-                    "&:hover": { background: "#0fa8ef" },
-                }}
-            >
-                <AddIcon />
-            </Fab>
-        </Box>
-    );
+        {/* ── Mobile FAB ── */}
+        <Fab
+            color="primary"
+            aria-label="add question"
+            onClick={handleOpenAdd}
+            sx={{
+                display: { xs: "flex", md: "none" },
+                position: "fixed",
+                bottom: 24,
+                right: 24,
+                background: "#25AFF4",
+                boxShadow: "0 6px 20px rgba(37,175,244,0.45)",
+                "&:hover": { background: "#0fa8ef" },
+            }}
+        >
+            <AddIcon />
+        </Fab>
+
+        <DeleteDialog
+            open={deleteTargetId !== null}
+            onClose={() => setDeleteTargetId(null)}
+            onConfirm={() => deleteTargetId && deleteMutation.mutate(deleteTargetId)}
+            loading={deleteMutation.isPending}
+        />
+    </Box>
+);
 }

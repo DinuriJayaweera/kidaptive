@@ -1,11 +1,13 @@
 import api from "../../../services/apiClient";
 
+export type QuestionType = 'mcq' | 'fill' | 'input' | 'boolean';
+
 export interface PlacementQuestion {
   _id: string;
   questionText: string;
   ageGroup: string;
   category: string;
-  questionType: string;
+  type: QuestionType;
   difficulty: 'easy' | 'medium' | 'hard';
   options: string[];
   correctAnswer: string;

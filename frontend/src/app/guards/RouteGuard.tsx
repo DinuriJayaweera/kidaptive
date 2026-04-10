@@ -3,12 +3,18 @@ import { useAuth } from "../../features/auth/context/AuthContext";
 import type { ReactNode } from "react";
 import { Box, CircularProgress } from "@mui/material";
 
-/** Returns the correct child landing path based on intro state */
+/** Returns the correct child landing path based on intro + placement state */
 function getChildHome(userId?: string): string {
-    if (userId && localStorage.getItem(`introSeen_${userId}`)) {
-        return "/child/dashboard";
+    // Step 1: Check if intro was seen
+    if (!userId || !localStorage.getItem(`introSeen_${userId}`)) {
+        return "/child/intro";
     }
-    return "/child/intro";
+    // Step 2: Check if placement is completed
+    if (!localStorage.getItem(`placementDone_${userId}`)) {
+        return "/child/placement";
+    }
+    // Step 3: All done → dashboard
+    return "/child/dashboard";
 }
 
 function Loading() {

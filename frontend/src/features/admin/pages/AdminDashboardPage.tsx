@@ -9,21 +9,21 @@ import { useAuth } from "../../auth/context/AuthContext";
 const statCards = [
     {
         label: "Total Users",
-        icon: <PeopleIcon sx={{ fontSize: 32, color: "#3498db" }} />,
+        icon: <PeopleIcon sx={{ fontSize: 32, color: "#25AFF4" }} />,
         value: "—",
-        bg: "#ebf5fb",
+        bg: "#e0f2fe",
     },
     {
         label: "Active Parents",
-        icon: <SchoolIcon sx={{ fontSize: 32, color: "#f59e0b" }} />,
+        icon: <SchoolIcon sx={{ fontSize: 32, color: "#FFCC35" }} />,
         value: "—",
-        bg: "#fef9ee",
+        bg: "#fffbeb",
     },
     {
         label: "Total Children",
-        icon: <ChildIcon sx={{ fontSize: 32, color: "#8b5cf6" }} />,
+        icon: <ChildIcon sx={{ fontSize: 32, color: "#8EE870" }} />,
         value: "—",
-        bg: "#f3f0ff",
+        bg: "#f0fdf4",
     },
 ];
 
@@ -31,14 +31,14 @@ export default function AdminDashboardPage() {
     const { user } = useAuth();
 
     return (
-        <>
+        <Box sx={{ fontFamily: "'Poppins', sans-serif" }}>
             <Typography
                 variant="h5"
-                sx={{ fontWeight: 700, color: "#1a1a2e", mb: 0.5 }}
+                sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#111827", mb: 0.5 }}
             >
                 Welcome back, {user?.name} 👋
             </Typography>
-            <Typography sx={{ color: "#7a8194", mb: 4, fontSize: 14 }}>
+            <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", mb: 4, fontSize: 14 }}>
                 Here's an overview of the Kidaptive platform.
             </Typography>
 
@@ -49,7 +49,7 @@ export default function AdminDashboardPage() {
                         <Paper
                             elevation={0}
                             sx={{
-                                borderRadius: 3,
+                                borderRadius: "16px",
                                 p: 3,
                                 background: "#fff",
                                 border: "1px solid #e8ecf1",
@@ -66,11 +66,12 @@ export default function AdminDashboardPage() {
                             <Box
                                 sx={{
                                     p: 1.5,
-                                    borderRadius: 2.5,
+                                    borderRadius: "16px",
                                     background: card.bg,
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
+                                    boxShadow: "inset 0 2px 4px rgba(255,255,255,0.5)",
                                 }}
                             >
                                 {card.icon}
@@ -78,19 +79,23 @@ export default function AdminDashboardPage() {
                             <Box>
                                 <Typography
                                     sx={{
-                                        color: "#7a8194",
+                                        fontFamily: "'Poppins', sans-serif",
+                                        color: "#6b7280",
                                         fontSize: 12,
-                                        fontWeight: 500,
+                                        fontWeight: 600,
                                         mb: 0.3,
+                                        textTransform: "uppercase",
                                     }}
                                 >
                                     {card.label}
                                 </Typography>
                                 <Typography
                                     sx={{
-                                        color: "#1a1a2e",
+                                        fontFamily: "'Baloo 2', cursive",
+                                        color: "#111827",
                                         fontWeight: 700,
-                                        fontSize: 22,
+                                        fontSize: 28,
+                                        lineHeight: 1,
                                     }}
                                 >
                                     {card.value}
@@ -105,25 +110,26 @@ export default function AdminDashboardPage() {
             <Paper
                 elevation={0}
                 sx={{
-                    borderRadius: 3,
+                    borderRadius: "16px",
                     p: 4,
                     background: "#fff",
                     border: "1px solid #e8ecf1",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
                 }}
             >
                 <Typography
-                    sx={{ color: "#1a1a2e", fontWeight: 600, fontSize: 15, mb: 1 }}
+                    sx={{ fontFamily: "'Poppins', sans-serif", color: "#111827", fontWeight: 600, fontSize: 15, mb: 1.5 }}
                 >
                     Admin Panel
                 </Typography>
-                <Typography sx={{ color: "#7a8194", lineHeight: 1.8, fontSize: 14 }}>
+                <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", lineHeight: 1.8, fontSize: 13.5 }}>
                     You are logged in as{" "}
-                    <strong style={{ color: "#3498db" }}>admin</strong>. Use this console
+                    <strong style={{ color: "#25AFF4", fontWeight: 600 }}>admin</strong>. Use this console
                     to manage users, monitor activity, and configure the Kidaptive
                     platform. More admin tools will be available here as the platform
                     grows.
                 </Typography>
             </Paper>
-        </>
+        </Box>
     );
 }
