@@ -1,3 +1,5 @@
+import { GoogleOAuthProvider } from "@react-oauth/google";
+
 /* ── Self-hosted fonts (replaces Google Fonts CDN) ── */
 import "@fontsource/baloo-2/400.css";
 import "@fontsource/baloo-2/500.css";
@@ -27,15 +29,17 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <BrowserRouter>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-        </BrowserRouter>
-      </ThemeProvider>
-    </QueryClientProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <BrowserRouter>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </BrowserRouter>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>,
 );

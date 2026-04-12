@@ -90,6 +90,16 @@ export async function resetPassword(data: {
     return res.data;
 }
 
+export async function googleLogin(data: { token: string }): Promise<LoginResult> {
+    const res = await api.post("/auth/google/login", data);
+    return res.data;
+}
+
+export async function googleSignup(data: { token: string }): Promise<LoginResult> {
+    const res = await api.post("/auth/google/signup", data);
+    return res.data;
+}
+
 // ── Token Management ─────────────────────────────────────────────────────────
 export async function refreshToken(): Promise<{ accessToken: string; user: AuthUser }> {
     const res = await api.post("/auth/refresh");

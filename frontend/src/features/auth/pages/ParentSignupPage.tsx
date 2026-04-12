@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
     Box, Container, Typography, Alert, Grid, InputAdornment, Divider
 } from "@mui/material";
@@ -10,7 +10,9 @@ import {
     HowToReg as HowToRegIcon,
 } from "@mui/icons-material";
 import { useNavigate, Link } from "react-router-dom";
-import { parentSignup } from "../api/authApi";
+import { useGoogleLogin } from "@react-oauth/google";
+import { parentSignup, googleSignup } from "../api/authApi";
+import { useAuth } from "../context/AuthContext";
 import AuthHeader from "../components/AuthHeader";
 import RoundedInput from "../../../components/ui/RoundedInput";
 import PillButton from "../../../components/ui/PillButton";
@@ -29,6 +31,8 @@ const GoogleColorIcon = () => (
 
 export default function ParentSignupPage() {
     const navigate = useNavigate();
+    const { login } = useAuth();
+
     const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
     const [terms, setTerms] = useState(false);
     const [guardian, setGuardian] = useState(false);
@@ -76,6 +80,29 @@ export default function ParentSignupPage() {
         }
     };
 
+    const handleGoogleSignup = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            setLoading(true);
+            setError("");
+            try {
+                const result = await googleSignup({ token: tokenResponse.access_token });
+                if (result.user && result.accessToken) {
+                    login(result.user, result.accessToken);
+                    navigate("/parent/dashboard");
+                }
+            } catch (err: any) {
+                setError(err.response?.data?.message ?? "Google signup failed.");
+                triggerShake();
+            } finally {
+                setLoading(false);
+            }
+        },
+        onError: () => {
+            setError("Google signup was cancelled or failed.");
+            triggerShake();
+        },
+    });
+
     return (
         <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: { xs: "flex-start", md: "center" }, position: "relative", py: { xs: 10, md: 0 } }}>
             <AuthHeader />
@@ -110,8 +137,14 @@ export default function ParentSignupPage() {
                                 {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>{error}</Alert>}
 
                                 <AnimatedItem index={1}>
-                                    <PillButton fullWidth colorScheme="google" startIcon={<GoogleColorIcon />} sx={{ mb: 2 }}>
-                                        Continue with Google
+                                    <PillButton
+                                        fullWidth
+                                        colorScheme="google"
+                                        startIcon={<GoogleColorIcon />}
+                                        sx={{ mb: 2 }}
+                                        onClick={() => handleGoogleSignup()}
+                                    >
+                                        Sign up with Google
                                     </PillButton>
                                 </AnimatedItem>
 

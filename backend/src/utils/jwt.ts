@@ -1,3 +1,4 @@
+import { AppError } from "./AppError.js";
 import jwt from "jsonwebtoken";
 
 const ACCESS_SECRET = process.env.JWT_SECRET ?? "dev-access-secret";
@@ -26,5 +27,9 @@ export function signRefreshToken(payload: TokenPayload): string {
 }
 
 export function verifyRefreshToken(token: string): TokenPayload {
-    return jwt.verify(token, REFRESH_SECRET) as TokenPayload;
+    try {
+        return jwt.verify(token, REFRESH_SECRET) as TokenPayload;
+    } catch {
+        throw new AppError("Invalid or expired refresh token", 401);
+    }
 }

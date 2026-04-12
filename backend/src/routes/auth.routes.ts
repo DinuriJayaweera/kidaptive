@@ -1,4 +1,4 @@
-import { Router, Request, Response, NextFunction } from "express";
+﻿import { Router, Request, Response, NextFunction } from "express";
 import { authenticate, requireRole } from "../middleware/auth.middleware.js";
 import {
     signup,
@@ -14,6 +14,8 @@ import {
     listChildren,
     childLoginHandler,
     adminLoginHandler,
+    googleLoginHandler,
+    googleSignupHandler,
 } from "../controllers/auth.controller.js";
 
 const router = Router();
@@ -23,6 +25,12 @@ function createRateLimiter(windowMs: number, max: number) {
     const hits = new Map<string, { count: number; resetAt: number }>();
 
     return (req: Request, res: Response, next: NextFunction): void => {
+        // 👇 Skip rate limiting during tests
+        if (process.env.NODE_ENV === "test") {
+            next();
+            return;
+        }
+
         const key = req.ip ?? "unknown";
         const now = Date.now();
         const record = hits.get(key);
@@ -44,28 +52,32 @@ function createRateLimiter(windowMs: number, max: number) {
 }
 
 const authLimiter = createRateLimiter(15 * 60 * 1000, 20); // 20 req / 15 min
-const otpLimiter = createRateLimiter(10 * 60 * 1000, 15);  // 15 req / 10 min
+const otpLimiter  = createRateLimiter(10 * 60 * 1000, 15); // 15 req / 10 min
 
 // ── Public auth routes ───────────────────────────────────────────────────────
-router.post("/auth/signup", authLimiter, signup);
-router.post("/auth/verify-email", otpLimiter, verifyEmail);
-router.post("/auth/resend-otp", otpLimiter, resendOtp);
-router.post("/auth/login", authLimiter, login);
-router.post("/auth/forgot-password", otpLimiter, forgotPwd);
-router.post("/auth/reset-password", otpLimiter, resetPwd);
-router.post("/auth/child/login", authLimiter, childLoginHandler);
-router.post("/auth/admin/login", authLimiter, adminLoginHandler);
+router.post("/auth/signup",          authLimiter, signup);
+router.post("/auth/verify-email",    otpLimiter,  verifyEmail);
+router.post("/auth/resend-otp",      otpLimiter,  resendOtp);
+router.post("/auth/login",           authLimiter, login);
+router.post("/auth/forgot-password", otpLimiter,  forgotPwd);
+router.post("/auth/reset-password",  otpLimiter,  resetPwd);
+router.post("/auth/child/login",     authLimiter, childLoginHandler);
+router.post("/auth/admin/login",     authLimiter, adminLoginHandler);
+
+// ── Google OAuth routes ───────────────────────────────────────────────────────
+router.post("/auth/google/login",  authLimiter, googleLoginHandler);
+router.post("/auth/google/signup", authLimiter, googleSignupHandler);
 
 // ── Token management ─────────────────────────────────────────────────────────
 router.post("/auth/refresh", refresh);
-router.post("/auth/logout", authenticate, logout);
+router.post("/auth/logout",  authenticate, logout);
 
 // ── Authenticated routes ─────────────────────────────────────────────────────
 router.get("/auth/me", authenticate, me);
 
 // ── Parent-only routes ───────────────────────────────────────────────────────
 router.post("/parents/children", authenticate, requireRole("parent"), addChild);
-router.get("/parents/children", authenticate, requireRole("parent"), listChildren);
+router.get("/parents/children",  authenticate, requireRole("parent"), listChildren);
 
 // ── Admin-only routes ────────────────────────────────────────────────────────
 router.get("/admin/me", authenticate, requireRole("admin"), (req, res) => {

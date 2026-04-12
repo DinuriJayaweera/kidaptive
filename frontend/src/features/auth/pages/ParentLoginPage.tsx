@@ -1,3 +1,6 @@
+import { useGoogleLogin } from "@react-oauth/google";
+import { googleLogin } from "../api/authApi";
+
 import { useState } from "react";
 import {
     Box, Container, Typography, Alert, Grid,
@@ -66,7 +69,32 @@ export default function ParentLoginPage() {
         } finally {
             setLoading(false);
         }
+        
     };
+
+    const handleGoogleLogin = useGoogleLogin({
+  onSuccess: async (tokenResponse) => {
+    setLoading(true);
+    setError("");
+    try {
+      const result = await googleLogin({ token: tokenResponse.access_token });
+      if (result.user && result.accessToken) {
+        login(result.user, result.accessToken);
+        const from = (location.state as { from?: { pathname: string } })?.from?.pathname ?? "/parent/dashboard";
+        navigate(from, { replace: true });
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message ?? "Google login failed.");
+      triggerShake();
+    } finally {
+      setLoading(false);
+    }
+  },
+  onError: () => {
+    setError("Google login was cancelled or failed.");
+    triggerShake();
+  },
+});
 
     return (
         <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: { xs: "flex-start", md: "center" }, position: "relative", py: { xs: 10, md: 0 } }}>
@@ -118,9 +146,9 @@ export default function ParentLoginPage() {
                                 )}
 
                                 <AnimatedItem index={1}>
-                                    <PillButton fullWidth colorScheme="google" startIcon={<GoogleColorIcon />} sx={{ mb: 2 }}>
-                                        Continue with Google
-                                    </PillButton>
+                                    <PillButton fullWidth colorScheme="google" startIcon={<GoogleColorIcon />} sx={{ mb: 2 }} onClick={() => handleGoogleLogin()}>
+  Continue with Google
+</PillButton>
                                 </AnimatedItem>
 
                                 <AnimatedItem index={2}>

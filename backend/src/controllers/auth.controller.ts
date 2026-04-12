@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+﻿import { Request, Response, NextFunction } from "express";
 import {
     parseBody,
     parentSignupSchema,
@@ -23,6 +23,8 @@ import {
     loginChild,
     getCurrentUser,
     loginAdmin,
+    googleLoginParent, 
+    googleSignupParent,
 } from "../services/auth.service.js";
 import type { TokenPayload } from "../utils/jwt.js";
 
@@ -123,4 +125,18 @@ export const adminLoginHandler = wrap(async (req, res) => {
     const data = parseBody(loginSchema, req.body);
     const result = await loginAdmin(data, res);
     res.json(result);
+});
+
+// ── Google Login ─────────────────────────────────────────────────────────────
+export const googleLoginHandler = wrap(async (req, res) => {
+    const { token } = req.body;
+    const result = await googleLoginParent(token, res);
+    res.json(result);
+});
+
+// ── Google Signup ─────────────────────────────────────────────────────────────
+export const googleSignupHandler = wrap(async (req, res) => {
+    const { token } = req.body;
+    const result = await googleSignupParent(token, res);
+    res.status(201).json(result);
 });

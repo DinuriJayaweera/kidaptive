@@ -1,4 +1,4 @@
-import { Response } from "express";
+﻿import { Response } from "express";
 import User from "../models/User.js";
 import {
     signAccessToken,
@@ -60,7 +60,6 @@ export async function signupParent(
     const existing = await User.findOne({ email: data.email });
     if (existing) throw Conflict("An account with this email already exists");
 
-    // Generate & hash OTP
     const otp = generateOtp();
     const hashedOtp = await hashOtp(otp);
 
@@ -76,13 +75,14 @@ export async function signupParent(
         lastVerificationSentAt: new Date(),
     });
 
-    // Log OTP to console for local development since SMTP isn't configured
     console.log(`\n\n🎯 [DEV ONLY] OTP for ${data.email} is: ${otp}\n\n`);
 
-    // Send verification email (fire-and-forget in dev, await in prod)
-    sendVerificationEmail(data.email, otp, data.name).catch((err) =>
-        console.error("Email send failed (Check SMTP config in .env):", err.message),
-    );
+    // 👇 Skip email sending during tests
+    if (process.env.NODE_ENV !== "test") {
+        sendVerificationEmail(data.email, otp, data.name).catch((err) =>
+            console.error("Email send failed (Check SMTP config in .env):", err.message),
+        );
+    }
 
     return {
         message: "Account created! Check your email for a verification code.",
@@ -125,14 +125,12 @@ export async function verifyEmailOtp(
         };
     }
 
-    // Mark verified & clear OTP fields
     user.emailVerified = true;
     user.emailOtp = undefined;
     user.emailOtpExpiry = undefined;
     user.verificationAttempts = 0;
     await user.save();
 
-    // Issue tokens
     const accessToken = signAccessToken({ userId: user._id.toString(), role: user.role });
     const refreshToken = signRefreshToken({
         userId: user._id.toString(),
@@ -157,7 +155,6 @@ export async function resendEmailOtp(data: { email: string }) {
     if (!user) throw NotFound("Account not found");
     if (user.emailVerified) throw BadRequest("Email is already verified");
 
-    // 60-second cooldown between resend requests
     if (user.lastVerificationSentAt) {
         const secondsSinceLast = (Date.now() - user.lastVerificationSentAt.getTime()) / 1000;
         if (secondsSinceLast < 60) {
@@ -176,9 +173,13 @@ export async function resendEmailOtp(data: { email: string }) {
     await user.save();
 
     console.log(`\n\n🎯 [DEV ONLY] Resent OTP for ${data.email} is: ${otp}\n\n`);
-    sendVerificationEmail(data.email, otp, user.name).catch((err) =>
-        console.error("Email send failed (Check SMTP config in .env):", err.message),
-    );
+
+    // 👇 Skip email sending during tests
+    if (process.env.NODE_ENV !== "test") {
+        sendVerificationEmail(data.email, otp, user.name).catch((err) =>
+            console.error("Email send failed (Check SMTP config in .env):", err.message),
+        );
+    }
 
     return { message: "A new verification code has been sent." };
 }
@@ -196,12 +197,10 @@ export async function loginParent(
     const valid = await user.comparePassword(data.password);
     if (!valid) throw Unauthorized("Invalid email or password");
 
-    // Block login if local user and not verified
     if (user.authProvider === "local" && !user.emailVerified) {
         throw Forbidden("Please verify your email before logging in.");
     }
 
-    // Issue tokens
     const accessToken = signAccessToken({ userId: user._id.toString(), role: user.role });
     const refreshToken = signRefreshToken({
         userId: user._id.toString(),
@@ -222,7 +221,6 @@ export async function loginParent(
 // ═══════════════════════════════════════════════════════════════════════════════
 export async function forgotPassword(data: { email: string }) {
     const user = await User.findOne({ email: data.email });
-    // Don't reveal if user exists
     if (!user) return { message: "If the email exists, a reset code has been sent." };
 
     const otp = generateOtp();
@@ -232,9 +230,13 @@ export async function forgotPassword(data: { email: string }) {
     await user.save();
 
     console.log(`\n\n🎯 [DEV ONLY] Password Reset OTP for ${data.email} is: ${otp}\n\n`);
-    sendResetEmail(data.email, otp, user.name).catch((err) =>
-        console.error("Email send failed (Check SMTP config in .env):", err.message),
-    );
+
+    // 👇 Skip email sending during tests
+    if (process.env.NODE_ENV !== "test") {
+        sendResetEmail(data.email, otp, user.name).catch((err) =>
+            console.error("Email send failed (Check SMTP config in .env):", err.message),
+        );
+    }
 
     return { message: "If the email exists, a reset code has been sent." };
 }
@@ -265,12 +267,11 @@ export async function resetPassword(data: {
         throw Unauthorized("Invalid reset code");
     }
 
-    // Update password and invalidate existing refresh tokens
     user.password = data.newPassword;
     user.resetOtp = undefined;
     user.resetOtpExpiry = undefined;
     user.resetOtpAttempts = 0;
-    user.tokenVersion += 1; // Invalidates all existing refresh tokens
+    user.tokenVersion += 1;
     await user.save();
 
     return { message: "Password has been reset. Please log in." };
@@ -286,11 +287,9 @@ export async function refreshTokens(token: string, res: Response) {
     const user = await User.findById(payload.userId);
     if (!user) throw Unauthorized("User not found");
 
-    // Check tokenVersion for revocation
     if (payload.tokenVersion !== user.tokenVersion)
         throw Unauthorized("Token has been revoked");
 
-    // Rotate: issue new tokens
     const accessToken = signAccessToken({ userId: user._id.toString(), role: user.role });
     const refreshToken = signRefreshToken({
         userId: user._id.toString(),
@@ -306,7 +305,6 @@ export async function refreshTokens(token: string, res: Response) {
 // LOGOUT
 // ═══════════════════════════════════════════════════════════════════════════════
 export async function logoutUser(userId: string | undefined, res: Response) {
-    // Increment tokenVersion to invalidate all refresh tokens
     if (userId) {
         await User.findByIdAndUpdate(userId, { $inc: { tokenVersion: 1 } });
     }
@@ -333,7 +331,6 @@ export async function createChildProfile(
     const existingUsername = await User.findOne({ username: data.username });
     if (existingUsername) throw Conflict("This username is already taken");
 
-    // Get parent's email to construct a dummy email for child
     const parent = await User.findById(parentId);
     if (!parent) throw NotFound("Parent not found");
 
@@ -342,14 +339,14 @@ export async function createChildProfile(
     const childData: Record<string, unknown> = {
         name: data.name,
         email: childEmail,
-        password: data.password ?? `dummy-${Date.now()}`, // placeholder pw if PIN/Emoji method
+        password: data.password ?? `dummy-${Date.now()}`,
         age: data.age,
         username: data.username,
         avatar: data.avatar ?? "default",
         role: "child",
         parentId,
         loginMethod: data.loginMethod,
-        emailVerified: true, // child emails are auto-verified
+        emailVerified: true,
     };
 
     if (data.loginMethod === "pin") {
@@ -390,7 +387,6 @@ export async function loginChild(
             throw Unauthorized("That PIN doesn't look right. Try again!");
     } else {
         if (!data.password) throw BadRequest("Password is required");
-        // Legacy accounts without explicit loginMethod default to password
         if (!(await user.comparePassword(data.password)))
             throw Unauthorized("Wrong password. Try again!");
     }
@@ -421,7 +417,6 @@ export async function getCurrentUser(userId: string) {
     return user;
 }
 
-
 // ═══════════════════════════════════════════════════════════════════════════════
 // ADMIN LOGIN
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -448,4 +443,69 @@ export async function loginAdmin(
         user: sanitizeUser(user),
         accessToken,
     };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// G) GOOGLE LOGIN — existing users only
+// ═══════════════════════════════════════════════════════════════════════════════
+export async function googleLoginParent(token: string, res: Response) {
+    const { OAuth2Client } = await import("google-auth-library");
+    const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const tokenInfo = await googleClient.getTokenInfo(token);
+
+    const email = tokenInfo.email;
+    if (!email) throw BadRequest("Could not get email from Google.");
+
+    const user = await User.findOne({ email, role: "parent" });
+    if (!user) throw NotFound("No account found with this Google email. Please sign up first.");
+
+    user.emailVerified = true;
+    user.authProvider  = "google";
+    await user.save();
+
+    const accessToken  = signAccessToken({ userId: user._id.toString(), role: user.role });
+    const refreshToken = signRefreshToken({
+        userId:       user._id.toString(),
+        role:         user.role,
+        tokenVersion: user.tokenVersion,
+    });
+    setTokenCookies(res, refreshToken);
+
+    return { message: "Google login successful", user: sanitizeUser(user), accessToken };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// H) GOOGLE SIGNUP — new users only
+// ═══════════════════════════════════════════════════════════════════════════════
+export async function googleSignupParent(token: string, res: Response) {
+    const { OAuth2Client } = await import("google-auth-library");
+    const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const tokenInfo = await googleClient.getTokenInfo(token);
+
+    const email = tokenInfo.email;
+    if (!email) throw BadRequest("Could not get email from Google.");
+
+    const existing = await User.findOne({ email });
+    if (existing) throw Conflict("An account with this email already exists. Please log in instead.");
+
+    const name = (tokenInfo as any).name ?? email.split("@")[0];
+
+    const user = await User.create({
+        name,
+        email,
+        password:      "google-oauth-" + Math.random().toString(36).slice(2),
+        role:          "parent",
+        authProvider:  "google",
+        emailVerified: true,
+    });
+
+    const accessToken  = signAccessToken({ userId: user._id.toString(), role: user.role });
+    const refreshToken = signRefreshToken({
+        userId:       user._id.toString(),
+        role:         user.role,
+        tokenVersion: user.tokenVersion,
+    });
+    setTokenCookies(res, refreshToken);
+
+    return { message: "Account created successfully!", user: sanitizeUser(user), accessToken };
 }
