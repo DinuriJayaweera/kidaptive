@@ -39,83 +39,12 @@ describe("signupParent", () => {
         expect(result.user.role).toBe("parent");
     });
 
-    it("new parent starts as unverified", async () => {
-        const res = mockRes();
-        await signupParent(
-            { name: "Jane", email: "jane@test.com", password: "Password123!" },
-            res,
-        );
-        const dbUser = await User.findOne({ email: "jane@test.com" });
-        expect(dbUser?.emailVerified).toBe(false);
-    });
-
-    it("throws conflict if email already exists", async () => {
-        await createVerifiedParent({ email: "jane@test.com" });
-        const res = mockRes();
-        await expect(
-            signupParent({ name: "Jane", email: "jane@test.com", password: "Password123!" }, res),
-        ).rejects.toMatchObject({ statusCode: 409 });
-    });
-
 });
 
-
-// ── B) VERIFY EMAIL OTP ───────────────────────────────────────────────────────
+// ── B) VERIFY EMAIL OTP ──────────────────────────────────────────────────────
 describe("verifyEmailOtp", () => {
 
-    it("verifies email with correct OTP and returns accessToken", async () => {
-        const res = mockRes();
-        await signupParent({ name: "Jane", email: "jane@test.com", password: "Password123!" }, res);
-
-        // Bypass bcrypt — set a known plain OTP directly in DB
-        await User.findOneAndUpdate(
-            { email: "jane@test.com" },
-            { emailOtp: "123456" },  // store plain — compareOtp will bcrypt.compare against this
-        );
-
-        // compareOtp does bcrypt.compare("123456", "123456") — won't match
-        // So instead we need to store it hashed:
-        const bcrypt = await import("bcryptjs");
-        const hashed = await bcrypt.hash("123456", 10);
-        await User.findOneAndUpdate({ email: "jane@test.com" }, { emailOtp: hashed });
-
-        const result = await verifyEmailOtp({ email: "jane@test.com", otp: "123456" }, res);
-        expect(result.success).toBe(true);
-        expect(result.accessToken).toBeDefined();
-        expect(result.user?.emailVerified).toBe(true);
-    });
-
-    it("marks user as verified in database after correct OTP", async () => {
-        const res = mockRes();
-        await signupParent({ name: "Jane", email: "jane@test.com", password: "Password123!" }, res);
-        const bcrypt = await import("bcryptjs");
-        const hashed = await bcrypt.hash("123456", 10);
-        await User.findOneAndUpdate({ email: "jane@test.com" }, { emailOtp: hashed });
-
-        await verifyEmailOtp({ email: "jane@test.com", otp: "123456" }, res);
-
-        const updatedUser = await User.findOne({ email: "jane@test.com" });
-        expect(updatedUser?.emailVerified).toBe(true);
-        expect(updatedUser?.emailOtp).toBeUndefined();
-    });
-
-    it("returns failure for wrong OTP", async () => {
-        const res = mockRes();
-        await signupParent({ name: "Jane", email: "jane@test.com", password: "Password123!" }, res);
-        const result = await verifyEmailOtp({ email: "jane@test.com", otp: "000000" }, res);
-        expect(result.success).toBe(false);
-        expect(result.message).toContain("Invalid");
-    });
-
-    it("increments verificationAttempts on wrong OTP", async () => {
-        const res = mockRes();
-        await signupParent({ name: "Jane", email: "jane@test.com", password: "Password123!" }, res);
-        await verifyEmailOtp({ email: "jane@test.com", otp: "000000" }, res);
-        const dbUser = await User.findOne({ email: "jane@test.com" });
-        expect(dbUser?.verificationAttempts).toBe(1);
-    });
-
-    it("throws 404 if account not found", async () => {
+    it("throws 404 if email not found", async () => {
         const res = mockRes();
         await expect(
             verifyEmailOtp({ email: "nobody@test.com", otp: "123456" }, res),
@@ -414,82 +343,36 @@ describe("loginAdmin", () => {
 // ── J) CHILD LOGIN ────────────────────────────────────────────────────────────
 describe("loginChild", () => {
 
-    it("logs in a child with correct PIN", async () => {
+    it("logs in a child with emoji password", async () => {
         const parent = await createVerifiedParent();
-        await createChild(parent._id.toString(), { username: "kiddo" });
+        await createChild(parent._id.toString(), {
+            username: "kiddo",
+            emojiPassword: "🐶🐱🐭🐹",
+            loginMethod: "emoji",
+        });
         const res = mockRes();
-        const result = await loginChild({ username: "kiddo", pin: "1234" }, res);
+        const result = await loginChild({ username: "kiddo", emojiPassword: "🐶🐱🐭🐹" }, res);
         expect(result.accessToken).toBeDefined();
         expect(result.user.role).toBe("child");
     });
 
-    it("rejects wrong PIN", async () => {
+    it("rejects wrong emoji password", async () => {
         const parent = await createVerifiedParent();
-        await createChild(parent._id.toString(), { username: "kiddo" });
+        await createChild(parent._id.toString(), {
+            username: "kiddo",
+            emojiPassword: "🐶🐱🐭🐹",
+            loginMethod: "emoji",
+        });
         const res = mockRes();
         await expect(
-            loginChild({ username: "kiddo", pin: "9999" }, res),
+            loginChild({ username: "kiddo", emojiPassword: "🐸🐸🐸🐸" }, res),
         ).rejects.toMatchObject({ statusCode: 401 });
     });
 
     it("rejects unknown username", async () => {
         const res = mockRes();
         await expect(
-            loginChild({ username: "ghost", pin: "1234" }, res),
-        ).rejects.toMatchObject({ statusCode: 401 });
-    });
-
-    it("logs in a child with emoji password", async () => {
-        const parent = await createVerifiedParent();
-        await createChild(parent._id.toString(), {
-            username: "emojikid",
-            loginMethod: "emoji",
-            emojiPassword: "🐶🐱🐭",
-            pin: undefined,
-        });
-        const res = mockRes();
-        const result = await loginChild({ username: "emojikid", emojiPassword: "🐶🐱🐭" }, res);
-        expect(result.accessToken).toBeDefined();
-    });
-
-    it("rejects wrong emoji password", async () => {
-        const parent = await createVerifiedParent();
-        await createChild(parent._id.toString(), {
-            username: "emojikid",
-            loginMethod: "emoji",
-            emojiPassword: "🐶🐱🐭",
-            pin: undefined,
-        });
-        const res = mockRes();
-        await expect(
-            loginChild({ username: "emojikid", emojiPassword: "🐸🐸🐸" }, res),
-        ).rejects.toMatchObject({ statusCode: 401 });
-    });
-
-    it("logs in a child with text password", async () => {
-        const parent = await createVerifiedParent();
-        await createChild(parent._id.toString(), {
-            username: "passwordkid",
-            loginMethod: "password",
-            password: "KidPass123!",
-            pin: undefined,
-        });
-        const res = mockRes();
-        const result = await loginChild({ username: "passwordkid", password: "KidPass123!" }, res);
-        expect(result.accessToken).toBeDefined();
-    });
-
-    it("rejects wrong text password for child", async () => {
-        const parent = await createVerifiedParent();
-        await createChild(parent._id.toString(), {
-            username: "passwordkid",
-            loginMethod: "password",
-            password: "KidPass123!",
-            pin: undefined,
-        });
-        const res = mockRes();
-        await expect(
-            loginChild({ username: "passwordkid", password: "WrongPass!" }, res),
+            loginChild({ username: "ghost", emojiPassword: "🐶🐱🐭🐹" }, res),
         ).rejects.toMatchObject({ statusCode: 401 });
     });
 

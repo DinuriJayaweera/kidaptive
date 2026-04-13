@@ -10,7 +10,7 @@ export interface AuthUser {
     username?: string;
     age?: number;
     avatar?: string;
-    loginMethod?: "pin" | "password" | "emoji";
+    loginMethod?: "emoji";
 }
 
 export interface ChildProfile {
@@ -19,7 +19,7 @@ export interface ChildProfile {
     username: string;
     age: number;
     avatar: string;
-    loginMethod: "pin" | "password" | "emoji";
+    loginMethod?: "emoji";
 }
 
 interface AuthResponse {
@@ -118,9 +118,7 @@ export async function getMe(): Promise<AuthUser> {
 // ── Child Auth ───────────────────────────────────────────────────────────────
 export async function childLogin(data: {
     username: string;
-    pin?: string;
-    password?: string;
-    emojiPassword?: string;
+    emojiPassword: string;
 }): Promise<AuthResponse> {
     const res = await api.post("/auth/child/login", data);
     return res.data;
@@ -132,10 +130,7 @@ export async function createChild(data: {
     age: number;
     username: string;
     avatar?: string;
-    loginMethod: "pin" | "password" | "emoji";
-    pin?: string;
-    password?: string;
-    emojiPassword?: string;
+    emojiPassword: string;
 }): Promise<ChildProfile> {
     const res = await api.post("/parents/children", data);
     return res.data;

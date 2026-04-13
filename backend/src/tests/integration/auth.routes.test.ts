@@ -406,7 +406,7 @@ describe("POST /api/parents/children", () => {
         const res = await request(app)
             .post("/api/parents/children")
             .set("Authorization", `Bearer ${token}`)
-            .send({ name: "Little One", age: 7, username: "littleone", loginMethod: "pin", pin: "1234" });
+            .send({ name: "Little One", age: 7, username: "littleone", emojiPassword: "😀😃😄😁" });
 
         expect(res.status).toBe(201);
         expect(res.body.username).toBe("littleone");
@@ -416,7 +416,7 @@ describe("POST /api/parents/children", () => {
     it("blocks unauthenticated request from creating a child", async () => {
         const res = await request(app)
             .post("/api/parents/children")
-            .send({ name: "Little One", age: 7, username: "littleone", loginMethod: "pin", pin: "1234" });
+            .send({ name: "Little One", age: 7, username: "littleone", emojiPassword: "😀😃😄😁" });
 
         expect(res.status).toBe(401);
     });
@@ -434,13 +434,13 @@ describe("POST /api/parents/children", () => {
         await request(app)
             .post("/api/parents/children")
             .set("Authorization", `Bearer ${token}`)
-            .send({ name: "Little One", age: 7, username: "littleone", loginMethod: "pin", pin: "1234" });
+            .send({ name: "Little One", age: 7, username: "littleone", emojiPassword: "😀😃😄😁" });
 
         // Try same username again
         const res = await request(app)
             .post("/api/parents/children")
             .set("Authorization", `Bearer ${token}`)
-            .send({ name: "Another Kid", age: 8, username: "littleone", loginMethod: "pin", pin: "5678" });
+            .send({ name: "Another Kid", age: 8, username: "littleone", emojiPassword: "😺😸😹😻" });
 
         expect(res.status).toBe(409);
     });
@@ -479,12 +479,12 @@ describe("GET /api/parents/children", () => {
         await request(app)
             .post("/api/parents/children")
             .set("Authorization", `Bearer ${token}`)
-            .send({ name: "Child One", age: 6, username: "childone", loginMethod: "pin", pin: "1234" });
+            .send({ name: "Child One", age: 6, username: "childone", emojiPassword: "😀😃😄😁" });
 
         await request(app)
             .post("/api/parents/children")
             .set("Authorization", `Bearer ${token}`)
-            .send({ name: "Child Two", age: 8, username: "childtwo", loginMethod: "pin", pin: "5678" });
+            .send({ name: "Child Two", age: 8, username: "childtwo", emojiPassword: "😺😸😹😻" });
 
         const res = await request(app)
             .get("/api/parents/children")
@@ -504,7 +504,7 @@ describe("GET /api/parents/children", () => {
         await request(app)
             .post("/api/parents/children")
             .set("Authorization", `Bearer ${tokenA}`)
-            .send({ name: "Child A", age: 7, username: "childa", loginMethod: "pin", pin: "1111" });
+            .send({ name: "Child A", age: 7, username: "childa", emojiPassword: "😀😃😄😁" });
 
         await createVerifiedParent({ email: "parentB@test.com" });
         const tokenB = await loginParentAndGetToken("parentB@test.com");
@@ -529,7 +529,7 @@ describe("GET /api/parents/children", () => {
         await request(app)
             .post("/api/parents/children")
             .set("Authorization", `Bearer ${token}`)
-            .send({ name: "Safe Kid", age: 7, username: "safekid", loginMethod: "pin", pin: "1234" });
+            .send({ name: "Safe Kid", age: 7, username: "safekid", emojiPassword: "😀😃😄😁" });
 
         const res = await request(app)
             .get("/api/parents/children")

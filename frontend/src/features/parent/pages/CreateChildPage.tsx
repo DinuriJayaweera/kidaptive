@@ -56,7 +56,6 @@ export default function CreateChildPage() {
         try {
             const result = await createChild({
                 name: form.name, age: Number(form.age), username: form.username, avatar: form.avatar,
-                loginMethod: "emoji",
                 emojiPassword: form.emojiPassword.join(""),
             });
             setCreatedChild({ ...result, emojiPassword: form.emojiPassword });

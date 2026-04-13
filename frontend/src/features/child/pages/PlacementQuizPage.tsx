@@ -108,8 +108,9 @@ export default function PlacementQuizPage() {
       timeTaken,
     };
 
-    setAnswers((prev) => [...prev, answer]);
-    moveToNext();
+    const nextAnswers = [...answers, answer];
+    setAnswers(nextAnswers);
+    moveToNext(nextAnswers);
   };
 
   // ── Handle Continue (after check) ─────────────────────
@@ -118,7 +119,7 @@ export default function PlacementQuizPage() {
   };
 
   // ── Move to next question or finish ───────────────────
-  const moveToNext = async () => {
+  const moveToNext = async (nextAnswers?: PlacementAnswer[]) => {
     setSelectedAnswer(null);
     setIsChecked(false);
     setIsCorrect(false);
@@ -128,15 +129,16 @@ export default function PlacementQuizPage() {
       setCurrentIndex((i) => i + 1);
     } else {
       // Submit all answers
-      await submitTest();
+      await submitTest(nextAnswers);
     }
   };
 
   // ── Submit test ───────────────────────────────────────
-  const submitTest = async () => {
+  const submitTest = async (overrideAnswers?: PlacementAnswer[]) => {
     try {
       setLoading(true);
-      const { data } = await placementTestApi.submit(answers);
+      const answersToSubmit = overrideAnswers ?? answers;
+      const { data } = await placementTestApi.submit(answersToSubmit);
 
       if (data.allCompleted) {
         // All categories evaluated → show final results

@@ -42,12 +42,7 @@ export default function ChildPinPage() {
         try {
             const result = await childLogin({
                 username: username,
-                // Passing it as emojiPassword to use the new "emoji" schema handler if they migrate,
-                // but if their account is legacy "password", we can fallback if needed.
                 emojiPassword: emojiPassword.join(""),
-                // Since legacy accounts fall back to password and pin, pass them too so legacy doesn't break easily
-                pin: emojiPassword.join(""),
-                password: emojiPassword.join(""),
             });
             if (result.user && result.accessToken) {
                 login(result.user, result.accessToken);

@@ -322,9 +322,6 @@ export async function createChildProfile(
         age: number;
         username: string;
         avatar?: string;
-        loginMethod: "pin" | "password" | "emoji";
-        pin?: string;
-        password?: string;
         emojiPassword?: string;
     },
 ) {
@@ -339,23 +336,17 @@ export async function createChildProfile(
     const childData: Record<string, unknown> = {
         name: data.name,
         email: childEmail,
-        password: data.password ?? `dummy-${Date.now()}`,
+        password: `dummy-${Date.now()}`,
         age: data.age,
         username: data.username,
         avatar: data.avatar ?? "default",
         role: "child",
         parentId,
-        loginMethod: data.loginMethod,
+        loginMethod: "emoji",
         emailVerified: true,
     };
 
-    if (data.loginMethod === "pin") {
-        childData.pin = data.pin;
-    } else if (data.loginMethod === "emoji") {
-        childData.emojiPassword = data.emojiPassword;
-    } else {
-        childData.password = data.password;
-    }
+    childData.emojiPassword = data.emojiPassword;
 
     const child = await User.create(childData);
     return sanitizeUser(child);
@@ -371,25 +362,15 @@ export async function getChildren(parentId: string) {
 // CHILD LOGIN
 // ═══════════════════════════════════════════════════════════════════════════════
 export async function loginChild(
-    data: { username: string; pin?: string; password?: string; emojiPassword?: string },
+    data: { username: string; emojiPassword?: string },
     res: Response,
 ) {
     const user = await User.findOne({ username: data.username, role: "child" });
     if (!user) throw Unauthorized("We couldn't find that username.");
 
-    if (user.loginMethod === "emoji") {
-        if (!data.emojiPassword) throw BadRequest("Emoji pattern is required");
-        if (!(await user.compareEmojiPassword(data.emojiPassword)))
-            throw Unauthorized("That pattern doesn't look right. Try again!");
-    } else if (user.loginMethod === "pin") {
-        if (!data.pin) throw BadRequest("PIN is required");
-        if (!(await user.comparePin(data.pin)))
-            throw Unauthorized("That PIN doesn't look right. Try again!");
-    } else {
-        if (!data.password) throw BadRequest("Password is required");
-        if (!(await user.comparePassword(data.password)))
-            throw Unauthorized("Wrong password. Try again!");
-    }
+    if (!data.emojiPassword) throw BadRequest("Emoji pattern is required");
+    if (!(await user.compareEmojiPassword(data.emojiPassword)))
+        throw Unauthorized("That pattern doesn't look right. Try again!");
 
     const accessToken = signAccessToken({ userId: user._id.toString(), role: "child" });
     const refreshToken = signRefreshToken({

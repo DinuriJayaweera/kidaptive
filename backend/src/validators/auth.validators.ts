@@ -67,30 +67,13 @@ export const createChildSchema = z
             .min(3, "Username must be at least 3 characters")
             .regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers, and underscores"),
         avatar: z.string().optional(),
-        loginMethod: z.enum(["pin", "password", "emoji"]),
-        pin: z
-            .string()
-            .regex(/^\d{4}$/, "PIN must be exactly 4 digits")
-            .optional(),
-        password: z.string().min(6, "Password must be at least 6 characters").optional(),
-        emojiPassword: z.string().min(4, "Emoji password must have at least 4 emojis").optional(),
-    })
-    .refine(
-        (d) => {
-            if (d.loginMethod === "pin") return !!d.pin;
-            if (d.loginMethod === "password") return !!d.password;
-            if (d.loginMethod === "emoji") return !!d.emojiPassword;
-            return false;
-        },
-        { message: "Credential required based on login method", path: ["loginMethod"] },
-    );
+        emojiPassword: z.string().min(4, "Emoji password must have at least 4 emojis"),
+    });
 
 // ── Child Login ──────────────────────────────────────────────────────────────
 export const childLoginSchema = z.object({
     username: z.string().min(1, "Username is required"),
-    pin: z.string().optional(),
-    password: z.string().optional(),
-    emojiPassword: z.string().optional(),
+    emojiPassword: z.string().min(4, "Emoji password must have at least 4 emojis"),
 });
 
 // ── Helper: parse and format Zod errors ──────────────────────────────────────

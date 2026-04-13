@@ -11,7 +11,7 @@ import {
 } from "@mui/icons-material";
 import { useNavigate, Link } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
-import { parentSignup, googleSignup } from "../api/authApi";
+import { parentSignup, googleSignup, googleLogin } from "../api/authApi";
 import { useAuth } from "../context/AuthContext";
 import AuthHeader from "../components/AuthHeader";
 import RoundedInput from "../../../components/ui/RoundedInput";
@@ -89,9 +89,24 @@ export default function ParentSignupPage() {
                 if (result.user && result.accessToken) {
                     login(result.user, result.accessToken);
                     navigate("/parent/dashboard");
+                    return;
                 }
             } catch (err: any) {
-                setError(err.response?.data?.message ?? "Google signup failed.");
+                if (err.response?.status === 409) {
+                    try {
+                        const loginResult = await googleLogin({ token: tokenResponse.access_token });
+                        if (loginResult.user && loginResult.accessToken) {
+                            login(loginResult.user, loginResult.accessToken);
+                            navigate("/parent/dashboard");
+                            return;
+                        }
+                        setError(loginResult.message ?? "Google login failed.");
+                    } catch (loginErr: any) {
+                        setError(loginErr.response?.data?.message ?? "Google login failed.");
+                    }
+                } else {
+                    setError(err.response?.data?.message ?? "Google signup failed.");
+                }
                 triggerShake();
             } finally {
                 setLoading(false);

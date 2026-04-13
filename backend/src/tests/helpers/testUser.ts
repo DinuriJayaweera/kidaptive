@@ -51,8 +51,8 @@ export async function createChild(parentId: string, overrides = {}) {
         age: 7,
         role: "child",
         parentId,
-        loginMethod: "pin",
-        pin: "1234",                // plain text — model hashes it
+        loginMethod: "emoji",
+        emojiPassword: "😀😃😄😁",
         emailVerified: true,
         tokenVersion: 0,
         ...overrides,
