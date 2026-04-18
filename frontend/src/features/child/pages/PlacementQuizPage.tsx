@@ -35,7 +35,19 @@ export default function PlacementQuizPage() {
       setIsCorrect(false);
       setCorrectAnswer("");
 
+      const statusRes = await placementTestApi.getStatus();
+      if (statusRes.data.placementCompleted) {
+        navigate("/child/dashboard", { replace: true });
+        return;
+      }
+
       const { data } = await placementTestApi.generate();
+      
+      if ((data as any).allCompleted) {
+        navigate("/child/placement/results", { replace: true });
+        return;
+      }
+      
       setQuestions(data.questions);
       setCorrectAnswersMap(data.correctAnswers);
       timerRef.current = Date.now();

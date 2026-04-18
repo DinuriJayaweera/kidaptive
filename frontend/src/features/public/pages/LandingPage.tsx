@@ -125,9 +125,7 @@ export default function LandingPage() {
   return (
     <Box>
       {/* ═══════════════ HERO ═══════════════ */}
-      <Box sx={{ backgroundColor: "#c8e6f7" }}>
-        {/* Wave that connects navbar (#3ab5e6) → hero (#c8e6f7) — scrolls with page */}
-        <WaveDown from="#3ab5e6" to="#c8e6f7" />
+      <Box sx={{ backgroundColor: "#c8e6f7", mt: "-100px", pt: "100px" }}>
         <Container maxWidth="lg">
           <Grid container alignItems="center" sx={{ minHeight: { xs: "auto", md: "420px" }, py: { xs: 6, md: 5 } }} spacing={4}>
             <Grid size={{ xs: 12, md: 6 }}>

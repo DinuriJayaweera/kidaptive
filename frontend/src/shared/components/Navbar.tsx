@@ -1,8 +1,18 @@
-import { Toolbar, Typography, Button, Box, Container, IconButton, Menu, MenuItem, Avatar, Tooltip } from "@mui/material";
+import {
+  Typography,
+  Button,
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Avatar,
+  Tooltip,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../features/auth/context/AuthContext";
+import logoImg from "../../assets/logo.png";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -17,155 +27,279 @@ export default function Navbar() {
     setAnchorEl(null);
   };
 
-  const dashboardPath = role === "parent" ? "/parent/dashboard" : "/child/dashboard";
+  const dashboardPath =
+    role === "parent" ? "/parent/dashboard" : "/child/dashboard";
+
+  const navLinks = [
+    { label: "Home", path: "/" },
+    { label: "Features", path: "/#features" },
+    ...(!isAuthenticated ? [{ label: "Login", path: "/auth/role" }] : []),
+  ];
 
   return (
-    <Box sx={{ backgroundColor: "#3ab5e6", position: "sticky", top: 0, zIndex: 1100 }}>
-      <Container maxWidth="lg">
-        <Toolbar disableGutters sx={{ py: 1 }}>
-          {/* Logo */}
-          <Typography
-            variant="h6"
-            component={Link}
-            to="/"
+    <Box
+      sx={{
+        position: "sticky",
+        top: 0,
+        zIndex: 1100,
+        mt: "14px",
+        /* ── Keyframes ── */
+        "@keyframes logoBob": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-3px)" },
+        },
+        "@keyframes slideDown": {
+          from: { opacity: 0, transform: "translateY(-18px)" },
+          to: { opacity: 1, transform: "translateY(0)" },
+        },
+      }}
+    >
+      {/* ── Blue pill navbar ── */}
+      <Box
+        sx={{
+          backgroundColor: "#25AFF4",
+          borderRadius: "30px",
+          height: "70px",
+          width: "calc(100% - 48px)",
+          mx: "auto",
+          pl: "8px",
+          pr: "16px",
+          display: "flex",
+          alignItems: "center",
+          boxShadow: "0 4px 18px rgba(37,175,244,0.25)",
+          transition: "box-shadow 0.4s ease, transform 0.4s ease",
+          animation: "slideDown 0.5s cubic-bezier(0.22, 1, 0.36, 1) both",
+          overflow: "visible",
+          "&:hover": {
+            boxShadow: "0 6px 28px rgba(37,175,244,0.4)",
+          },
+        }}
+      >
+        {/* ── Logo + Brand ── */}
+        <Box
+          component={Link}
+          to="/"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            textDecoration: "none",
+            flexShrink: 0,
+            gap: 0,
+            mr: "auto",
+          }}
+        >
+          <Box
+            component="img"
+            src={logoImg}
+            alt="Kidaptive Logo"
             sx={{
+              width: 118,
+              height: 107,
+              objectFit: "contain",
+              flexShrink: 0,
+              filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.12))",
+              transition: "transform 0.3s ease",
+              "&:hover": {
+                transform: "scale(1.05)",
+              },
+            }}
+          />
+          <Typography
+            sx={{
+              ml: "-8px",
               fontFamily: "'Baloo 2', sans-serif",
-              fontWeight: 900,
-              fontSize: "1.35rem",
+              fontWeight: 800,
+              fontSize: "28px",
               color: "#fff",
-              textDecoration: "none",
-              letterSpacing: 1.5,
-              flexGrow: 1,
+              letterSpacing: 1,
+              lineHeight: 1,
+              textShadow: "0 1px 4px rgba(0,0,0,0.1)",
+              userSelect: "none",
             }}
           >
             KIDAPTIVE
           </Typography>
+        </Box>
 
-          {/* Desktop Nav Links */}
-          <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: 0.5 }}>
-            {[
-              { label: "Home", path: "/" },
-              { label: "Features", path: "/#features" },
-              ...(!isAuthenticated ? [{ label: "Login", path: "/auth/role" }] : []),
-            ].map((item) => (
-              <Button
-                key={item.label}
-                onClick={() => navigate(item.path)}
+        {/* ── Desktop Nav Links ── */}
+        <Box
+          sx={{
+            display: { xs: "none", md: "flex" },
+            alignItems: "center",
+            gap: "36px",
+            mr: "20px",
+          }}
+        >
+          {navLinks.map((item, i) => (
+            <Button
+              key={item.label}
+              onClick={() => navigate(item.path)}
+              disableRipple
+              sx={{
+                color: "#fff",
+                fontFamily: "'Poppins', sans-serif",
+                fontWeight: 600,
+                fontSize: "17px",
+                textTransform: "none",
+                p: 0,
+                minWidth: "auto",
+                position: "relative",
+                overflow: "visible",
+                transition: "all 0.25s ease",
+                animation: `slideDown 0.45s cubic-bezier(0.22, 1, 0.36, 1) ${0.08 * (i + 1)}s both`,
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: -3,
+                  left: "50%",
+                  width: 0,
+                  height: "2.5px",
+                  backgroundColor: "#FDC700",
+                  borderRadius: "2px",
+                  transform: "translateX(-50%)",
+                  transition:
+                    "width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                },
+                "&:hover": {
+                  backgroundColor: "transparent",
+                  transform: "translateY(-2px)",
+                  textShadow: "0 0 8px rgba(255,255,255,0.5)",
+                  "&::after": { width: "100%" },
+                },
+                "&:active": { transform: "translateY(0px)" },
+              }}
+            >
+              {item.label}
+            </Button>
+          ))}
+        </Box>
+
+        {/* ── CTA / Avatar ── */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            flexShrink: 0,
+          }}
+        >
+          {!isAuthenticated ? (
+            <Button
+              variant="contained"
+              onClick={() => navigate("/auth/signup")}
+              sx={{
+                backgroundColor: "#FDC700",
+                color: "#fff",
+                fontFamily: "'Poppins', sans-serif",
+                fontWeight: 700,
+                fontSize: "17px",
+                height: "44px",
+                borderRadius: "40px",
+                textTransform: "none",
+                px: "24px",
+                boxShadow: "0 3px 12px rgba(253,199,0,0.35)",
+                animation: "slideDown 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both",
+                transition:
+                  "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                "&:hover": {
+                  backgroundColor: "#E8B600",
+                  transform: "scale(1.04) translateY(-1px)",
+                  boxShadow: "0 6px 20px rgba(253,199,0,0.55)",
+                },
+                "&:active": {
+                  transform: "scale(0.97)",
+                  transition: "all 0.1s",
+                },
+              }}
+            >
+              Sign up
+            </Button>
+          ) : (
+            <Tooltip title="Go to Dashboard">
+              <IconButton
+                onClick={() => navigate(dashboardPath)}
+                size="small"
                 sx={{
-                  color: "#fff",
+                  transition: "transform 0.25s ease",
+                  "&:hover": { transform: "scale(1.1) rotate(4deg)" },
+                }}
+              >
+                <Avatar
+                  sx={{
+                    width: 42,
+                    height: 42,
+                    bgcolor: "#FDC700",
+                    fontWeight: 700,
+                    fontSize: "18px",
+                    border: "2.5px solid #fff",
+                    boxShadow: "0 2px 8px rgba(253,199,0,0.3)",
+                  }}
+                >
+                  {user?.name?.[0]?.toUpperCase() || "U"}
+                </Avatar>
+              </IconButton>
+            </Tooltip>
+          )}
+
+          {/* ── Mobile Menu Icon ── */}
+          <IconButton
+            size="large"
+            edge="end"
+            color="inherit"
+            aria-label="menu"
+            sx={{
+              display: { xs: "flex", md: "none" },
+              ml: 1,
+              color: "#fff",
+              transition: "transform 0.2s ease",
+              "&:hover": { transform: "rotate(90deg)" },
+            }}
+            onClick={handleMenuOpen}
+          >
+            <MenuIcon sx={{ fontSize: 28 }} />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+            sx={{ display: { xs: "block", md: "none" } }}
+            PaperProps={{
+              sx: {
+                borderRadius: 3,
+                minWidth: 200,
+                mt: 1,
+                boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+              },
+            }}
+          >
+            {[
+              ...navLinks,
+              ...(isAuthenticated
+                ? [{ label: "Dashboard", path: dashboardPath }]
+                : []),
+            ].map((item) => (
+              <MenuItem
+                key={item.label}
+                onClick={() => {
+                  handleMenuClose();
+                  navigate(item.path);
+                }}
+                sx={{
                   fontFamily: "'Poppins', sans-serif",
-                  fontWeight: 500,
-                  fontSize: "0.9rem",
-                  textTransform: "none",
-                  position: "relative",
-                  overflow: "hidden",
-                  transition: "all 0.2s",
-                  "&::after": {
-                    content: '""',
-                    position: "absolute",
-                    bottom: 6,
-                    left: "50%",
-                    width: 0,
-                    height: "2px",
-                    backgroundColor: "#fff",
-                    borderRadius: "2px",
-                    transform: "translateX(-50%)",
-                    transition: "width 0.28s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                  },
+                  fontSize: "1rem",
+                  py: 1.5,
+                  transition: "all 0.2s ease",
                   "&:hover": {
-                    backgroundColor: "rgba(255,255,255,0.15)",
-                    transform: "translateY(-2px)",
-                    "&::after": { width: "65%" },
+                    backgroundColor: "#E8F6FE",
+                    pl: 3,
                   },
-                  "&:active": { transform: "translateY(0px)" },
                 }}
               >
                 {item.label}
-              </Button>
+              </MenuItem>
             ))}
-          </Box>
-
-          <Box sx={{ display: "flex", alignItems: "center", ml: { xs: 0, md: 1 } }}>
-            {!isAuthenticated ? (
-              <Button
-                variant="contained"
-                onClick={() => navigate("/auth/signup")}
-                sx={{
-                  ml: 1,
-                  backgroundColor: "#f5a623",
-                  color: "#fff",
-                  fontFamily: "'Poppins', sans-serif",
-                  fontWeight: 700,
-                  borderRadius: "50px",
-                  textTransform: "none",
-                  px: 3,
-                  boxShadow: "0 4px 14px rgba(245,166,35,0.45)",
-                  transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                  "&:hover": {
-                    backgroundColor: "#e09010",
-                    transform: "scale(1.12) rotate(-3deg)",
-                    boxShadow: "0 8px 24px rgba(245,166,35,0.6)",
-                  },
-                  "&:active": { transform: "scale(0.95) rotate(0deg)", transition: "all 0.1s" },
-                }}
-              >
-                Sign up
-              </Button>
-            ) : (
-              <>
-                <Tooltip title="Go to Dashboard">
-                  <IconButton
-                    onClick={() => navigate(dashboardPath)}
-                    size="small"
-                    sx={{ ml: 1, transition: "transform 0.2s", "&:hover": { transform: "scale(1.05)" } }}
-                  >
-                    <Avatar sx={{ width: 38, height: 38, bgcolor: "#f5a623", fontWeight: 700, border: "2px solid #fff" }}>
-                      {user?.name?.[0]?.toUpperCase() || "U"}
-                    </Avatar>
-                  </IconButton>
-                </Tooltip>
-              </>
-            )}
-
-            {/* Mobile Menu Icon */}
-            <IconButton
-              size="large"
-              edge="end"
-              color="inherit"
-              aria-label="menu"
-              sx={{ display: { xs: "flex", md: "none" }, ml: 1, color: "#fff" }}
-              onClick={handleMenuOpen}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleMenuClose}
-              sx={{ display: { xs: "block", md: "none" } }}
-              PaperProps={{ sx: { borderRadius: 3, minWidth: 200, mt: 1 } }}
-            >
-              {[
-                { label: "Home", path: "/" },
-                { label: "Features", path: "/#features" },
-                ...(!isAuthenticated ? [{ label: "Login", path: "/auth/role" }] : []),
-                ...(isAuthenticated ? [{ label: "Dashboard", path: dashboardPath }] : []),
-              ].map((item) => (
-                <MenuItem
-                  key={item.label}
-                  onClick={() => {
-                    handleMenuClose();
-                    navigate(item.path);
-                  }}
-                  sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.95rem", py: 1.5 }}
-                >
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-        </Toolbar>
-      </Container>
+          </Menu>
+        </Box>
+      </Box>
     </Box>
   );
 }

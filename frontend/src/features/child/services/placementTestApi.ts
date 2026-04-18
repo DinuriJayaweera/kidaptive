@@ -1,16 +1,4 @@
-import axios from "axios";
-
-const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
-  withCredentials: true,
-});
-
-// Attach access token
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
+import api from "../../../services/apiClient";
 
 export type QuestionType = 'mcq' | 'fill' | 'input' | 'boolean';
 
@@ -65,10 +53,10 @@ export interface ResultsResponse {
 }
 
 export const placementTestApi = {
-  getStatus: () => API.get<PlacementStatus>("/placement-test/status"),
-  generate: () => API.post<GenerateResponse>("/placement-test/generate"),
+  getStatus: () => api.get<PlacementStatus>("/placement/status"),
+  generate: () => api.post<GenerateResponse>("/placement-test/generate"),
   submit: (answers: PlacementAnswer[]) =>
-    API.post<SubmitResponse>("/placement-test/submit", { answers }),
-  getResults: () => API.get<ResultsResponse>("/placement-test/results"),
-  reset: () => API.post("/placement-test/reset"),
+    api.post<SubmitResponse>("/placement-test/submit", { answers }),
+  getResults: () => api.get<ResultsResponse>("/placement-test/results"),
+  reset: () => api.post("/placement-test/reset"),
 };

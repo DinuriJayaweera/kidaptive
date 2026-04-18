@@ -32,6 +32,13 @@ export interface IUser {
     pin?: string;
     emojiPassword?: string;
 
+    // Game Stats
+    totalXP?: number;
+    gems?: number;
+    streak?: number;
+    lastPlayedDate?: Date;
+    placementCompleted?: boolean;
+
     createdAt: Date;
     updatedAt: Date;
 
@@ -76,6 +83,13 @@ const userSchema = new Schema<IUser>(
         loginMethod: { type: String, enum: ["pin", "password", "emoji"] },
         pin: { type: String },
         emojiPassword: { type: String },
+
+        // Game Stats
+        totalXP: { type: Number, default: 0 },
+        gems: { type: Number, default: 0 },
+        streak: { type: Number, default: 0 },
+        lastPlayedDate: { type: Date },
+        placementCompleted: { type: Boolean, default: false },
     },
     { timestamps: true },
 );

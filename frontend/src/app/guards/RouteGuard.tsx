@@ -9,11 +9,7 @@ function getChildHome(userId?: string): string {
     if (!userId || !localStorage.getItem(`introSeen_${userId}`)) {
         return "/child/intro";
     }
-    // Step 2: Check if placement is completed
-    if (!localStorage.getItem(`placementDone_${userId}`)) {
-        return "/child/placement";
-    }
-    // Step 3: All done → dashboard
+    // Dashboard and Placement test components now strictly enforce routing via the backend API API.getStatus()
     return "/child/dashboard";
 }
 

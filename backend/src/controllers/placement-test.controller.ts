@@ -12,6 +12,7 @@ import {
 type AuthRequest = Request & { user: TokenPayload };
 
 // GET /api/placement-test/status
+// GET /api/placement-test/status (Legacy, uses PlacementResult)
 export const status = async (req: Request, res: Response): Promise<void> => {
   try {
     const { userId } = (req as AuthRequest).user;
@@ -23,6 +24,22 @@ export const status = async (req: Request, res: Response): Promise<void> => {
     res.json(result);
   } catch (error) {
     console.error("Placement status error:", error);
+    res.status(500).json({ message: "Failed to get placement status" });
+  }
+};
+
+// GET /api/placement/status
+export const userPlacementStatus = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { userId } = (req as AuthRequest).user;
+    const child = await User.findById(userId).select("placementCompleted");
+    if (!child) {
+      res.status(404).json({ message: "Child not found" });
+      return;
+    }
+    res.json({ placementCompleted: child.placementCompleted ?? false });
+  } catch (error) {
+    console.error("User placement status error:", error);
     res.status(500).json({ message: "Failed to get placement status" });
   }
 };
@@ -39,7 +56,7 @@ export const generate = async (req: Request, res: Response): Promise<void> => {
     res.json(test);
   } catch (error: any) {
     if (error.message === "All categories already evaluated") {
-      res.status(400).json({ message: error.message, allCompleted: true });
+      res.status(200).json({ message: error.message, allCompleted: true });
       return;
     }
     console.error("Generate test error:", error);
@@ -75,7 +92,6 @@ export const results = async (req: Request, res: Response): Promise<void> => {
   try {
     const { userId } = (req as AuthRequest).user;
     const data = await getFinalResults(userId);
-    if (!data) { res.status(404).json({ message: "No placement results found" }); return; }
     res.json(data);
   } catch (error) {
     console.error("Get results error:", error);

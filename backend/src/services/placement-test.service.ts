@@ -1,5 +1,6 @@
 import PlacementQuestion from "../models/placement.model.js";
 import PlacementResult from "../models/placementResult.model.js";
+import User from "../models/User.js";
 import type { IPlacementAnswer, ICategoryResult } from "../models/placementResult.model.js";
 
 // ── Weight map ──────────────────────────────────────────────────────────────
@@ -54,11 +55,27 @@ export async function generateTestQuestions(
   correctAnswers: Record<string, string>;
 }> {
   const unevaluated = await getUnevaluatedCategories(childId, ageGroup);
-  if (unevaluated.length === 0) {
+  const allCategories = await getCategoriesForAge(ageGroup);
+  
+  // If there are no categories at all for this age group, auto-pass them so they aren't completely stuck
+  if (allCategories.length === 0) {
+    const user = await User.findById(childId);
+    if (user && !user.placementCompleted) {
+      user.placementCompleted = true;
+      await user.save();
+    }
     throw new Error("All categories already evaluated");
   }
 
-  const allCategories = await getCategoriesForAge(ageGroup);
+  if (unevaluated.length === 0) {
+    const user = await User.findById(childId);
+    if (user && !user.placementCompleted) {
+      user.placementCompleted = true;
+      await user.save();
+    }
+    throw new Error("All categories already evaluated");
+  }
+
   const result = await PlacementResult.findOne({ childId });
   const testNumber = result ? Math.floor(result.evaluatedCategories.length / 4) + 1 : 1;
 
@@ -233,8 +250,47 @@ export async function submitTestAnswers(
     placementResult!.evaluatedCategories.includes(c)
   );
 
+  const wasCompleted = placementResult.placementCompleted;
+
   if (allCompleted) {
     placementResult.placementCompleted = true;
+
+    if (!wasCompleted) {
+      // Calculate Placement XP (Initial Setup)
+      const getXPForScore = (s: number) => {
+        if (s < 50) return 0;
+        if (s < 60) return 20;
+        if (s < 70) return 40;
+        if (s < 75) return 60;
+        if (s < 85) return 80;
+        return 100;
+      };
+
+      let totalPlacementXP = 0;
+      let earnedGems = 0;
+      for (const result of placementResult.categoryResults) {
+        totalPlacementXP += getXPForScore(result.score);
+        if (result.level === "starter") earnedGems += 1;
+        else if (result.level === "explorer") earnedGems += 3;
+        else if (result.level === "champion") earnedGems += 5;
+      }
+      
+      // Average XP across all categories
+      const averageXP = placementResult.categoryResults.length > 0 
+        ? Math.round(totalPlacementXP / placementResult.categoryResults.length)
+        : 0;
+
+      // Set initial totalXP safely (only initialize it if the user doesn't have XP yet)
+      const user = await User.findById(childId);
+      if (user) {
+        user.placementCompleted = true; // Mark placement as completed on the user
+        if (user.totalXP === undefined || user.totalXP === 0) {
+          user.totalXP = averageXP;
+          user.gems = (user.gems || 0) + earnedGems;
+        }
+        await user.save();
+      }
+    }
   }
 
   await placementResult.save();
@@ -249,7 +305,13 @@ export async function submitTestAnswers(
 // ── Get final results ───────────────────────────────────────────────────────
 export async function getFinalResults(childId: string) {
   const result = await PlacementResult.findOne({ childId });
-  if (!result) return null;
+  if (!result) {
+    return {
+      categoryResults: [],
+      evaluatedCategories: [],
+      placementCompleted: true, // If they reached here with no results, assume it's blank/auto-passed
+    };
+  }
   return {
     categoryResults: result.categoryResults,
     evaluatedCategories: result.evaluatedCategories,
