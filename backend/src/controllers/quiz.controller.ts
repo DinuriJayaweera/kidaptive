@@ -11,14 +11,14 @@ type AuthRequest = Request & { user: TokenPayload };
 export const start = async (req: Request, res: Response): Promise<void> => {
   try {
     const { userId } = (req as AuthRequest).user;
-    const { categoryId } = req.query;
+    const { categoryId, targetLevel } = req.query;
 
     if (!categoryId || typeof categoryId !== "string") {
       res.status(400).json({ message: "categoryId is required" });
       return;
     }
 
-    const data = await startQuiz(userId, categoryId);
+    const data = await startQuiz(userId, categoryId as string, targetLevel as string | undefined);
     res.json(data);
   } catch (error) {
     console.error("Start quiz error:", error);
@@ -28,7 +28,7 @@ export const start = async (req: Request, res: Response): Promise<void> => {
 export const submitQuiz = async (req: Request, res: Response): Promise<void> => {
     try {
         const { userId } = (req as AuthRequest).user;
-        const { categoryId, answers } = req.body;
+        const { categoryId, answers, targetLevel, isReplay } = req.body;
 
         if (!categoryId || !answers || !Array.isArray(answers)) {
             res.status(400).json({ message: 'categoryId and answers array are required' });
@@ -36,7 +36,7 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
         }
 
         // Call the service first — it modifies and saves the child document
-        const result = await serviceSubmitQuiz(userId, categoryId, answers);
+        const result = await serviceSubmitQuiz(userId, categoryId, answers, targetLevel, isReplay);
 
         // Reload the child AFTER the service to get fresh totalXP/gems values
         const child = await User.findById(userId);
@@ -93,7 +93,7 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
             newLevel: result.newLevel,
             categoryXP: result.newXP,
             xpToNextLevel: result.xpToNextLevel,
-            xpGained: (result.passed ? (result.isChampion ? 20 : 10) : 0) + streakXPToAdd,
+            xpGained: result.xpGained + streakXPToAdd, // we'll calculate base xpGained correctly in the service
             totalXP: child.totalXP,
             streak,
             gemsEarned: result.gemsEarned,

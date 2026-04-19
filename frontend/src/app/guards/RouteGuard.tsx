@@ -4,9 +4,14 @@ import type { ReactNode } from "react";
 import { Box, CircularProgress } from "@mui/material";
 
 /** Returns the correct child landing path based on intro + placement state */
-function getChildHome(userId?: string): string {
-    // Step 1: Check if intro was seen
-    if (!userId || !localStorage.getItem(`introSeen_${userId}`)) {
+function getChildHome(user?: any): string {
+    // If the backend already knows the child has done the placement test, we aggressively skip
+    if (user?.placementCompleted) {
+        return "/child/dashboard";
+    }
+
+    // Step 1: Check if intro was seen locally
+    if (!user?._id || !localStorage.getItem(`introSeen_${user._id}`)) {
         return "/child/intro";
     }
     // Dashboard and Placement test components now strictly enforce routing via the backend API API.getStatus()
@@ -26,7 +31,7 @@ export function ParentRoute({ children }: { children: ReactNode }) {
     const location = useLocation();
     if (loading) return <Loading />;
     if (!isAuthenticated) return <Navigate to="/auth/login" state={{ from: location }} replace />;
-    if (role === "child") return <Navigate to={getChildHome(user?._id)} replace />;
+    if (role === "child") return <Navigate to={getChildHome(user)} replace />;
     if (role === "admin") return <Navigate to="/admin/dashboard" replace />;
     if (role !== "parent") return <Navigate to="/" replace />;
     return <>{children}</>;
@@ -49,7 +54,7 @@ export function AdminRoute({ children }: { children: ReactNode }) {
     if (loading) return <Loading />;
     if (!isAuthenticated) return <Navigate to="/auth/admin-login" state={{ from: location }} replace />;
     if (role === "parent") return <Navigate to="/parent/dashboard" replace />;
-    if (role === "child") return <Navigate to={getChildHome(user?._id)} replace />;
+    if (role === "child") return <Navigate to={getChildHome(user)} replace />;
     if (role !== "admin") return <Navigate to="/" replace />;
     return <>{children}</>;
 }
@@ -60,7 +65,7 @@ export function PublicOnlyRoute({ children }: { children: ReactNode }) {
     if (isAuthenticated) {
         if (role === "admin") return <Navigate to="/admin/dashboard" replace />;
         if (role === "parent") return <Navigate to="/parent/dashboard" replace />;
-        if (role === "child") return <Navigate to={getChildHome(user?._id)} replace />;
+        if (role === "child") return <Navigate to={getChildHome(user)} replace />;
         return <Navigate to="/" replace />;
     }
     return <>{children}</>;

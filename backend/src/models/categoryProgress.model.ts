@@ -6,6 +6,7 @@ export interface ICategoryProgress extends Document {
   level: "starter" | "explorer" | "champion";
   xp: number;
   quizzesCompleted: number;
+  globalQuizzesCompleted: number;
   championWins: number;
   attemptedQuestionIds: Types.ObjectId[];
   createdAt: Date;
@@ -19,6 +20,7 @@ const categoryProgressSchema = new Schema<ICategoryProgress>(
     level: { type: String, enum: ["starter", "explorer", "champion"], required: true },
     xp: { type: Number, default: 0 },
     quizzesCompleted: { type: Number, default: 0 },
+    globalQuizzesCompleted: { type: Number, default: 0 },
     championWins: { type: Number, default: 0 },
     attemptedQuestionIds: { type: [Schema.Types.ObjectId], ref: "QuizQuestion", default: [] },
   },

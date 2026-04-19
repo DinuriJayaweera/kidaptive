@@ -5,13 +5,15 @@ export async function getDashboardData() {
   return response.data;
 }
 
-export async function startQuiz(categoryId: string) {
-  const response = await api.get(`/quiz/start?categoryId=${encodeURIComponent(categoryId)}`);
+export async function startQuiz(categoryId: string, targetLevel?: string) {
+  let url = `/quiz/start?categoryId=${encodeURIComponent(categoryId)}`;
+  if (targetLevel) url += `&targetLevel=${encodeURIComponent(targetLevel)}`;
+  const response = await api.get(url);
   return response.data;
 }
 
-export async function submitQuiz(categoryId: string, answers: { questionId: string; selectedAnswer: string }[]) {
-  const response = await api.post("/quiz/submit", { categoryId, answers });
+export async function submitQuiz(categoryId: string, answers: { questionId: string; selectedAnswer: string; timeTaken?: number }[], targetLevel?: string, isReplay?: boolean) {
+  const response = await api.post("/quiz/submit", { categoryId, answers, targetLevel, isReplay });
   return response.data;
 }
 

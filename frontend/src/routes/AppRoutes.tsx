@@ -19,6 +19,7 @@ import ChildIntroLoading from "../features/child/pages/ChildIntroLoading";
 import PlacementQuizPage from "../features/child/pages/PlacementQuizPage";
 import PlacementResultsPage from "../features/child/pages/PlacementResultsPage";
 import AdaptiveQuizPage from "../features/child/pages/AdaptiveQuizPage";
+import CategoryProgressPage from "../features/child/pages/CategoryProgressPage";
 import AdminLoginPage from "../features/auth/pages/AdminLoginPage";
 import { PublicOnlyRoute, ParentRoute, ChildRoute, AdminRoute } from "../app/guards/RouteGuard";
 
@@ -74,6 +75,7 @@ export default function AppRoutes() {
             <Route path="/child/intro/loading" element={<ChildRoute><ChildIntroLoading /></ChildRoute>} />
             <Route path="/child/placement" element={<ChildRoute><PlacementQuizPage /></ChildRoute>} />
             <Route path="/child/placement/results" element={<ChildRoute><PlacementResultsPage /></ChildRoute>} />
+            <Route path="/child/category-progress/:categoryId" element={<ChildRoute><CategoryProgressPage /></ChildRoute>} />
             <Route path="/child/quiz/:categoryId" element={<ChildRoute><AdaptiveQuizPage /></ChildRoute>} />
             <Route path="/child/dashboard" element={<ChildRoute><ChildDashboardPage /></ChildRoute>} />
 

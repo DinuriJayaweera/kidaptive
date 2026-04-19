@@ -8,10 +8,18 @@ import PlacementResult from "../models/placementResult.model.js";
 interface QuizAnswer {
   questionId: string;
   selectedAnswer: string;
+  timeTaken?: number;
+}
+
+function timeScore(seconds: number): number {
+  if (seconds <= 10) return 100;
+  if (seconds <= 15) return 80;
+  if (seconds <= 20) return 60;
+  return 40;
 }
 
 // ── Start Quiz ───────────────────────────────────────────────────────────────
-export async function startQuiz(childId: string, categoryId: string) {
+export async function startQuiz(childId: string, categoryId: string, targetLevel?: string) {
   const child = await User.findById(childId);
   if (!child) throw new Error("Child not found");
 
@@ -40,9 +48,10 @@ export async function startQuiz(childId: string, categoryId: string) {
   }
 
   // 2. Map level to difficulty
+  const activeLevel = targetLevel || progress.level;
   let difficulty = "easy";
-  if (progress.level === "explorer") difficulty = "medium";
-  if (progress.level === "champion") difficulty = "hard";
+  if (activeLevel === "explorer") difficulty = "medium";
+  if (activeLevel === "champion") difficulty = "hard";
 
   // 3. Fetch 5 random questions (avoiding attempted ones first)
   let questions = await QuizQuestion.aggregate([
@@ -121,7 +130,7 @@ export async function startQuiz(childId: string, categoryId: string) {
 }
 
 // ── Submit Quiz ──────────────────────────────────────────────────────────────
-export async function submitQuiz(childId: string, categoryId: string, answers: QuizAnswer[]) {
+export async function submitQuiz(childId: string, categoryId: string, answers: QuizAnswer[], targetLevel?: string, isReplay?: boolean) {
   const child = await User.findById(childId);
   if (!child) throw new Error("Child not found");
 
@@ -134,6 +143,7 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
   const questionMap = new Map(questions.map((q) => [q._id.toString(), q]));
 
   let correctCount = 0;
+  const correctTimings: number[] = [];
 
   for (const a of answers) {
     const q = questionMap.get(a.questionId.toString());
@@ -144,20 +154,33 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
       }
 
       // Check correctness
+      let isCorrect = false;
       if (q.type === "input") {
         if (q.correctAnswer.trim().toLowerCase() === (a.selectedAnswer || "").trim().toLowerCase()) {
-          correctCount++;
+          isCorrect = true;
         }
       } else {
         if (q.correctAnswer === a.selectedAnswer) {
-          correctCount++;
+          isCorrect = true;
         }
+      }
+
+      if (isCorrect) {
+        correctCount++;
+        correctTimings.push(a.timeTaken || 0);
       }
     }
   }
 
   const limit = Math.max(answers.length, 1);
-  const score = Math.round((correctCount / limit) * 100);
+  const accuracyScore = (correctCount / limit) * 100;
+
+  let timeAverage = 0;
+  if (correctCount > 0) {
+    timeAverage = correctTimings.reduce((sum, t) => sum + timeScore(t), 0) / correctCount;
+  }
+  
+  const score = Math.round(0.8 * accuracyScore + 0.2 * timeAverage);
   const passed = score >= 75;
 
   let levelUp = false;
@@ -166,14 +189,21 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
   let xpGained = 0;
   let newBadge = false;
 
-  const isChampion = progress.level === "champion";
+  const activeLevel = targetLevel || progress.level;
+  const isChampion = activeLevel === "champion";
+  
+  // A replay is either an explicitly marked replay (already done node) OR a lower level quiz
+  const isEffectiveReplay = isReplay || (!!targetLevel && targetLevel !== progress.level);
 
-  // Increment quizzes completed
-  progress.quizzesCompleted = (progress.quizzesCompleted || 0) + 1;
+  // Increment quizzes completed only if not replaying a completed node or lower level
+  if (!isEffectiveReplay) {
+    progress.quizzesCompleted = (progress.quizzesCompleted || 0) + 1;
+    progress.globalQuizzesCompleted = (progress.globalQuizzesCompleted || 0) + 1;
+  }
 
   if (isChampion) {
     // ── CHAMPION MODE: different reward logic ──
-    if (passed) {
+    if (passed && !isEffectiveReplay) {
       // +20 XP to totalXP only (NO categoryXP, NO level progression)
       child.totalXP = (child.totalXP || 0) + 20;
       xpGained = 20;
@@ -194,7 +224,7 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
     }
   } else {
     // ── STARTER / EXPLORER: normal progression ──
-    if (passed) {
+    if (passed && !isEffectiveReplay) {
       // categoryXP: used ONLY for level progression
       progress.xp += 10;
 
@@ -205,8 +235,8 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
       // +1 gem for passing
       gemsEarned += 1;
 
-      // Level Up check: categoryXP reaches 50
-      if (progress.xp >= 50) {
+      // Level Up check: categoryXP reaches 50 (only if not replaying)
+      if (!isEffectiveReplay && progress.xp >= 50) {
         if (progress.level === "starter") {
           newLevel = "explorer";
           levelUp = true;
@@ -224,7 +254,7 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
     }
 
     // Every 5 quizzes → +2 gems (starter/explorer only)
-    if (progress.quizzesCompleted > 0 && progress.quizzesCompleted % 5 === 0) {
+    if (!isEffectiveReplay && progress.quizzesCompleted > 0 && progress.quizzesCompleted % 5 === 0) {
       gemsEarned += 2;
     }
   }
@@ -246,6 +276,7 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
     newLevel: progress.level,
     newXP: progress.xp,
     xpToNextLevel: 50,
+    xpGained, // added so the controller can read it
     totalXP: child.totalXP,
     gemsEarned,
     totalGems: child.gems,
@@ -280,6 +311,7 @@ export async function getCategoryProgress(childId: string, categoryId: string) {
       level: initialLevel,
       xp: 0,
       quizzesCompleted: 0,
+      globalQuizzesCompleted: 0,
       championWins: 0,
     });
     await progress.save();
@@ -291,6 +323,7 @@ export async function getCategoryProgress(childId: string, categoryId: string) {
     xp: progress.xp,
     xpToNextLevel: 50,
     quizzesCompleted: progress.quizzesCompleted,
+    totalCompletedQuizzes: progress.globalQuizzesCompleted || 0,
     questionsAttempted: progress.attemptedQuestionIds.length,
     championWins: progress.championWins || 0,
     championBadge: getChampionBadge(progress.championWins || 0),

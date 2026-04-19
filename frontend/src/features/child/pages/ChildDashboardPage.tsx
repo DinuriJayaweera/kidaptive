@@ -43,8 +43,8 @@ export default function ChildDashboardPage() {
     }, [navigate]);
 
     const handleCategoryClick = (id: string, level: string) => {
-        // Navigate to the quiz screen
-        navigate(`/child/quiz/${id}?level=${level}`);
+        // Navigate to the category progress timeline
+        navigate(`/child/category-progress/${id}`);
     };
 
     if (checkingStatus || !dashboardData) {

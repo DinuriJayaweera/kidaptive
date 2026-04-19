@@ -11,6 +11,7 @@ export interface AuthUser {
     age?: number;
     avatar?: string;
     loginMethod?: "emoji";
+    placementCompleted?: boolean;
 }
 
 export interface ChildProfile {

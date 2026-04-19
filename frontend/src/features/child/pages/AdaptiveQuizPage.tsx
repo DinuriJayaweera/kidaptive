@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { startQuiz, submitQuiz, getCategoryProgress } from "../services/quizApi";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { startQuiz, submitQuiz } from "../services/quizApi";
 import type { PlacementQuestion } from "../services/placementTestApi";
 import "./AdaptiveQuiz.css";
 import "./PlacementQuiz.css";
@@ -43,7 +43,7 @@ interface CategoryProgressData {
   championBadge: ChampionBadge;
 }
 
-type QuizPhase = "hub" | "quiz" | "result";
+type QuizPhase = "quiz" | "result";
 
 const LEVEL_LABELS: Record<string, string> = {
   starter: "Starter",
@@ -82,9 +82,12 @@ const BADGE_LABELS: Record<string, string> = {
 export default function AdaptiveQuizPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const targetLevel = searchParams.get("targetLevel") || undefined;
+  const isReplay = searchParams.get("isReplay") === "true";
 
   // ── State ──────────────────────────────────────────
-  const [phase, setPhase] = useState<QuizPhase>("hub");
+  const [phase, setPhase] = useState<QuizPhase>("quiz");
   const [progress, setProgress] = useState<CategoryProgressData | null>(null);
   const [questions, setQuestions] = useState<PlacementQuestion[]>([]);
   const [correctAnswersMap, setCorrectAnswersMap] = useState<Record<string, string>>({});
@@ -102,24 +105,6 @@ export default function AdaptiveQuizPage() {
 
   const isChampion = progress?.level === "champion";
 
-  // ── Load Category Progress ─────────────────────────
-  const loadProgress = useCallback(async () => {
-    if (!categoryId) return;
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getCategoryProgress(categoryId);
-      setProgress(data);
-      setLoading(false);
-    } catch {
-      setError("Could not load category progress.");
-      setLoading(false);
-    }
-  }, [categoryId]);
-
-  useEffect(() => {
-    loadProgress();
-  }, [loadProgress]);
 
   // ── Start Quiz (same call for all levels) ──────────
   const handleStartQuiz = useCallback(async () => {
@@ -135,7 +120,7 @@ export default function AdaptiveQuizPage() {
       setCorrectAnswer("");
       setResult(null);
 
-      const data = await startQuiz(categoryId);
+      const data = await startQuiz(categoryId, targetLevel);
       if (!data.questions || data.questions.length === 0) {
         setError("No questions available for this category and level yet. Please try again later!");
         setLoading(false);
@@ -159,7 +144,11 @@ export default function AdaptiveQuizPage() {
       setError("Could not load quiz questions. Please try again.");
       setLoading(false);
     }
-  }, [categoryId]);
+  }, [categoryId, targetLevel]);
+
+  useEffect(() => {
+    handleStartQuiz();
+  }, [handleStartQuiz]);
 
   // Reset timer on new question
   useEffect(() => {
@@ -187,19 +176,22 @@ export default function AdaptiveQuizPage() {
     setIsChecked(true);
     setIsCorrect(answeredCorrectly);
     setCorrectAnswer(correct || "");
-    setAnswers((prev) => [...prev, { questionId: question._id, selectedAnswer }]);
+
+    const timeTaken = Math.round((Date.now() - timerRef.current) / 1000);
+    setAnswers((prev) => [...prev, { questionId: question._id, selectedAnswer, timeTaken }]);
   };
 
   const handleSkip = () => {
     if (!question) return;
-    const nextAnswers = [...answers, { questionId: question._id, selectedAnswer: "" }];
+    const timeTaken = Math.round((Date.now() - timerRef.current) / 1000);
+    const nextAnswers = [...answers, { questionId: question._id, selectedAnswer: "", timeTaken }];
     setAnswers(nextAnswers);
     moveToNext(nextAnswers);
   };
 
   const handleContinue = () => moveToNext();
 
-  const moveToNext = async (nextAnswers?: { questionId: string; selectedAnswer: string }[]) => {
+  const moveToNext = async (nextAnswers?: { questionId: string; selectedAnswer: string; timeTaken?: number }[]) => {
     setSelectedAnswer(null);
     setIsChecked(false);
     setIsCorrect(false);
@@ -212,11 +204,11 @@ export default function AdaptiveQuizPage() {
     }
   };
 
-  const submitTest = async (overrideAnswers?: { questionId: string; selectedAnswer: string }[]) => {
+  const submitTest = async (overrideAnswers?: { questionId: string; selectedAnswer: string; timeTaken?: number }[]) => {
     if (!categoryId) return;
     try {
       setLoading(true);
-      const data = await submitQuiz(categoryId, overrideAnswers ?? answers);
+      const data = await submitQuiz(categoryId, overrideAnswers ?? answers, targetLevel, isReplay);
       setResult(data);
       setPhase("result");
       setLoading(false);
@@ -226,14 +218,12 @@ export default function AdaptiveQuizPage() {
     }
   };
 
-  const handleExit = () => navigate("/child/dashboard", { replace: true });
+  const handleExit = () => navigate(`/child/category-progress/${categoryId}`, { replace: true });
 
   const handleNextQuiz = () => handleStartQuiz();
 
   const handleBackToHub = () => {
-    setPhase("hub");
-    setResult(null);
-    loadProgress();
+    navigate(`/child/category-progress/${categoryId}`);
   };
 
   // ── LOADING ────────────────────────────────────────
@@ -242,7 +232,7 @@ export default function AdaptiveQuizPage() {
       <div className="aq-loading">
         <div className="aq-loading-spinner" />
         <p className="aq-loading-text">
-          {phase === "hub" ? "Loading your progress..." : "Preparing your quiz..."}
+          Preparing your quiz...
         </p>
       </div>
     );
@@ -255,8 +245,8 @@ export default function AdaptiveQuizPage() {
         <div className="aq-error-icon">😕</div>
         <p className="aq-error-text">{error}</p>
         <div className="aq-error-actions">
-          <button className="aq-btn-primary" onClick={() => { setError(null); loadProgress(); }}>Try Again</button>
-          <button className="aq-btn-secondary" onClick={handleExit}>Dashboard</button>
+          <button className="aq-btn-primary" onClick={() => { setError(null); handleStartQuiz(); }}>Try Again</button>
+          <button className="aq-btn-secondary" onClick={handleExit}>Back</button>
         </div>
       </div>
     );
@@ -264,6 +254,30 @@ export default function AdaptiveQuizPage() {
 
   // ── RESULT SCREEN ──────────────────────────────────
   if (phase === "result" && result) {
+    if (isReplay) {
+      return (
+        <div className="aq-result">
+          <div className="aq-result-card">
+            <div className="aq-result-emoji">
+              {result.passed ? "🎯" : "💪"}
+            </div>
+            <h1 className={`aq-result-title ${result.passed ? "pass" : "fail"}`}>
+              {result.passed ? "Great Practice!" : "Good Try!"}
+            </h1>
+            <p className="aq-result-score">
+              You got <strong>{result.correctCount}/{result.totalQuestions}</strong> correct — <strong>{result.score}%</strong>
+            </p>
+            <div className="aq-result-actions">
+              <button className={result.passed ? "aq-btn-success" : "aq-btn-primary"} onClick={handleNextQuiz}>
+                {result.passed ? "Practice Again →" : "Try Again →"}
+              </button>
+              <button className="aq-btn-secondary" onClick={handleBackToHub}>Back to Journey</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     const resultIsChampion = result.isChampion;
     const xpPercent = (result.xpToNextLevel || 50) > 0
       ? Math.min(((result.categoryXP || 0) / (result.xpToNextLevel || 50)) * 100, 100)
@@ -500,140 +514,5 @@ export default function AdaptiveQuizPage() {
     );
   }
 
-  // ── HUB ────────────────────────────────────────────
-  const level = progress?.level || "starter";
-  const xp = progress?.xp || 0;
-  const xpToNext = progress?.xpToNextLevel || 50;
-  const xpPercent = xpToNext > 0 ? Math.min((xp / xpToNext) * 100, 100) : 0;
-  const quizzesCompleted = progress?.quizzesCompleted || 0;
-  const nextMilestone = Math.ceil((quizzesCompleted + 1) / 5) * 5;
-  const championWins = progress?.championWins || 0;
-  const championBadge = progress?.championBadge || { current: "none", next: "bronze", winsToNext: 5 };
-
-  return (
-    <div className="aq-hub">
-      {/* Header */}
-      <div className="aq-hub-header">
-        <button className="aq-hub-back" onClick={handleExit}>← Back</button>
-        <div className="aq-hub-title-area">
-          <h1 className="aq-hub-category-name">{categoryId}</h1>
-          <div className={`aq-hub-level-badge ${level}`}>
-            {LEVEL_EMOJI[level] || "⭐"} {LEVEL_LABELS[level] || level}
-          </div>
-        </div>
-        <div style={{ width: 80 }} />
-      </div>
-
-      {/* XP Progress — starter/explorer only */}
-      {!isChampion && (
-        <div className="aq-progress-section">
-          <div className="aq-xp-card">
-            <div className="aq-xp-header">
-              <span className="aq-xp-label">Level Progress</span>
-              <span className="aq-xp-value">{xp}/{xpToNext} XP</span>
-            </div>
-            <div className="aq-xp-bar-track">
-              <div className={`aq-xp-bar-fill ${level}`} style={{ width: `${xpPercent}%` }} />
-            </div>
-            <div className="aq-next-level">
-              <span>→</span>
-              <span>Next level: {NEXT_LEVEL[level] || "Explorer"}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Champion Mode Section — champion only */}
-      {isChampion && (
-        <div className="aq-champion-section">
-          <div className="aq-champion-card">
-            <div className="aq-champion-header">
-              <span className="aq-champion-icon">🏆</span>
-              <div>
-                <h2 className="aq-champion-title">Champion Mode</h2>
-                <p className="aq-champion-subtitle">High-reward challenge • Hard questions only</p>
-              </div>
-            </div>
-
-            <div className="aq-champion-badge-display">
-              <span className="aq-current-badge-icon">{BADGE_EMOJI[championBadge.current]}</span>
-              <div className="aq-current-badge-info">
-                <span className="aq-current-badge-label">{BADGE_LABELS[championBadge.current]}</span>
-                <span className="aq-current-badge-wins">{championWins} wins</span>
-              </div>
-            </div>
-
-            {championBadge.current !== "master" && (
-              <div className="aq-badge-progress-inline">
-                <div className="aq-badge-track">
-                  {["bronze", "silver", "gold", "master"].map((badge) => {
-                    const thresholds: Record<string, number> = { bronze: 5, silver: 15, gold: 30, master: 50 };
-                    const reached = championWins >= thresholds[badge];
-                    return (
-                      <div key={badge} className={`aq-badge-dot ${reached ? "reached" : ""}`}>
-                        <span>{BADGE_EMOJI[badge]}</span>
-                        <span className="aq-badge-dot-label">{thresholds[badge]}</span>
-                      </div>
-                    );
-                  })}
-                </div>
-                <p className="aq-badge-next-text">
-                  {championBadge.winsToNext} wins to {BADGE_LABELS[championBadge.next]} {BADGE_EMOJI[championBadge.next]}
-                </p>
-              </div>
-            )}
-
-            <div className="aq-champion-rewards-info">
-              <span>Pass rewards: <strong>+20 XP</strong> • <strong>+2 💎</strong></span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Stats */}
-      <div className="aq-stats-row">
-        <div className="aq-stat-pill">
-          <span className="aq-stat-icon">📝</span>
-          <div className="aq-stat-info">
-            <span className="aq-stat-value">{quizzesCompleted}</span>
-            <span className="aq-stat-label">Quizzes</span>
-          </div>
-        </div>
-        <div className="aq-stat-pill">
-          <span className="aq-stat-icon">🎯</span>
-          <div className="aq-stat-info">
-            <span className="aq-stat-value">{progress?.questionsAttempted || 0}</span>
-            <span className="aq-stat-label">Attempted</span>
-          </div>
-        </div>
-        {isChampion ? (
-          <div className="aq-stat-pill">
-            <span className="aq-stat-icon">🏆</span>
-            <div className="aq-stat-info">
-              <span className="aq-stat-value">{championWins}</span>
-              <span className="aq-stat-label">Wins</span>
-            </div>
-          </div>
-        ) : (
-          <div className="aq-stat-pill">
-            <span className="aq-stat-icon">💎</span>
-            <div className="aq-stat-info">
-              <span className="aq-stat-value">{nextMilestone - quizzesCompleted}</span>
-              <span className="aq-stat-label">To Bonus</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Start Quiz — same button, backend handles champion logic */}
-      <div className="aq-start-area">
-        <button
-          className={isChampion ? "aq-btn-champion" : "aq-start-btn"}
-          onClick={handleStartQuiz}
-        >
-          {isChampion ? "🔥 Champion Mode" : "🚀 Start Quiz"}
-        </button>
-      </div>
-    </div>
-  );
+  return null;
 }

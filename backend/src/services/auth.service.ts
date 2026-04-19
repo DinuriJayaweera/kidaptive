@@ -1,4 +1,4 @@
-﻿import { Response } from "express";
+import { Response } from "express";
 import User from "../models/User.js";
 import {
     signAccessToken,
@@ -47,6 +47,7 @@ function sanitizeUser(user: InstanceType<typeof User>) {
         age: user.age,
         avatar: user.avatar,
         loginMethod: user.loginMethod,
+        placementCompleted: user.placementCompleted,
     };
 }
 
