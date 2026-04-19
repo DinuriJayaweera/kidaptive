@@ -158,49 +158,75 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
 
   const limit = Math.max(answers.length, 1);
   const score = Math.round((correctCount / limit) * 100);
-
   const passed = score >= 75;
+
   let levelUp = false;
   let newLevel = progress.level;
   let gemsEarned = 0;
   let xpGained = 0;
+  let newBadge = false;
+
+  const isChampion = progress.level === "champion";
 
   // Increment quizzes completed
   progress.quizzesCompleted = (progress.quizzesCompleted || 0) + 1;
 
-  if (passed) {
-    // ── categoryXP: used ONLY for level progression ──
-    progress.xp += 10;
+  if (isChampion) {
+    // ── CHAMPION MODE: different reward logic ──
+    if (passed) {
+      // +20 XP to totalXP only (NO categoryXP, NO level progression)
+      child.totalXP = (child.totalXP || 0) + 20;
+      xpGained = 20;
 
-    // ── totalXP: cumulative, never reset ──
-    child.totalXP = (child.totalXP || 0) + 10;
-    xpGained = 10;
+      // +2 gems for champion pass
+      gemsEarned = 2;
 
-    // +1 gem for passing
-    gemsEarned += 1;
-    
-    // Level Up check: categoryXP reaches 50
-    if (progress.xp >= 50) {
-      if (progress.level === "starter") {
-        newLevel = "explorer";
-        levelUp = true;
-      } else if (progress.level === "explorer") {
-        newLevel = "champion";
-        levelUp = true;
-      }
-      // Champion stays champion but keeps earning XP
-      
-      if (levelUp) {
-        progress.level = newLevel;
-        progress.xp = 0; // reset categoryXP for next level
-        progress.quizzesCompleted = 0; // reset quiz count for new level
+      // Track champion wins
+      const oldWins = progress.championWins || 0;
+      progress.championWins = oldWins + 1;
+
+      // Check if they earned a new badge
+      const oldBadge = getChampionBadge(oldWins).current;
+      const newBadgeInfo = getChampionBadge(progress.championWins);
+      if (newBadgeInfo.current !== oldBadge) {
+        newBadge = true;
       }
     }
-  }
+  } else {
+    // ── STARTER / EXPLORER: normal progression ──
+    if (passed) {
+      // categoryXP: used ONLY for level progression
+      progress.xp += 10;
 
-  // Every 5 quizzes → +2 gems (regardless of pass/fail, based on completion count)
-  if (progress.quizzesCompleted > 0 && progress.quizzesCompleted % 5 === 0) {
-    gemsEarned += 2;
+      // totalXP: cumulative, never reset
+      child.totalXP = (child.totalXP || 0) + 10;
+      xpGained = 10;
+
+      // +1 gem for passing
+      gemsEarned += 1;
+
+      // Level Up check: categoryXP reaches 50
+      if (progress.xp >= 50) {
+        if (progress.level === "starter") {
+          newLevel = "explorer";
+          levelUp = true;
+        } else if (progress.level === "explorer") {
+          newLevel = "champion";
+          levelUp = true;
+        }
+
+        if (levelUp) {
+          progress.level = newLevel;
+          progress.xp = 0; // reset categoryXP for next level
+          progress.quizzesCompleted = 0;
+        }
+      }
+    }
+
+    // Every 5 quizzes → +2 gems (starter/explorer only)
+    if (progress.quizzesCompleted > 0 && progress.quizzesCompleted % 5 === 0) {
+      gemsEarned += 2;
+    }
   }
 
   // Apply gems
@@ -210,6 +236,8 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
 
   await child.save();
   await progress.save();
+
+  const badgeInfo = getChampionBadge(progress.championWins || 0);
 
   return {
     score,
@@ -224,6 +252,11 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
     quizzesCompleted: progress.quizzesCompleted,
     correctCount,
     totalQuestions: answers.length,
+    // Champion-specific fields
+    isChampion,
+    championWins: progress.championWins || 0,
+    championBadge: badgeInfo,
+    newBadge,
   };
 }
 
@@ -247,6 +280,7 @@ export async function getCategoryProgress(childId: string, categoryId: string) {
       level: initialLevel,
       xp: 0,
       quizzesCompleted: 0,
+      championWins: 0,
     });
     await progress.save();
   }
@@ -258,5 +292,16 @@ export async function getCategoryProgress(childId: string, categoryId: string) {
     xpToNextLevel: 50,
     quizzesCompleted: progress.quizzesCompleted,
     questionsAttempted: progress.attemptedQuestionIds.length,
+    championWins: progress.championWins || 0,
+    championBadge: getChampionBadge(progress.championWins || 0),
   };
+}
+
+// ── Champion Badge Logic ─────────────────────────────────────────────────────
+function getChampionBadge(wins: number): { current: string; next: string; winsToNext: number } {
+  if (wins >= 50) return { current: "master", next: "max", winsToNext: 0 };
+  if (wins >= 30) return { current: "gold", next: "master", winsToNext: 50 - wins };
+  if (wins >= 15) return { current: "silver", next: "gold", winsToNext: 30 - wins };
+  if (wins >= 5) return { current: "bronze", next: "silver", winsToNext: 15 - wins };
+  return { current: "none", next: "bronze", winsToNext: 5 - wins };
 }

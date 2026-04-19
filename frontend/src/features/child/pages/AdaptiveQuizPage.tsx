@@ -6,20 +6,30 @@ import "./AdaptiveQuiz.css";
 import "./PlacementQuiz.css";
 
 // ── Types ──────────────────────────────────────────────────
+interface ChampionBadge {
+  current: string;
+  next: string;
+  winsToNext: number;
+}
+
 interface QuizResult {
   score: number;
   passed: boolean;
-  levelUp: boolean;
-  newLevel: string;
-  categoryXP: number;
-  xpToNextLevel: number;
+  levelUp?: boolean;
+  newLevel?: string;
+  categoryXP?: number;
+  xpToNextLevel?: number;
   xpGained: number;
   totalXP: number;
   gemsEarned: number;
   totalGems: number;
-  quizzesCompleted: number;
+  quizzesCompleted?: number;
   correctCount: number;
   totalQuestions: number;
+  isChampion?: boolean;
+  championWins?: number;
+  championBadge?: ChampionBadge;
+  newBadge?: boolean;
 }
 
 interface CategoryProgressData {
@@ -29,6 +39,8 @@ interface CategoryProgressData {
   xpToNextLevel: number;
   quizzesCompleted: number;
   questionsAttempted: number;
+  championWins: number;
+  championBadge: ChampionBadge;
 }
 
 type QuizPhase = "hub" | "quiz" | "result";
@@ -42,13 +54,28 @@ const LEVEL_LABELS: Record<string, string> = {
 const NEXT_LEVEL: Record<string, string> = {
   starter: "Explorer",
   explorer: "Champion",
-  champion: "Master",
 };
 
 const LEVEL_EMOJI: Record<string, string> = {
   starter: "⭐",
   explorer: "🚀",
   champion: "🏆",
+};
+
+const BADGE_EMOJI: Record<string, string> = {
+  none: "⬜",
+  bronze: "🥉",
+  silver: "🥈",
+  gold: "🥇",
+  master: "👑",
+};
+
+const BADGE_LABELS: Record<string, string> = {
+  none: "No Badge",
+  bronze: "Bronze",
+  silver: "Silver",
+  gold: "Gold",
+  master: "Master",
 };
 
 // ── Main Component ─────────────────────────────────────────
@@ -73,6 +100,8 @@ export default function AdaptiveQuizPage() {
 
   const timerRef = useRef<number>(Date.now());
 
+  const isChampion = progress?.level === "champion";
+
   // ── Load Category Progress ─────────────────────────
   const loadProgress = useCallback(async () => {
     if (!categoryId) return;
@@ -92,7 +121,7 @@ export default function AdaptiveQuizPage() {
     loadProgress();
   }, [loadProgress]);
 
-  // ── Start Quiz Handler ─────────────────────────────
+  // ── Start Quiz (same call for all levels) ──────────
   const handleStartQuiz = useCallback(async () => {
     if (!categoryId) return;
     try {
@@ -115,14 +144,13 @@ export default function AdaptiveQuizPage() {
       setQuestions(data.questions);
       setCorrectAnswersMap(data.correctAnswers);
       if (data.progress) {
-        setProgress({
-          categoryId: categoryId,
+        setProgress((prev) => prev ? {
+          ...prev,
           level: data.progress.level,
           xp: data.progress.xp,
           xpToNextLevel: data.progress.xpToNextLevel || 50,
           quizzesCompleted: data.progress.quizzesCompleted || 0,
-          questionsAttempted: 0,
-        });
+        } : prev);
       }
       timerRef.current = Date.now();
       setPhase("quiz");
@@ -150,7 +178,6 @@ export default function AdaptiveQuizPage() {
 
   const handleCheck = () => {
     if (!selectedAnswer || !question) return;
-
     const correct = correctAnswersMap[question._id];
     const answeredCorrectly =
       question.type === "input"
@@ -160,31 +187,17 @@ export default function AdaptiveQuizPage() {
     setIsChecked(true);
     setIsCorrect(answeredCorrectly);
     setCorrectAnswer(correct || "");
-
-    const answer = {
-      questionId: question._id,
-      selectedAnswer,
-    };
-
-    setAnswers((prev) => [...prev, answer]);
+    setAnswers((prev) => [...prev, { questionId: question._id, selectedAnswer }]);
   };
 
   const handleSkip = () => {
     if (!question) return;
-
-    const answer = {
-      questionId: question._id,
-      selectedAnswer: "",
-    };
-
-    const nextAnswers = [...answers, answer];
+    const nextAnswers = [...answers, { questionId: question._id, selectedAnswer: "" }];
     setAnswers(nextAnswers);
     moveToNext(nextAnswers);
   };
 
-  const handleContinue = () => {
-    moveToNext();
-  };
+  const handleContinue = () => moveToNext();
 
   const moveToNext = async (nextAnswers?: { questionId: string; selectedAnswer: string }[]) => {
     setSelectedAnswer(null);
@@ -203,8 +216,7 @@ export default function AdaptiveQuizPage() {
     if (!categoryId) return;
     try {
       setLoading(true);
-      const answersToSubmit = overrideAnswers ?? answers;
-      const data = await submitQuiz(categoryId, answersToSubmit);
+      const data = await submitQuiz(categoryId, overrideAnswers ?? answers);
       setResult(data);
       setPhase("result");
       setLoading(false);
@@ -214,13 +226,14 @@ export default function AdaptiveQuizPage() {
     }
   };
 
-  const handleExit = () => {
-    navigate("/child/dashboard", { replace: true });
-  };
+  const handleExit = () => navigate("/child/dashboard", { replace: true });
 
-  const handleNextQuiz = () => {
-    // Start next quiz immediately
-    handleStartQuiz();
+  const handleNextQuiz = () => handleStartQuiz();
+
+  const handleBackToHub = () => {
+    setPhase("hub");
+    setResult(null);
+    loadProgress();
   };
 
   // ── LOADING ────────────────────────────────────────
@@ -242,12 +255,8 @@ export default function AdaptiveQuizPage() {
         <div className="aq-error-icon">😕</div>
         <p className="aq-error-text">{error}</p>
         <div className="aq-error-actions">
-          <button className="aq-btn-primary" onClick={() => { setError(null); loadProgress(); }}>
-            Try Again
-          </button>
-          <button className="aq-btn-secondary" onClick={handleExit}>
-            Dashboard
-          </button>
+          <button className="aq-btn-primary" onClick={() => { setError(null); loadProgress(); }}>Try Again</button>
+          <button className="aq-btn-secondary" onClick={handleExit}>Dashboard</button>
         </div>
       </div>
     );
@@ -255,46 +264,58 @@ export default function AdaptiveQuizPage() {
 
   // ── RESULT SCREEN ──────────────────────────────────
   if (phase === "result" && result) {
-    const xpPercent = result.xpToNextLevel > 0 ? Math.min((result.categoryXP / result.xpToNextLevel) * 100, 100) : 0;
-    const isQuizMilestone = result.quizzesCompleted > 0 && result.quizzesCompleted % 5 === 0;
+    const resultIsChampion = result.isChampion;
+    const xpPercent = (result.xpToNextLevel || 50) > 0
+      ? Math.min(((result.categoryXP || 0) / (result.xpToNextLevel || 50)) * 100, 100)
+      : 0;
+    const isQuizMilestone = !resultIsChampion && (result.quizzesCompleted || 0) > 0 && (result.quizzesCompleted || 0) % 5 === 0;
 
     return (
       <div className="aq-result">
-        <div className="aq-result-card">
-          {/* Emoji */}
+        <div className={`aq-result-card ${resultIsChampion ? "champion-result" : ""}`}>
           <div className="aq-result-emoji">
-            {result.passed ? "🎉" : "💪"}
+            {resultIsChampion ? (result.passed ? "🏆" : "💪") : (result.passed ? "🎉" : "💪")}
           </div>
 
-          {/* Title */}
           <h1 className={`aq-result-title ${result.passed ? "pass" : "fail"}`}>
-            {result.passed ? "Great Job!" : "Keep Going!"}
+            {resultIsChampion
+              ? (result.passed ? "Champion Victory!" : "Not This Time!")
+              : (result.passed ? "Great Job!" : "Keep Going!")}
           </h1>
 
-          {/* Score */}
           <p className="aq-result-score">
             You got <strong>{result.correctCount}/{result.totalQuestions}</strong> correct — <strong>{result.score}%</strong>
           </p>
 
-          {/* Level Up */}
-          {result.levelUp && (
-            <div className="aq-level-up-banner">
-              <p className="aq-level-up-text">
-                🎉 Level Up! → {LEVEL_LABELS[result.newLevel] || result.newLevel} {LEVEL_EMOJI[result.newLevel] || ""}
-              </p>
-              <p className="aq-level-up-sub">
-                You've unlocked harder questions!
+          {/* New Badge (champion only) */}
+          {resultIsChampion && result.newBadge && result.championBadge && (
+            <div className="aq-badge-earned">
+              <span className="aq-badge-earned-icon">{BADGE_EMOJI[result.championBadge.current] || "🏅"}</span>
+              <p className="aq-badge-earned-text">
+                New Badge: {BADGE_LABELS[result.championBadge.current]}!
               </p>
             </div>
           )}
 
-          {/* Quiz Milestone */}
+          {/* Level Up (starter/explorer only) */}
+          {!resultIsChampion && result.levelUp && (
+            <div className="aq-level-up-banner">
+              <p className="aq-level-up-text">
+                🎉 Level Up! → {LEVEL_LABELS[result.newLevel || ""] || result.newLevel} {LEVEL_EMOJI[result.newLevel || ""] || ""}
+              </p>
+              <p className="aq-level-up-sub">
+                {result.newLevel === "champion"
+                  ? "You've unlocked Champion Mode! 🏆"
+                  : "You've unlocked harder questions!"}
+              </p>
+            </div>
+          )}
+
+          {/* Quiz Milestone (starter/explorer only) */}
           {isQuizMilestone && (
             <div className="aq-milestone">
               <span>💎</span>
-              <span className="aq-milestone-text">
-                {result.quizzesCompleted} Quizzes Completed! +2 Bonus Gems
-              </span>
+              <span className="aq-milestone-text">{result.quizzesCompleted} Quizzes Completed! +2 Bonus Gems</span>
             </div>
           )}
 
@@ -311,50 +332,61 @@ export default function AdaptiveQuizPage() {
               <span className="aq-reward-label">Gems</span>
             </div>
             <div className="aq-reward-item">
-              <span className="aq-reward-icon">📊</span>
-              <span className="aq-reward-value">{result.totalXP}</span>
-              <span className="aq-reward-label">Total XP</span>
+              <span className="aq-reward-icon">{resultIsChampion ? "🏆" : "📊"}</span>
+              <span className="aq-reward-value">{resultIsChampion ? (result.championWins || 0) : result.totalXP}</span>
+              <span className="aq-reward-label">{resultIsChampion ? "Wins" : "Total XP"}</span>
             </div>
           </div>
 
-          {/* XP Progress Bar */}
-          {!result.levelUp && (
+          {/* Badge Progress (champion only) */}
+          {resultIsChampion && result.championBadge && result.championBadge.current !== "master" && (
+            <div className="aq-badge-progress">
+              <div className="aq-badge-progress-header">
+                <span>Badge Progress</span>
+                <span>{result.championBadge.winsToNext} wins to {BADGE_LABELS[result.championBadge.next]}</span>
+              </div>
+              <div className="aq-badge-track">
+                {["bronze", "silver", "gold", "master"].map((badge) => {
+                  const thresholds: Record<string, number> = { bronze: 5, silver: 15, gold: 30, master: 50 };
+                  const reached = (result.championWins || 0) >= thresholds[badge];
+                  return (
+                    <div key={badge} className={`aq-badge-dot ${reached ? "reached" : ""}`}>
+                      <span>{BADGE_EMOJI[badge]}</span>
+                      <span className="aq-badge-dot-label">{thresholds[badge]}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* XP Progress Bar (starter/explorer only, not on level up) */}
+          {!resultIsChampion && !result.levelUp && (
             <div className="aq-result-progress">
               <div className="aq-result-progress-header">
                 <span className="aq-result-progress-label">
-                  {LEVEL_LABELS[result.newLevel] || result.newLevel} Progress
+                  {LEVEL_LABELS[result.newLevel || ""] || result.newLevel} Progress
                 </span>
                 <span className="aq-result-progress-value">
                   {result.categoryXP}/{result.xpToNextLevel} XP
                 </span>
               </div>
               <div className="aq-result-bar-track">
-                <div
-                  className="aq-result-bar-fill"
-                  style={{ width: `${xpPercent}%` }}
-                />
+                <div className="aq-result-bar-fill" style={{ width: `${xpPercent}%` }} />
               </div>
               <div className="aq-next-level">
                 <span>→</span>
-                <span>Next: {NEXT_LEVEL[result.newLevel] || "Max Level"}</span>
+                <span>Next: {NEXT_LEVEL[result.newLevel || ""] || "Champion"}</span>
               </div>
             </div>
           )}
 
           {/* Actions */}
           <div className="aq-result-actions">
-            {result.passed ? (
-              <button className="aq-btn-success" onClick={handleNextQuiz}>
-                Next Quiz →
-              </button>
-            ) : (
-              <button className="aq-btn-primary" onClick={handleNextQuiz}>
-                Try Again →
-              </button>
-            )}
-            <button className="aq-btn-secondary" onClick={handleExit}>
-              Dashboard
+            <button className={resultIsChampion ? "aq-btn-champion" : (result.passed ? "aq-btn-success" : "aq-btn-primary")} onClick={handleNextQuiz}>
+              {resultIsChampion ? "🏆 Play Again" : (result.passed ? "Next Quiz →" : "Try Again →")}
             </button>
+            <button className="aq-btn-secondary" onClick={handleBackToHub}>Back to Hub</button>
           </div>
         </div>
       </div>
@@ -378,9 +410,17 @@ export default function AdaptiveQuizPage() {
           <div className="pq-header">
             <button className="pq-exit" onClick={handleExit} aria-label="Exit">×</button>
             <div className="pq-progress-track">
-              <div className="pq-progress-fill" style={{ width: `${quizProgress}%` }} />
+              <div
+                className="pq-progress-fill"
+                style={{
+                  width: `${quizProgress}%`,
+                  ...(isChampion ? { background: "linear-gradient(90deg, #f59e0b, #ef4444)" } : {}),
+                }}
+              />
             </div>
-            <span className="pq-counter">{currentIndex + 1}/{totalQuestions}</span>
+            <span className="pq-counter">
+              {isChampion && "🏆 "}{currentIndex + 1}/{totalQuestions}
+            </span>
           </div>
 
           <div className="pq-content">
@@ -460,56 +500,95 @@ export default function AdaptiveQuizPage() {
     );
   }
 
-  // ── HUB / CATEGORY PROGRESS SCREEN ─────────────────
+  // ── HUB ────────────────────────────────────────────
   const level = progress?.level || "starter";
   const xp = progress?.xp || 0;
   const xpToNext = progress?.xpToNextLevel || 50;
   const xpPercent = xpToNext > 0 ? Math.min((xp / xpToNext) * 100, 100) : 0;
   const quizzesCompleted = progress?.quizzesCompleted || 0;
   const nextMilestone = Math.ceil((quizzesCompleted + 1) / 5) * 5;
+  const championWins = progress?.championWins || 0;
+  const championBadge = progress?.championBadge || { current: "none", next: "bronze", winsToNext: 5 };
 
   return (
     <div className="aq-hub">
       {/* Header */}
       <div className="aq-hub-header">
-        <button className="aq-hub-back" onClick={handleExit}>
-          ← Back
-        </button>
+        <button className="aq-hub-back" onClick={handleExit}>← Back</button>
         <div className="aq-hub-title-area">
-          <h1 className="aq-hub-category-name">
-            {categoryId}
-          </h1>
+          <h1 className="aq-hub-category-name">{categoryId}</h1>
           <div className={`aq-hub-level-badge ${level}`}>
             {LEVEL_EMOJI[level] || "⭐"} {LEVEL_LABELS[level] || level}
           </div>
         </div>
-        <div style={{ width: 80 }} /> {/* spacer for centering */}
+        <div style={{ width: 80 }} />
       </div>
 
-      {/* XP Progress */}
-      <div className="aq-progress-section">
-        <div className="aq-xp-card">
-          <div className="aq-xp-header">
-            <span className="aq-xp-label">Level Progress</span>
-            <span className="aq-xp-value">{xp}/{xpToNext} XP</span>
-          </div>
-          <div className="aq-xp-bar-track">
-            <div
-              className={`aq-xp-bar-fill ${level}`}
-              style={{ width: `${xpPercent}%` }}
-            />
-          </div>
-          <div className="aq-next-level">
-            <span>→</span>
-            <span>
-              {level === "champion"
-                ? "You've reached the highest level!"
-                : `Next level: ${NEXT_LEVEL[level] || "Explorer"}`
-              }
-            </span>
+      {/* XP Progress — starter/explorer only */}
+      {!isChampion && (
+        <div className="aq-progress-section">
+          <div className="aq-xp-card">
+            <div className="aq-xp-header">
+              <span className="aq-xp-label">Level Progress</span>
+              <span className="aq-xp-value">{xp}/{xpToNext} XP</span>
+            </div>
+            <div className="aq-xp-bar-track">
+              <div className={`aq-xp-bar-fill ${level}`} style={{ width: `${xpPercent}%` }} />
+            </div>
+            <div className="aq-next-level">
+              <span>→</span>
+              <span>Next level: {NEXT_LEVEL[level] || "Explorer"}</span>
+            </div>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Champion Mode Section — champion only */}
+      {isChampion && (
+        <div className="aq-champion-section">
+          <div className="aq-champion-card">
+            <div className="aq-champion-header">
+              <span className="aq-champion-icon">🏆</span>
+              <div>
+                <h2 className="aq-champion-title">Champion Mode</h2>
+                <p className="aq-champion-subtitle">High-reward challenge • Hard questions only</p>
+              </div>
+            </div>
+
+            <div className="aq-champion-badge-display">
+              <span className="aq-current-badge-icon">{BADGE_EMOJI[championBadge.current]}</span>
+              <div className="aq-current-badge-info">
+                <span className="aq-current-badge-label">{BADGE_LABELS[championBadge.current]}</span>
+                <span className="aq-current-badge-wins">{championWins} wins</span>
+              </div>
+            </div>
+
+            {championBadge.current !== "master" && (
+              <div className="aq-badge-progress-inline">
+                <div className="aq-badge-track">
+                  {["bronze", "silver", "gold", "master"].map((badge) => {
+                    const thresholds: Record<string, number> = { bronze: 5, silver: 15, gold: 30, master: 50 };
+                    const reached = championWins >= thresholds[badge];
+                    return (
+                      <div key={badge} className={`aq-badge-dot ${reached ? "reached" : ""}`}>
+                        <span>{BADGE_EMOJI[badge]}</span>
+                        <span className="aq-badge-dot-label">{thresholds[badge]}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="aq-badge-next-text">
+                  {championBadge.winsToNext} wins to {BADGE_LABELS[championBadge.next]} {BADGE_EMOJI[championBadge.next]}
+                </p>
+              </div>
+            )}
+
+            <div className="aq-champion-rewards-info">
+              <span>Pass rewards: <strong>+20 XP</strong> • <strong>+2 💎</strong></span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stats */}
       <div className="aq-stats-row">
@@ -527,19 +606,32 @@ export default function AdaptiveQuizPage() {
             <span className="aq-stat-label">Attempted</span>
           </div>
         </div>
-        <div className="aq-stat-pill">
-          <span className="aq-stat-icon">💎</span>
-          <div className="aq-stat-info">
-            <span className="aq-stat-value">{nextMilestone - quizzesCompleted}</span>
-            <span className="aq-stat-label">To Bonus</span>
+        {isChampion ? (
+          <div className="aq-stat-pill">
+            <span className="aq-stat-icon">🏆</span>
+            <div className="aq-stat-info">
+              <span className="aq-stat-value">{championWins}</span>
+              <span className="aq-stat-label">Wins</span>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="aq-stat-pill">
+            <span className="aq-stat-icon">💎</span>
+            <div className="aq-stat-info">
+              <span className="aq-stat-value">{nextMilestone - quizzesCompleted}</span>
+              <span className="aq-stat-label">To Bonus</span>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Start Quiz */}
+      {/* Start Quiz — same button, backend handles champion logic */}
       <div className="aq-start-area">
-        <button className="aq-start-btn" onClick={handleStartQuiz}>
-          🚀 Start Quiz
+        <button
+          className={isChampion ? "aq-btn-champion" : "aq-start-btn"}
+          onClick={handleStartQuiz}
+        >
+          {isChampion ? "🔥 Champion Mode" : "🚀 Start Quiz"}
         </button>
       </div>
     </div>

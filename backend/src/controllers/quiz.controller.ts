@@ -93,7 +93,7 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
             newLevel: result.newLevel,
             categoryXP: result.newXP,
             xpToNextLevel: result.xpToNextLevel,
-            xpGained: result.passed ? 10 + streakXPToAdd : streakXPToAdd,
+            xpGained: (result.passed ? (result.isChampion ? 20 : 10) : 0) + streakXPToAdd,
             totalXP: child.totalXP,
             streak,
             gemsEarned: result.gemsEarned,
@@ -101,6 +101,11 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
             quizzesCompleted: result.quizzesCompleted,
             correctCount: result.correctCount,
             totalQuestions: result.totalQuestions,
+            // Champion-specific
+            isChampion: result.isChampion,
+            championWins: result.championWins,
+            championBadge: result.championBadge,
+            newBadge: result.newBadge,
         });
 
     } catch (error) {

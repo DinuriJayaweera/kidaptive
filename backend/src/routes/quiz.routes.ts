@@ -6,10 +6,10 @@ const router = Router();
 
 router.use(authenticate);
 
-// Start a quiz
+// Start a quiz (handles both normal + champion via level detection)
 router.get("/start", requireRole("child"), start);
 
-// Allow child to submit quiz
+// Submit quiz (handles both normal + champion via level detection)
 router.post("/submit", requireRole("child"), submitQuiz);
 
 // Get child dashboard stats and categories
