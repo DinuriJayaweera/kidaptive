@@ -14,3 +14,8 @@ export async function submitQuiz(categoryId: string, answers: { questionId: stri
   const response = await api.post("/quiz/submit", { categoryId, answers });
   return response.data;
 }
+
+export async function getCategoryProgress(categoryId: string) {
+  const response = await api.get(`/quiz/progress/${encodeURIComponent(categoryId)}`);
+  return response.data;
+}

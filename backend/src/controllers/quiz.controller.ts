@@ -2,8 +2,9 @@ import QuizQuestion from '../models/quizQuestion.model.js';
 import { Request, Response } from 'express';
 import User from '../models/User.js';
 import PlacementResult from '../models/placementResult.model.js';
+import CategoryProgress from '../models/categoryProgress.model.js';
 import type { TokenPayload } from '../utils/jwt.js';
-import { startQuiz, submitQuiz as serviceSubmitQuiz } from '../services/quiz.service.js';
+import { startQuiz, submitQuiz as serviceSubmitQuiz, getCategoryProgress as serviceGetCategoryProgress } from '../services/quiz.service.js';
 
 type AuthRequest = Request & { user: TokenPayload };
 
@@ -34,19 +35,20 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
             return;
         }
 
+        // Call the service first — it modifies and saves the child document
+        const result = await serviceSubmitQuiz(userId, categoryId, answers);
+
+        // Reload the child AFTER the service to get fresh totalXP/gems values
         const child = await User.findById(userId);
         if (!child) {
             res.status(404).json({ message: 'Child not found' });
             return;
         }
 
-        // Call the new service which updates XP, Level, CategoryProgress, and User totalXP.
-        const result = await serviceSubmitQuiz(userId, categoryId, answers);
-
+        // ── Streak logic (applied to fresh child) ──
         let streak = child.streak || 0;
         const lastPlayedDate = child.lastPlayedDate;
 
-        // Streak logic
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
@@ -58,7 +60,7 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
         let streakXPToAdd = 0;
 
         if (!lastPlayed || lastPlayed.getTime() !== today.getTime()) {
-            child.lastPlayedDate = new Date(); // update to right now
+            child.lastPlayedDate = new Date();
 
             const yesterday = new Date(today);
             yesterday.setDate(yesterday.getDate() - 1);
@@ -69,7 +71,7 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
                 streak = 1;
             }
 
-            // Streak bonus
+            // Streak bonus → added ONLY to totalXP (cumulative)
             if (streak === 3) {
                 streakXPToAdd = 5;
             } else if (streak === 5) {
@@ -90,14 +92,38 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
             levelUp: result.levelUp,
             newLevel: result.newLevel,
             categoryXP: result.newXP,
+            xpToNextLevel: result.xpToNextLevel,
             xpGained: result.passed ? 10 + streakXPToAdd : streakXPToAdd,
             totalXP: child.totalXP,
             streak,
+            gemsEarned: result.gemsEarned,
+            totalGems: child.gems,
+            quizzesCompleted: result.quizzesCompleted,
+            correctCount: result.correctCount,
+            totalQuestions: result.totalQuestions,
         });
 
     } catch (error) {
         console.error('Quiz submit error:', error);
         res.status(500).json({ message: 'Failed to submit quiz' });
+    }
+};
+
+export const getCategoryProgressController = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { userId } = (req as AuthRequest).user;
+        const { categoryId } = req.params;
+
+        if (!categoryId || typeof categoryId !== 'string') {
+            res.status(400).json({ message: 'categoryId is required' });
+            return;
+        }
+
+        const progress = await serviceGetCategoryProgress(userId, categoryId as string);
+        res.json(progress);
+    } catch (error) {
+        console.error('Get category progress error:', error);
+        res.status(500).json({ message: 'Failed to get category progress' });
     }
 };
 
@@ -134,47 +160,28 @@ export const getDashboard = async (req: Request, res: Response): Promise<void> =
         let finalTotalXP = child.totalXP || 0;
         let finalGems = child.gems || 0;
 
-        // Retroactive fix: if XP or Gems is 0 but they finished placement, backfill it
-        if ((finalTotalXP === 0 || finalGems === 0) && placement && placement.placementCompleted) {
-            const getXPForScore = (s: number) => {
-                if (s < 50) return 0;
-                if (s < 60) return 20;
-                if (s < 70) return 40;
-                if (s < 75) return 60;
-                if (s < 85) return 80;
-                return 100;
-            };
-
-            let totalPlacementXP = 0;
+        // Retroactive fix: if gems is 0 but they finished placement, backfill gems only.
+        // totalXP is set by placement-test.service on completion — never recalculate here.
+        if (finalGems === 0 && placement && placement.placementCompleted) {
             let earnedGems = 0;
             for (const result of placement.categoryResults) {
-                totalPlacementXP += getXPForScore(result.score);
                 if (result.level === "starter") earnedGems += 1;
                 else if (result.level === "explorer") earnedGems += 3;
                 else if (result.level === "champion") earnedGems += 5;
             }
-            const averageXP = placement.categoryResults.length > 0 
-                ? Math.round(totalPlacementXP / placement.categoryResults.length)
-                : 0;
 
-            let updated = false;
-
-            if (finalTotalXP === 0 && averageXP > 0) {
-                child.totalXP = averageXP;
-                finalTotalXP = averageXP;
-                updated = true;
-            }
-            
-            if (finalGems === 0 && earnedGems > 0) {
+            if (earnedGems > 0) {
                 child.gems = earnedGems;
                 finalGems = earnedGems;
-                updated = true;
-            }
-
-            if (updated) {
                 await child.save();
             }
         }
+
+        // Get all category progress for this child
+        const allProgress = await CategoryProgress.find({ childId: userId });
+        const progressMap = new Map(
+            allProgress.map(p => [p.categoryId, { xp: p.xp, level: p.level, quizzesCompleted: p.quizzesCompleted || 0 }])
+        );
 
         const categories = placement?.categoryResults.map(cat => {
             let icon = "📚";
@@ -182,13 +189,20 @@ export const getDashboard = async (req: Request, res: Response): Promise<void> =
             else if (cat.categoryId.toLowerCase().includes("verb")) icon = "🏃‍♂️";
             else if (cat.categoryId.toLowerCase().includes("adjective")) icon = "✨";
 
+            const catProgress = progressMap.get(cat.categoryId);
+
             return {
                 id: cat.categoryId,
                 name: cat.categoryId,
                 // uppercase first letter
-                level: cat.level.charAt(0).toUpperCase() + cat.level.slice(1),
+                level: catProgress
+                    ? catProgress.level.charAt(0).toUpperCase() + catProgress.level.slice(1)
+                    : cat.level.charAt(0).toUpperCase() + cat.level.slice(1),
                 icon,
-                score: cat.score, // optional, for sorting on frontend if needed
+                score: cat.score,
+                xp: catProgress?.xp || 0,
+                xpToNextLevel: 50,
+                quizzesCompleted: catProgress?.quizzesCompleted || 0,
             };
         }) || [];
 

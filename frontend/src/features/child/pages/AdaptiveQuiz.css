@@ -1,0 +1,767 @@
+/* ─── Adaptive Quiz Page ────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+
+/* ── Keyframes ────────────────────────────────────── */
+@keyframes aq-fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes aq-fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes aq-slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes aq-pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 175, 244, 0.3); }
+  50% { box-shadow: 0 0 0 10px rgba(37, 175, 244, 0); }
+}
+
+@keyframes aq-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes aq-popIn {
+  0% { transform: scale(0.7); opacity: 0; }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes aq-confetti {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+}
+
+@keyframes aq-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes aq-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes aq-scaleIn {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes aq-progressPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes aq-starBurst {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1.4) rotate(180deg); opacity: 1; }
+  100% { transform: scale(1) rotate(360deg); opacity: 1; }
+}
+
+/* ── Category Hub Page ────────────────────────────── */
+.aq-hub {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #E8F4FD 0%, #F0F4F8 50%, #FFF9E6 100%);
+  font-family: 'Poppins', sans-serif;
+  animation: aq-fadeIn 0.4s ease;
+}
+
+.aq-hub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 40px;
+}
+
+.aq-hub-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748b;
+  background: rgba(255, 255, 255, 0.7);
+  border: 2px solid #E2E8F0;
+  border-radius: 999px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+}
+
+.aq-hub-back:hover {
+  background: #fff;
+  border-color: #25AFF4;
+  color: #25AFF4;
+  transform: translateX(-3px);
+}
+
+.aq-hub-title-area {
+  text-align: center;
+  flex: 1;
+}
+
+.aq-hub-category-name {
+  font-family: 'Baloo 2', cursive;
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #1A202C;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.aq-hub-level-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 999px;
+  margin-top: 8px;
+}
+
+.aq-hub-level-badge.starter {
+  background: rgba(255, 204, 53, 0.15);
+  color: #B8860B;
+  border: 2px solid rgba(255, 204, 53, 0.4);
+}
+
+.aq-hub-level-badge.explorer {
+  background: rgba(37, 175, 244, 0.12);
+  color: #0369a1;
+  border: 2px solid rgba(37, 175, 244, 0.3);
+}
+
+.aq-hub-level-badge.champion {
+  background: rgba(142, 232, 112, 0.15);
+  color: #166534;
+  border: 2px solid rgba(142, 232, 112, 0.4);
+}
+
+/* ── XP Progress Section ─────────────────────────── */
+.aq-progress-section {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 40px;
+  animation: aq-fadeInUp 0.5s ease 0.1s both;
+}
+
+.aq-xp-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 28px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+.aq-xp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.aq-xp-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.aq-xp-value {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #25AFF4;
+}
+
+.aq-xp-bar-track {
+  width: 100%;
+  height: 16px;
+  background: #E2E8F0;
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.aq-xp-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.aq-xp-bar-fill.starter {
+  background: linear-gradient(90deg, #FFCC35, #FFE082);
+}
+
+.aq-xp-bar-fill.explorer {
+  background: linear-gradient(90deg, #25AFF4, #81D4FA);
+}
+
+.aq-xp-bar-fill.champion {
+  background: linear-gradient(90deg, #8EE870, #A5D6A7);
+}
+
+.aq-xp-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: aq-shimmer 2s ease-in-out infinite;
+}
+
+.aq-next-level {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+/* ── Stats Row ────────────────────────────────────── */
+.aq-stats-row {
+  display: flex;
+  gap: 16px;
+  max-width: 520px;
+  margin: 24px auto 0;
+  padding: 0 40px;
+  animation: aq-fadeInUp 0.5s ease 0.2s both;
+}
+
+.aq-stat-pill {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.aq-stat-icon {
+  font-size: 1.5rem;
+}
+
+.aq-stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.aq-stat-value {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1A202C;
+  line-height: 1;
+}
+
+.aq-stat-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Start Quiz Button ────────────────────────────── */
+.aq-start-area {
+  display: flex;
+  justify-content: center;
+  padding: 36px 40px;
+  animation: aq-fadeInUp 0.5s ease 0.3s both;
+}
+
+.aq-start-btn {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #25AFF4 0%, #0EA5E9 100%);
+  border: none;
+  border-radius: 999px;
+  padding: 18px 64px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 8px 24px rgba(37, 175, 244, 0.35);
+  letter-spacing: 0.5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.aq-start-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.aq-start-btn:hover::before {
+  left: 100%;
+}
+
+.aq-start-btn:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 14px 32px rgba(37, 175, 244, 0.45);
+}
+
+.aq-start-btn:active {
+  transform: translateY(-2px) scale(0.98);
+}
+
+.aq-start-btn:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ── Quiz Flow ────────────────────────────────────── */
+/* Reuse the .pq-* classes from PlacementQuiz.css,
+   but override quiz-specific elements here for consistency */
+
+/* ── Result Screen ────────────────────────────────── */
+.aq-result {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #E8F4FD 0%, #F0F4F8 50%, #FFF9E6 100%);
+  font-family: 'Poppins', sans-serif;
+  padding: 24px;
+  animation: aq-fadeIn 0.4s ease;
+}
+
+.aq-result-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 32px;
+  padding: 48px 40px;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
+  animation: aq-popIn 0.5s ease both;
+}
+
+.aq-result-emoji {
+  font-size: 4rem;
+  margin-bottom: 8px;
+  animation: aq-bounce 1.5s ease-in-out infinite;
+}
+
+.aq-result-title {
+  font-family: 'Baloo 2', cursive;
+  font-size: 2.8rem;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.aq-result-title.pass {
+  background: linear-gradient(135deg, #8EE870, #4ADE80);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.aq-result-title.fail {
+  background: linear-gradient(135deg, #FF5144, #FB923C);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.aq-result-score {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin: 12px 0 28px;
+  font-weight: 500;
+}
+
+.aq-result-score strong {
+  font-size: 1.3rem;
+  color: #1A202C;
+}
+
+/* ── Rewards Grid ─────────────────────────────────── */
+.aq-rewards {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.aq-reward-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #F8FAFC;
+  border: 2px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 16px 24px;
+  min-width: 100px;
+  animation: aq-scaleIn 0.4s ease both;
+}
+
+.aq-reward-item:nth-child(2) { animation-delay: 0.1s; }
+.aq-reward-item:nth-child(3) { animation-delay: 0.2s; }
+
+.aq-reward-item.highlight {
+  border-color: #25AFF4;
+  background: rgba(37, 175, 244, 0.06);
+}
+
+.aq-reward-icon {
+  font-size: 1.6rem;
+}
+
+.aq-reward-value {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #1A202C;
+  line-height: 1;
+}
+
+.aq-reward-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Level Up Banner ──────────────────────────────── */
+.aq-level-up-banner {
+  background: linear-gradient(135deg, #FFF9E6, #FFFBEB);
+  border: 2px solid #FCD34D;
+  border-radius: 16px;
+  padding: 16px 24px;
+  margin-bottom: 28px;
+  animation: aq-popIn 0.5s ease 0.3s both;
+}
+
+.aq-level-up-text {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #B45309;
+  margin: 0;
+}
+
+.aq-level-up-sub {
+  font-size: 0.85rem;
+  color: #92400E;
+  margin: 4px 0 0;
+  font-weight: 500;
+}
+
+/* ── XP Progress in Result ────────────────────────── */
+.aq-result-progress {
+  margin-bottom: 28px;
+}
+
+.aq-result-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.aq-result-progress-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.aq-result-progress-value {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #25AFF4;
+}
+
+.aq-result-bar-track {
+  width: 100%;
+  height: 12px;
+  background: #E2E8F0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.aq-result-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #25AFF4, #81D4FA);
+  transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.aq-result-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  background-size: 200% 100%;
+  animation: aq-shimmer 2s ease-in-out infinite;
+}
+
+/* ── Action Buttons ───────────────────────────────── */
+.aq-result-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.aq-btn-primary {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #25AFF4, #0EA5E9);
+  border: none;
+  border-radius: 999px;
+  padding: 14px 36px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 20px rgba(37, 175, 244, 0.3);
+}
+
+.aq-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(37, 175, 244, 0.4);
+}
+
+.aq-btn-secondary {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #475569;
+  background: #F1F5F9;
+  border: 2px solid #E2E8F0;
+  border-radius: 999px;
+  padding: 14px 36px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.aq-btn-secondary:hover {
+  background: #E2E8F0;
+  border-color: #CBD5E1;
+  transform: translateY(-2px);
+}
+
+.aq-btn-success {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #8EE870, #4ADE80);
+  border: none;
+  border-radius: 999px;
+  padding: 14px 36px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 6px 20px rgba(142, 232, 112, 0.3);
+}
+
+.aq-btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(142, 232, 112, 0.4);
+}
+
+/* ── Loading ──────────────────────────────────────── */
+.aq-loading {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: linear-gradient(135deg, #E8F4FD 0%, #F0F4F8 50%, #FFF9E6 100%);
+  font-family: 'Poppins', sans-serif;
+  color: #64748b;
+}
+
+.aq-loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #E2E8F0;
+  border-top-color: #25AFF4;
+  border-radius: 50%;
+  animation: aq-spin 0.8s linear infinite;
+}
+
+.aq-loading-text {
+  font-size: 1rem;
+  font-weight: 500;
+  animation: aq-progressPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Error ────────────────────────────────────────── */
+.aq-error {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  background: linear-gradient(135deg, #E8F4FD 0%, #F0F4F8 50%, #FFF9E6 100%);
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+  padding: 24px;
+}
+
+.aq-error-icon {
+  font-size: 3rem;
+}
+
+.aq-error-text {
+  font-size: 1.05rem;
+  color: #64748b;
+  max-width: 400px;
+}
+
+.aq-error-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* ── Quiz Milestone Badge ─────────────────────────── */
+.aq-milestone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #EDE9FE, #F3E8FF);
+  border: 2px solid #C4B5FD;
+  border-radius: 16px;
+  padding: 12px 20px;
+  margin-bottom: 28px;
+  animation: aq-popIn 0.5s ease 0.2s both;
+}
+
+.aq-milestone-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #6D28D9;
+}
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 600px) {
+  .aq-hub-header {
+    padding: 16px 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .aq-hub-category-name {
+    font-size: 2rem;
+  }
+
+  .aq-progress-section {
+    padding: 0 20px;
+  }
+
+  .aq-xp-card {
+    padding: 24px;
+    border-radius: 20px;
+  }
+
+  .aq-stats-row {
+    padding: 0 20px;
+    gap: 10px;
+  }
+
+  .aq-stat-pill {
+    padding: 10px 12px;
+    border-radius: 16px;
+  }
+
+  .aq-start-area {
+    padding: 28px 20px;
+  }
+
+  .aq-start-btn {
+    padding: 16px 48px;
+    font-size: 1.2rem;
+  }
+
+  .aq-result-card {
+    padding: 36px 24px;
+    border-radius: 24px;
+  }
+
+  .aq-result-title {
+    font-size: 2.2rem;
+  }
+
+  .aq-rewards {
+    gap: 10px;
+  }
+
+  .aq-reward-item {
+    padding: 12px 16px;
+    min-width: 80px;
+  }
+}
+
+@media (max-width: 380px) {
+  .aq-hub-category-name {
+    font-size: 1.7rem;
+  }
+
+  .aq-result-title {
+    font-size: 1.8rem;
+  }
+
+  .aq-result-actions {
+    flex-direction: column;
+  }
+  
+  .aq-btn-primary,
+  .aq-btn-secondary,
+  .aq-btn-success {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -5,6 +5,9 @@ export type CategoryData = {
   name: string;
   level: "Starter" | "Explorer" | "Champion";
   icon?: string;
+  xp?: number;
+  xpToNextLevel?: number;
+  quizzesCompleted?: number;
 };
 
 type Props = {
