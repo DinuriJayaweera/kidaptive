@@ -1,6 +1,6 @@
 import { Box, Typography, Button, LinearProgress } from "@mui/material";
-import BoltIcon from "@mui/icons-material/BoltRounded";
-import CardGiftcardIcon from "@mui/icons-material/CardGiftcardRounded";
+import earnImg from "../../../assets/earn.png";
+import gemsImg from "../../../assets/gems.png";
 
 export default function DailyQuestCard() {
   return (
@@ -41,7 +41,12 @@ export default function DailyQuestCard() {
       </Box>
 
       <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
-        <BoltIcon sx={{ color: "#F6AD55", fontSize: 28, mt: 0.5 }} />
+        <Box
+          component="img"
+          src={earnImg}
+          alt="Earn"
+          sx={{ width: 28, height: 28, mt: 0.5, objectFit: "contain" }}
+        />
         <Box sx={{ flex: 1 }}>
           <Typography sx={{ fontSize: "0.9rem", fontWeight: 700, color: "#1A202C", mb: 1 }}>
             Earn 10 XP
@@ -65,7 +70,12 @@ export default function DailyQuestCard() {
                 1/10
               </Typography>
             </Box>
-            <CardGiftcardIcon sx={{ color: "#E53E3E", fontSize: 24 }} />
+            <Box
+              component="img"
+              src={gemsImg}
+              alt="Reward"
+              sx={{ width: 24, height: 24, objectFit: "contain" }}
+            />
           </Box>
         </Box>
       </Box>

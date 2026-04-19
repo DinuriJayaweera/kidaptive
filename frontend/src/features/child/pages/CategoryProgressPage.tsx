@@ -2,6 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCategoryProgress } from "../services/quizApi";
 import kipMascot from "../../../assets/kip.png"; // Fixed asset path
+import LockIcon from "@mui/icons-material/LockRounded";
+import strengthImg from "../../../assets/strength.png";
+import medalImg from "../../../assets/medal.png";
+import crownImg from "../../../assets/crown.png";
 import "./CategoryProgress.css";
 
 // ── Types ──────────────────────────────────────────────────
@@ -163,11 +167,18 @@ export default function CategoryProgressPage() {
 
         {items.map((item) => {
           if (item.type === "trophy") {
-            const TrophyIcon = item.level === "starter" ? "🏆" : item.level === "explorer" ? "🎖️" : "👑";
+            const TrophyIconSrc = 
+              item.level === "starter" ? strengthImg : 
+              item.level === "explorer" ? medalImg : crownImg;
+            
             return (
               <div key={item.key} className="cp-trophy-wrapper">
                 <div className={`cp-trophy ${item.level} ${item.locked ? "locked" : ""}`}>
-                  {item.locked ? "🔒" : TrophyIcon}
+                  {item.locked ? (
+                    <LockIcon sx={{ fontSize: 32, color: "#A0AEC0" }} />
+                  ) : (
+                    <img src={TrophyIconSrc} alt={item.level} style={{ width: 44, height: 44, objectFit: "contain" }} />
+                  )}
                 </div>
                 <div className="cp-trophy-label">{item.label}</div>
               </div>
@@ -196,7 +207,7 @@ export default function CategoryProgressPage() {
                   className={`cp-node ${item.status}`}
                   onClick={() => handleNodeClick(item)}
                 >
-                  {item.status === "locked" ? "🔒" : item.index}
+                  {item.status === "locked" ? <LockIcon sx={{ fontSize: 28, opacity: 0.7 }} /> : item.index}
                 </div>
               </div>
             );

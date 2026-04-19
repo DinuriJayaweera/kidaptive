@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material";
-import LockIcon from "@mui/icons-material/LockRounded";
+import winsImg from "../../../assets/wins.png";
 
 export default function LeaderboardCard() {
   return (
@@ -38,7 +38,12 @@ export default function LeaderboardCard() {
             flexShrink: 0,
           }}
         >
-          <LockIcon sx={{ color: "#A0AEC0" }} />
+          <Box
+            component="img"
+            src={winsImg}
+            alt="Trophy"
+            sx={{ width: 28, height: 28, objectFit: "contain", filter: "grayscale(100%) opacity(0.6)" }}
+          />
         </Box>
         <Typography sx={{ fontSize: "0.85rem", color: "#4A5568", fontWeight: 500, lineHeight: 1.4 }}>
           Complete 5 more lessons to start competing

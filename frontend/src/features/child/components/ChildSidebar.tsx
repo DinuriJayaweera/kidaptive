@@ -1,31 +1,32 @@
 import { Box, Typography, Stack, Button } from "@mui/material";
-import HomeIcon from "@mui/icons-material/HomeRounded";
-import MenuBookIcon from "@mui/icons-material/MenuBookRounded";
-import TrackChangesIcon from "@mui/icons-material/TrackChangesRounded";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEventsRounded";
-import DashboardIcon from "@mui/icons-material/DashboardRounded";
-import PersonIcon from "@mui/icons-material/PersonRounded";
-import MoreHorizIcon from "@mui/icons-material/MoreHorizRounded";
 import LogoutIcon from "@mui/icons-material/LogoutRounded";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/context/AuthContext";
 import { logout as logoutApi } from "../../auth/api/authApi";
-import dinoIcon from "../../../assets/5.png";
+import logoImg from "../../../assets/logo.png";
+
+import learnIcon from "../../../assets/learn.png";
+import lettersIcon from "../../../assets/letters.png";
+import practiceIcon from "../../../assets/practice.png";
+import leaderboardIcon from "../../../assets/leaderboard.png";
+import questsIcon from "../../../assets/quests.png";
+import profileIcon from "../../../assets/profile.png";
+import moreIcon from "../../../assets/more.png";
 
 type NavItemObj = {
   label: string;
-  icon: React.ElementType;
+  iconSrc: string;
   isActive?: boolean;
 };
 
 const navItems: NavItemObj[] = [
-  { label: "LEARN", icon: HomeIcon, isActive: true },
-  { label: "LETTERS", icon: MenuBookIcon },
-  { label: "PRACTICE", icon: TrackChangesIcon },
-  { label: "LEADERBOARDS", icon: EmojiEventsIcon },
-  { label: "QUESTS", icon: DashboardIcon },
-  { label: "PROFILE", icon: PersonIcon },
-  { label: "MORE", icon: MoreHorizIcon },
+  { label: "LEARN", iconSrc: learnIcon, isActive: true },
+  { label: "LETTERS", iconSrc: lettersIcon },
+  { label: "PRACTICE", iconSrc: practiceIcon },
+  { label: "LEADERBOARDS", iconSrc: leaderboardIcon },
+  { label: "QUESTS", iconSrc: questsIcon },
+  { label: "PROFILE", iconSrc: profileIcon },
+  { label: "MORE", iconSrc: moreIcon },
 ];
 
 export default function ChildSidebar() {
@@ -55,20 +56,33 @@ export default function ChildSidebar() {
       }}
     >
       {/* ── Logo Area ── */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 6, pl: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 0, mb: 6, pl: 0 }}>
         <Box
           component="img"
-          src={dinoIcon}
-          alt="Dino Logo"
-          sx={{ width: 42, height: 42, objectFit: "contain" }}
+          src={logoImg}
+          alt="Kidaptive Logo"
+          sx={{
+            width: 72,
+            height: 65,
+            objectFit: "contain",
+            flexShrink: 0,
+            filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.12))",
+            transition: "transform 0.3s ease",
+            "&:hover": {
+              transform: "scale(1.05)",
+            },
+          }}
         />
         <Typography
           sx={{
+            ml: "-4px",
             fontFamily: "'Baloo 2', sans-serif",
             fontWeight: 800,
-            fontSize: "1.45rem",
+            fontSize: "22px",
             color: "#25AFF4",
             letterSpacing: 0.5,
+            lineHeight: 1,
+            userSelect: "none",
           }}
         >
           KIDAPTIVE
@@ -78,7 +92,6 @@ export default function ChildSidebar() {
       {/* ── Nav Items ── */}
       <Stack spacing={1.5}>
         {navItems.map((item) => {
-          const Icon = item.icon;
           return (
             <Box
               key={item.label}
@@ -98,10 +111,17 @@ export default function ChildSidebar() {
                 },
               }}
             >
-              <Icon
+              <Box
+                component="img"
+                src={item.iconSrc}
+                alt={item.label}
                 sx={{
-                  color: item.isActive ? "#25AFF4" : "#4A5568",
-                  fontSize: 26,
+                  width: 26,
+                  height: 26,
+                  objectFit: "contain",
+                  opacity: item.isActive ? 1 : 0.6,
+                  filter: item.isActive ? "none" : "grayscale(80%)",
+                  transition: "all 0.2s",
                 }}
               />
               <Typography

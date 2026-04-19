@@ -3,6 +3,7 @@ import { Logout as LogoutIcon } from "@mui/icons-material";
 import { adminNavSections } from "../navigation/adminNavConfig";
 import { Drawer, Box } from "@mui/material";
 import "../styles/adminLayout.css";
+import logoImg from "../../../assets/logo.png";
 
 interface AdminSidebarProps {
     onLogout: () => void;
@@ -14,14 +15,39 @@ export default function AdminSidebar({ onLogout, mobileOpen, onDrawerToggle }: A
     const drawerContent = (
         <aside className="admin-sidebar" style={{ position: "static", width: "100%", height: "100%", borderRight: "none", zIndex: 1 }}>
             {/* Brand */}
-            <div className="admin-sidebar__brand">
-                <div className="admin-sidebar__logo">
-                    <div className="admin-sidebar__logo-inner" />
-                </div>
-                <div>
-                    <div className="admin-sidebar__title">Kidaptive</div>
-                    <div className="admin-sidebar__subtitle">Admin Panel</div>
-                </div>
+            <div className="admin-sidebar__brand" style={{ padding: "0", margin: "20px 0 20px 10px" }}>
+                <Box
+                    component="img"
+                    src={logoImg}
+                    alt="Kidaptive Logo"
+                    sx={{
+                        width: 72,
+                        height: 65,
+                        objectFit: "contain",
+                        flexShrink: 0,
+                        filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.12))",
+                        transition: "transform 0.3s ease",
+                        "&:hover": {
+                            transform: "scale(1.05)",
+                        },
+                    }}
+                />
+                <Box
+                    sx={{
+                        ml: "-4px",
+                        fontFamily: "'Baloo 2', sans-serif",
+                        fontWeight: 800,
+                        fontSize: "22px",
+                        color: "#25AFF4",
+                        letterSpacing: 0.5,
+                        lineHeight: 1,
+                        userSelect: "none",
+                        display: "flex",
+                        alignItems: "center"
+                    }}
+                >
+                    KIDAPTIVE
+                </Box>
             </div>
 
             {/* Navigation */}
