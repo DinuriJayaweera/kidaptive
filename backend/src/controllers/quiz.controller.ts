@@ -185,7 +185,18 @@ export const getDashboard = async (req: Request, res: Response): Promise<void> =
         // Get all category progress for this child
         const allProgress = await CategoryProgress.find({ childId: userId });
         const progressMap = new Map(
-            allProgress.map(p => [p.categoryId, { xp: p.xp, level: p.level, quizzesCompleted: p.quizzesCompleted || 0 }])
+            allProgress.map(p => {
+                // progress.xp resets on level-up, compute real total XP
+                let earnedXp = p.xp || 0;
+                if (p.level === "explorer") earnedXp += 50;
+                if (p.level === "champion") earnedXp += 100;
+                earnedXp += (p.championWins || 0) * 20;
+                return [p.categoryId, {
+                    xp: earnedXp,
+                    level: p.level,
+                    quizzesCompleted: p.globalQuizzesCompleted || p.quizzesCompleted || 0,
+                }];
+            })
         );
 
         const categories = placement?.categoryResults.map(cat => {

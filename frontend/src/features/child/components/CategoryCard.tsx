@@ -86,6 +86,17 @@ export default function CategoryCard({ category, onClick }: Props) {
         >
           {level}
         </Typography>
+        <Typography
+          sx={{
+            fontFamily: "'Poppins', sans-serif",
+            fontSize: "0.8rem",
+            color: borderColor,
+            fontWeight: 700,
+            mt: 0.5,
+          }}
+        >
+          XP : {category.xp ?? 0}
+        </Typography>
       </Box>
     </Box>
   );

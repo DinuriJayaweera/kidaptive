@@ -10,6 +10,9 @@ import ChildSelectPage from "../features/auth/pages/ChildSelectPage";
 import ChildPinPage from "../features/auth/pages/ChildPinPage";
 import ParentDashboardPage from "../features/parent/pages/ParentDashboardPage";
 import CreateChildPage from "../features/parent/pages/CreateChildPage";
+import ParentChildrenPage from "../features/parent/pages/ParentChildrenPage";
+import ChildProgressPage from "../features/parent/pages/ChildProgressPage";
+import ParentLayout from "../features/parent/layouts/ParentLayout";
 import ChildDashboardPage from "../features/child/pages/ChildDashboardPage";
 import ChildIntroPage from "../features/child/pages/ChildIntroPage";
 import ChildIntroAchievements from "../features/child/pages/ChildIntroAchievements";
@@ -61,11 +64,14 @@ export default function AppRoutes() {
             <Route path="/admin" element={<Navigate to="/auth/admin-login" replace />} />
 
             {/* Parent — protected */}
-            <Route path="/parent/dashboard" element={<ParentRoute><ParentDashboardPage /></ParentRoute>} />
-            <Route path="/parent/children/new" element={<ParentRoute><CreateChildPage /></ParentRoute>} />
-            <Route path="/parent/children" element={<ParentRoute><ParentDashboardPage /></ParentRoute>} />
-            <Route path="/parent/settings" element={<ParentRoute><ParentDashboardPage /></ParentRoute>} />
-            <Route path="/parent/profile" element={<ParentRoute><ParentDashboardPage /></ParentRoute>} />
+            <Route element={<ParentRoute><ParentLayout /></ParentRoute>}>
+                <Route path="/parent/dashboard" element={<ParentDashboardPage />} />
+                <Route path="/parent/children/new" element={<CreateChildPage />} />
+                <Route path="/parent/children" element={<ParentChildrenPage />} />
+                <Route path="/parent/child/:childId" element={<ChildProgressPage />} />
+                <Route path="/parent/settings" element={<ParentDashboardPage />} />
+                <Route path="/parent/profile" element={<ParentDashboardPage />} />
+            </Route>
 
             {/* Child — protected */}
             <Route path="/child/intro" element={<ChildRoute><ChildIntroPage /></ChildRoute>} />

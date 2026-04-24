@@ -1,80 +1,117 @@
-import {
-    Box, List, ListItemButton, ListItemIcon, ListItemText, Typography, Divider,
-} from "@mui/material";
-import {
-    Dashboard as DashboardIcon, People as PeopleIcon, Settings as SettingsIcon,
-    Person as PersonIcon, Logout as LogoutIcon,
-} from "@mui/icons-material";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../../auth/context/AuthContext";
-import { logout as logoutApi } from "../../auth/api/authApi";
+import { NavLink } from "react-router-dom";
+import { Logout as LogoutIcon } from "@mui/icons-material";
+import { parentNavSections } from "../navigation/parentNavConfig";
+import { Drawer, Box } from "@mui/material";
+import "../../admin/styles/adminLayout.css";
+import logoImg from "../../../assets/logo.png";
 
-const items = [
-    { label: "Dashboard", icon: <DashboardIcon />, path: "/parent/dashboard" },
-    { label: "Children", icon: <PeopleIcon />, path: "/parent/children" },
-    { label: "Settings", icon: <SettingsIcon />, path: "/parent/settings" },
-    { label: "Profile", icon: <PersonIcon />, path: "/parent/profile" },
-];
+interface ParentSidebarProps {
+    onLogout: () => void;
+    mobileOpen: boolean;
+    onDrawerToggle: () => void;
+}
 
-export default function ParentSidebar() {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const { user, logout } = useAuth();
+export default function ParentSidebar({ onLogout, mobileOpen, onDrawerToggle }: ParentSidebarProps) {
+    const drawerContent = (
+        <aside className="admin-sidebar" style={{ position: "static", width: "100%", height: "100%", borderRight: "none", zIndex: 1 }}>
+            {/* Brand */}
+            <div className="admin-sidebar__brand" style={{ padding: "0", margin: "20px 0 20px 10px" }}>
+                <Box
+                    component="img"
+                    src={logoImg}
+                    alt="Kidaptive Logo"
+                    sx={{
+                        width: 72,
+                        height: 65,
+                        objectFit: "contain",
+                        flexShrink: 0,
+                        filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.12))",
+                        transition: "transform 0.3s ease",
+                        "&:hover": {
+                            transform: "scale(1.05)",
+                        },
+                    }}
+                />
+                <Box
+                    sx={{
+                        ml: "-4px",
+                        fontFamily: "'Baloo 2', sans-serif",
+                        fontWeight: 800,
+                        fontSize: "22px",
+                        color: "#25AFF4",
+                        letterSpacing: 0.5,
+                        lineHeight: 1,
+                        userSelect: "none",
+                        display: "flex",
+                        alignItems: "center"
+                    }}
+                >
+                    KIDAPTIVE
+                </Box>
+            </div>
 
-    const handleLogout = async () => {
-        try { await logoutApi(); } catch { /* ignore */ }
-        logout();
-        navigate("/");
-    };
+            {/* Navigation */}
+            <nav className="admin-sidebar__nav">
+                {parentNavSections.map((section, sIdx) => (
+                    <div key={sIdx}>
+                        {section.title && (
+                            <div className="admin-sidebar__nav-section-title">
+                                {section.title}
+                            </div>
+                        )}
+                        {section.items.map((item) => (
+                            <NavLink
+                                key={item.path}
+                                to={item.path}
+                                end={item.path === "/parent/dashboard"}
+                                onClick={() => { if (window.innerWidth < 900) onDrawerToggle(); }}
+                                className={({ isActive }) =>
+                                    `admin-sidebar__nav-item${isActive ? " admin-sidebar__nav-item--active" : ""}`
+                                }
+                            >
+                                <item.icon className="admin-sidebar__nav-icon" />
+                                {item.label}
+                            </NavLink>
+                        ))}
+                    </div>
+                ))}
+            </nav>
+
+            {/* Footer — Logout */}
+            <div className="admin-sidebar__footer">
+                <button className="admin-sidebar__logout-btn" onClick={onLogout}>
+                    <LogoutIcon className="admin-sidebar__nav-icon" />
+                    Log out
+                </button>
+            </div>
+        </aside>
+    );
 
     return (
-        <Box sx={{
-            width: { xs: "100%", md: 260 },
-            backgroundColor: "#1a1a2e",
-            color: "#fff",
-            display: "flex",
-            flexDirection: { xs: "row", md: "column" },
-            p: { xs: 1, md: 3 },
-            minHeight: { md: "100vh" },
-        }}>
-            <Typography variant="h6" sx={{
-                fontWeight: 800, mb: { xs: 0, md: 3 },
-                display: { xs: "none", md: "block" }, fontFamily: "'Baloo 2', sans-serif",
-            }}>
-                Kidaptive
-            </Typography>
-
-            <List sx={{ display: { xs: "flex", md: "block" }, flex: 1, p: 0 }}>
-                {items.map((it) => (
-                    <ListItemButton key={it.path}
-                        onClick={() => navigate(it.path)}
-                        selected={location.pathname === it.path}
-                        sx={{
-                            borderRadius: 2, mb: { md: 0.5 },
-                            "&.Mui-selected": { backgroundColor: "rgba(58,181,230,0.15)", color: "#3ab5e6" },
-                            "&:hover": { backgroundColor: "rgba(255,255,255,0.05)" },
-                            color: "#ccc",
-                        }}>
-                        <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}>{it.icon}</ListItemIcon>
-                        <ListItemText primary={it.label} sx={{ display: { xs: "none", sm: "block" } }} />
-                    </ListItemButton>
-                ))}
-            </List>
-
-            <Divider sx={{ borderColor: "rgba(255,255,255,0.1)", my: { xs: 0, md: 2 }, display: { xs: "none", md: "block" } }} />
-
-            <Box sx={{ display: { xs: "flex", md: "block" }, alignItems: "center", gap: 1 }}>
-                <Typography variant="body2" sx={{ color: "#888", mb: 0.5, display: { xs: "none", md: "block" }, fontSize: "0.75rem" }}>
-                    Signed in as
-                </Typography>
-                <Typography variant="body2" fontWeight={600} sx={{ display: { xs: "none", md: "block" }, mb: 1 }}>
-                    {user?.name}
-                </Typography>
-                <ListItemButton onClick={handleLogout} sx={{ borderRadius: 2, color: "#e74c3c", "&:hover": { backgroundColor: "rgba(231,76,60,0.1)" } }}>
-                    <ListItemIcon sx={{ color: "inherit", minWidth: 36 }}><LogoutIcon /></ListItemIcon>
-                    <ListItemText primary="Log out" sx={{ display: { xs: "none", sm: "block" } }} />
-                </ListItemButton>
-            </Box>
+        <Box component="nav" sx={{ width: { md: 240 }, flexShrink: { md: 0 } }}>
+            <Drawer
+                variant="temporary"
+                open={mobileOpen}
+                onClose={onDrawerToggle}
+                ModalProps={{ keepMounted: true }} 
+                sx={{
+                    display: { xs: "block", md: "none" },
+                    "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 },
+                }}
+            >
+                {drawerContent}
+            </Drawer>
+            
+            <Drawer
+                variant="permanent"
+                sx={{
+                    display: { xs: "none", md: "block" },
+                    "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 },
+                }}
+                open
+            >
+                {drawerContent}
+            </Drawer>
         </Box>
     );
 }

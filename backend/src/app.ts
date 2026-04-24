@@ -35,10 +35,12 @@ import placementRoutes from "./routes/placement.routes.js";
 import placementTestRoutes from "./routes/placement-test.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import quizRoutes from "./routes/quiz.routes.js";
+import parentRoutes from "./routes/parent.routes.js";
 
 // ── Routes ───────────────────────────────────────────────────────────────────
 app.use("/api", healthRoutes);
 app.use("/api", authRoutes);
+app.use("/api/parent", parentRoutes);
 app.use("/api/placement-questions", placementRoutes);
 app.use("/api/placement-test", placementTestRoutes);
 app.get("/api/placement/status", authenticate, requireRole("child"), userPlacementStatus);
