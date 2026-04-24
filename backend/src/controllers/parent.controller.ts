@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import User, { IUser } from "../models/User.js";
 import CategoryProgress from "../models/categoryProgress.model.js";
 import PlacementResult from "../models/placementResult.model.js";
+import ActivityLog from "../models/activityLog.model.js";
 
 // Utility to get child enhanced structure
 async function getChildEnhancedData(child: IUser, includePlacement = false) {
@@ -120,7 +121,81 @@ export const getChildProgress = async (req: Request, res: Response) => {
     }
 
     const enhancedChild = await getChildEnhancedData(child, true);
-    res.json(enhancedChild);
+
+    const now = new Date();
+    const startOfToday = new Date(now);
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const startOfWeek = new Date(startOfToday);
+    startOfWeek.setDate(startOfWeek.getDate() - 6);
+
+    const [todayLogs, weekLogs, recentLogs] = await Promise.all([
+      ActivityLog.find({ childId: child._id, createdAt: { $gte: startOfToday } }).sort({ createdAt: 1 }),
+      ActivityLog.find({ childId: child._id, createdAt: { $gte: startOfWeek } }),
+      ActivityLog.find({ childId: child._id }).sort({ createdAt: -1 }).limit(12),
+    ]);
+
+    const totalLearningSecondsToday = todayLogs.reduce(
+      (sum, log) => sum + (log.durationSeconds || 0),
+      0,
+    );
+    const quizzesToday = todayLogs.filter((log) => log.type === "quiz_complete").length;
+    const xpToday = todayLogs.reduce(
+      (sum, log) => sum + (log.type === "xp_earned" ? (log.xp || 0) : 0),
+      0,
+    );
+
+    const totalLearningSecondsWeek = weekLogs.reduce(
+      (sum, log) => sum + (log.durationSeconds || 0),
+      0,
+    );
+    const quizzesWeek = weekLogs.filter((log) => log.type === "quiz_complete").length;
+
+    const practiceCounts = weekLogs
+      .filter((log) => log.type === "quiz_complete" && log.categoryId)
+      .reduce((acc, log) => {
+        const key = log.categoryId as string;
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+    const mostPracticedCategory = Object.keys(practiceCounts).length
+      ? Object.entries(practiceCounts).sort((a, b) => b[1] - a[1])[0][0]
+      : null;
+
+    const bestScoreThisWeek = weekLogs
+      .filter((log) => log.type === "quiz_complete" && typeof log.score === "number")
+      .reduce((max, log) => Math.max(max, log.score as number), -1);
+
+    const activitySummary = {
+      today: {
+        startTime: todayLogs[0]?.createdAt ? todayLogs[0].createdAt.toISOString() : null,
+        endTime: todayLogs.length ? todayLogs[todayLogs.length - 1].createdAt.toISOString() : null,
+        totalLearningSeconds: totalLearningSecondsToday,
+        quizzesCompleted: quizzesToday,
+        xpEarned: xpToday,
+      },
+      weekly: {
+        totalLearningSeconds: totalLearningSecondsWeek,
+        quizzesCompleted: quizzesWeek,
+        streak: child.streak || 0,
+      },
+      insights: {
+        mostPracticedCategory,
+        bestScoreThisWeek: bestScoreThisWeek >= 0 ? bestScoreThisWeek : null,
+        averageDailyLearningSeconds: Math.round(totalLearningSecondsWeek / 7),
+      },
+      timeline: recentLogs.map((log) => ({
+        id: log._id.toString(),
+        time: log.createdAt.toISOString(),
+        description: log.description,
+      })),
+    };
+
+    res.json({
+      ...enhancedChild,
+      activitySummary,
+    });
   } catch (error) {
     console.error("Error in getChildProgress:", error);
     res.status(500).json({ message: "Failed to load child progress." });
@@ -166,6 +241,7 @@ export const deleteChild = async (req: Request, res: Response) => {
     // Delete related data
     await CategoryProgress.deleteMany({ childId: child._id });
     await PlacementResult.deleteMany({ childId: child._id });
+    await ActivityLog.deleteMany({ childId: child._id });
     await User.deleteOne({ _id: child._id });
 
     res.json({ message: "Child deleted successfully." });

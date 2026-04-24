@@ -12,6 +12,7 @@ import {
     Assignment as PlacementIcon,
     EmojiEvents as TrophyIcon,
     Star as XpIcon,
+    AccessTime as TimeIcon,
 } from "@mui/icons-material";
 import { useParams, useNavigate } from "react-router-dom";
 import { getChildProgress } from "../api/parentApi";
@@ -135,6 +136,46 @@ export default function ChildProgressPage() {
         }
     }
 
+
+    const activitySummary = child.activitySummary ?? {
+        today: {
+            startTime: null,
+            endTime: null,
+            totalLearningSeconds: 0,
+            quizzesCompleted: 0,
+            xpEarned: 0,
+        },
+        weekly: {
+            totalLearningSeconds: 0,
+            quizzesCompleted: 0,
+            streak: child.streak || 0,
+        },
+        insights: {
+            mostPracticedCategory: null,
+            bestScoreThisWeek: null,
+            averageDailyLearningSeconds: 0,
+        },
+        timeline: [],
+    };
+
+    const formatDuration = (totalSeconds: number) => {
+        const minutes = Math.round(totalSeconds / 60);
+        if (minutes <= 0) return "0m";
+        if (minutes < 60) return `${minutes}m`;
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        return `${hours}h ${remainingMinutes}m`;
+    };
+
+    const formatTime = (value: string | null) =>
+        value ? new Date(value).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "-";
+
+    const formatCategory = (value: string | null) =>
+        value
+            ? value
+                .replace(/[-_]+/g, " ")
+                .replace(/\b\w/g, (char) => char.toUpperCase())
+            : "-";
 
     return (
         <Box sx={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -308,6 +349,119 @@ export default function ChildProgressPage() {
                             </Box>
                         </Paper>
                     )}
+
+                    {/* ═══ Section 1B: Learning Activity / Screen Time ═══ */}
+                    <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "#fff", border: "1px solid #e8ecf1", mb: 4 }}>
+                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "#6b7280", fontWeight: 600, mb: 3, textTransform: "uppercase" }}>
+                            Learning Activity / Screen Time
+                        </Typography>
+
+                        <Grid container spacing={3} sx={{ mb: 3 }}>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <Box sx={{ background: "#f8fafc", borderRadius: 3, p: 3, border: "1px solid #e2e8f0" }}>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#111827", mb: 1 }}>
+                                        Today
+                                    </Typography>
+                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                                        <TimeIcon sx={{ fontSize: 18, color: "#64748b" }} />
+                                        <Typography sx={{ fontSize: 14, color: "#475569" }}>
+                                            {formatDuration(activitySummary.today.totalLearningSeconds)} - {formatTime(activitySummary.today.startTime)} / {formatTime(activitySummary.today.endTime)}
+                                        </Typography>
+                                    </Box>
+                                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
+                                            <QuizzesIcon sx={{ fontSize: 18, color: "#25AFF4" }} />
+                                            <Typography sx={{ fontSize: 13, color: "#475569" }}>{activitySummary.today.quizzesCompleted} quizzes</Typography>
+                                        </Box>
+                                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
+                                            <XpIcon sx={{ fontSize: 18, color: "#FFCC35" }} />
+                                            <Typography sx={{ fontSize: 13, color: "#475569" }}>{activitySummary.today.xpEarned} XP</Typography>
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <Box sx={{ background: "#f8fafc", borderRadius: 3, p: 3, border: "1px solid #e2e8f0" }}>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#111827", mb: 2 }}>
+                                        Weekly Activity
+                                    </Typography>
+                                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                                        <Box sx={{ flex: 1, minWidth: 120, background: "#eff6ff", borderRadius: 2, p: 2, textAlign: "center" }}>
+                                            <Typography sx={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>This Week Learning Time</Typography>
+                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 20, color: "#2563eb" }}>
+                                                {formatDuration(activitySummary.weekly.totalLearningSeconds)}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ flex: 1, minWidth: 120, background: "#f0fdf4", borderRadius: 2, p: 2, textAlign: "center" }}>
+                                            <Typography sx={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>This Week Quizzes</Typography>
+                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 20, color: "#16a34a" }}>
+                                                {activitySummary.weekly.quizzesCompleted}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ flex: 1, minWidth: 120, background: "#fffbeb", borderRadius: 2, p: 2, textAlign: "center" }}>
+                                            <Typography sx={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Current Streak</Typography>
+                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 20, color: "#d97706", display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}>
+                                                <StreakIcon sx={{ fontSize: 18 }} /> {activitySummary.weekly.streak} days
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Grid>
+                        </Grid>
+
+                        <Grid container spacing={3}>
+                            <Grid size={{ xs: 12, md: 7 }}>
+                                <Box sx={{ background: "#f8fafc", borderRadius: 3, p: 3, border: "1px solid #e2e8f0" }}>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#111827", mb: 2 }}>
+                                        Recent Activity Timeline
+                                    </Typography>
+                                    {activitySummary.timeline.length === 0 ? (
+                                        <Typography sx={{ color: "#94a3b8", fontSize: 14 }}>
+                                            No activity yet. Once lessons start, updates will appear here.
+                                        </Typography>
+                                    ) : (
+                                        activitySummary.timeline.map((item, index) => (
+                                            <Box key={item.id} sx={{ display: "flex", alignItems: "center", gap: 2, py: 1.2, borderBottom: index === activitySummary.timeline.length - 1 ? "none" : "1px dashed #e2e8f0" }}>
+                                                <Typography sx={{ fontSize: 12, fontWeight: 700, color: "#64748b", minWidth: 70 }}>
+                                                    {new Date(item.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                                                </Typography>
+                                                <Typography sx={{ fontSize: 14, color: "#334155" }}>{item.description}</Typography>
+                                            </Box>
+                                        ))
+                                    )}
+                                </Box>
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 5 }}>
+                                <Box sx={{ background: "#f8fafc", borderRadius: 3, p: 3, border: "1px solid #e2e8f0" }}>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#111827", mb: 2 }}>
+                                        Child Usage Insights
+                                    </Typography>
+                                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                        <Box sx={{ background: "#ecfeff", borderRadius: 2, p: 2 }}>
+                                            <Typography sx={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Most Practiced Category</Typography>
+                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#0f766e" }}>
+                                                {formatCategory(activitySummary.insights.mostPracticedCategory)}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ background: "#f5f3ff", borderRadius: 2, p: 2 }}>
+                                            <Typography sx={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Best Score This Week</Typography>
+                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#6d28d9" }}>
+                                                {activitySummary.insights.bestScoreThisWeek ?? "-"}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ background: "#fff7ed", borderRadius: 2, p: 2 }}>
+                                            <Typography sx={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Average Daily Learning Time</Typography>
+                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#c2410c" }}>
+                                                {formatDuration(activitySummary.insights.averageDailyLearningSeconds)}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Grid>
+                        </Grid>
+                    </Paper>
 
                     {/* ═══ Section 2: Category Cards ═══ */}
                     <Typography variant="h5" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#111827", mb: 3 }}>

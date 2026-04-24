@@ -14,6 +14,33 @@ export interface PlacementCategoryResult {
     assignedLevel: "starter" | "explorer" | "champion";
 }
 
+export interface ActivityTimelineItem {
+    id: string;
+    time: string;
+    description: string;
+}
+
+export interface ActivitySummary {
+    today: {
+        startTime: string | null;
+        endTime: string | null;
+        totalLearningSeconds: number;
+        quizzesCompleted: number;
+        xpEarned: number;
+    };
+    weekly: {
+        totalLearningSeconds: number;
+        quizzesCompleted: number;
+        streak: number;
+    };
+    insights: {
+        mostPracticedCategory: string | null;
+        bestScoreThisWeek: number | null;
+        averageDailyLearningSeconds: number;
+    };
+    timeline: ActivityTimelineItem[];
+}
+
 export interface EnhancedChildProfile {
     childId: string;
     name: string;
@@ -27,6 +54,7 @@ export interface EnhancedChildProfile {
     categories: ChildCategoryProgress[];
     placementCompleted?: boolean;
     placementResults?: PlacementCategoryResult[];
+    activitySummary?: ActivitySummary;
 }
 
 export const getParentChildrenEnriched = async (): Promise<EnhancedChildProfile[]> => {

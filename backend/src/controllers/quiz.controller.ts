@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import User from '../models/User.js';
 import PlacementResult from '../models/placementResult.model.js';
 import CategoryProgress from '../models/categoryProgress.model.js';
+import ActivityLog from '../models/activityLog.model.js';
 import type { TokenPayload } from '../utils/jwt.js';
 import { startQuiz, submitQuiz as serviceSubmitQuiz, getCategoryProgress as serviceGetCategoryProgress } from '../services/quiz.service.js';
 
@@ -84,6 +85,54 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
             child.totalXP = (child.totalXP || 0) + streakXPToAdd;
         }
         await child.save();
+
+        const totalTimeSeconds = answers.reduce((sum: number, a: any) => sum + (a.timeTaken || 0), 0);
+        const xpEarned = result.xpGained + streakXPToAdd;
+
+        const formatCategoryName = (value: string) =>
+            value
+                .replace(/[-_]+/g, " ")
+                .replace(/\b\w/g, (char) => char.toUpperCase());
+
+        try {
+            const baseTime = new Date();
+            const practiceTime = new Date(baseTime.getTime() - 1200);
+            const completeTime = new Date(baseTime.getTime() - 600);
+
+            const activityLogs: any[] = [
+                {
+                    childId: userId,
+                    type: "practice",
+                    categoryId,
+                    description: `Practiced ${formatCategoryName(categoryId)}`,
+                    createdAt: practiceTime,
+                },
+                {
+                    childId: userId,
+                    type: "quiz_complete",
+                    categoryId,
+                    description: "Completed Quiz",
+                    quizzes: 1,
+                    score: result.score,
+                    durationSeconds: totalTimeSeconds,
+                    createdAt: completeTime,
+                },
+            ];
+
+            if (xpEarned > 0) {
+                activityLogs.push({
+                    childId: userId,
+                    type: "xp_earned",
+                    description: `Earned ${xpEarned} XP`,
+                    xp: xpEarned,
+                    createdAt: baseTime,
+                });
+            }
+
+            await ActivityLog.insertMany(activityLogs);
+        } catch (logError) {
+            console.error("Activity log error:", logError);
+        }
 
         res.json({
             message: 'Quiz submitted successfully',
