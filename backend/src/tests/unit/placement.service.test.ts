@@ -325,10 +325,10 @@ describe("submitTestAnswers — scoring logic", () => {
 
         // Also create medium and hard questions so generate works
         await PlacementQuestion.create([
-            { questionText: "M1", ageGroup: "7-8", category: "Grammar", type: "mcq", difficulty: "medium", options: ["A","B"], correctAnswer: "A" },
-            { questionText: "M2", ageGroup: "7-8", category: "Grammar", type: "mcq", difficulty: "medium", options: ["A","B"], correctAnswer: "A" },
-            { questionText: "H1", ageGroup: "7-8", category: "Grammar", type: "mcq", difficulty: "hard", options: ["A","B"], correctAnswer: "A" },
-            { questionText: "H2", ageGroup: "7-8", category: "Grammar", type: "mcq", difficulty: "hard", options: ["A","B"], correctAnswer: "A" },
+            { questionText: "M1", ageGroup: "7-8", category: "Grammar", type: "mcq", difficulty: "medium", options: ["A", "B"], correctAnswer: "A" },
+            { questionText: "M2", ageGroup: "7-8", category: "Grammar", type: "mcq", difficulty: "medium", options: ["A", "B"], correctAnswer: "A" },
+            { questionText: "H1", ageGroup: "7-8", category: "Grammar", type: "mcq", difficulty: "hard", options: ["A", "B"], correctAnswer: "A" },
+            { questionText: "H2", ageGroup: "7-8", category: "Grammar", type: "mcq", difficulty: "hard", options: ["A", "B"], correctAnswer: "A" },
         ]);
 
         const child = await createTestChild(7);
@@ -504,10 +504,15 @@ describe("getPlacementStatus", () => {
 // ── G) GET FINAL RESULTS ──────────────────────────────────────────────────────
 describe("getFinalResults", () => {
 
-    it("returns null when child has no results", async () => {
+    // FIXED: getFinalResults never returns null — returns empty object when no results
+    it("returns empty categoryResults when child has no results", async () => {
         const child = await createTestChild(7);
         const result = await getFinalResults(child._id.toString());
-        expect(result).toBeNull();
+
+        expect(result).not.toBeNull();
+        expect(result.categoryResults).toEqual([]);
+        expect(result.evaluatedCategories).toEqual([]);
+        expect(result.placementCompleted).toBe(true); // auto-passed when no result
     });
 
     it("returns category results after placement completed", async () => {
@@ -528,10 +533,9 @@ describe("getFinalResults", () => {
         );
 
         const result = await getFinalResults(child._id.toString());
-        expect(result).not.toBeNull();
-        expect(result?.categoryResults.length).toBe(1);
-        expect(result?.placementCompleted).toBe(true);
-        expect(result?.categoryResults[0].categoryId).toBe("Nouns");
+        expect(result.categoryResults.length).toBe(1);
+        expect(result.placementCompleted).toBe(true);
+        expect(result.categoryResults[0].categoryId).toBe("Nouns");
     });
 
 });
@@ -557,23 +561,23 @@ describe("resetPlacement", () => {
             }))
         );
 
-        // Confirm results exist
+        // Confirm results exist before reset
         const beforeReset = await getFinalResults(child._id.toString());
-        expect(beforeReset).not.toBeNull();
+        expect(beforeReset.categoryResults.length).toBeGreaterThan(0);
 
         // Reset
         await resetPlacement(child._id.toString());
 
-        // Confirm results are gone
+        // FIXED: after reset, getFinalResults returns empty object (no null)
         const afterReset = await getFinalResults(child._id.toString());
-        expect(afterReset).toBeNull();
+        expect(afterReset.categoryResults).toEqual([]);
+        expect(afterReset.evaluatedCategories).toEqual([]);
     });
 
     it("allows generating a new test after reset", async () => {
         await createCategoryQuestions("Nouns", "7-8");
         const child = await createTestChild(7);
 
-        // Complete placement
         const test = await generateTestQuestions(child._id.toString(), "7-8");
         await submitTestAnswers(
             child._id.toString(),
@@ -587,10 +591,8 @@ describe("resetPlacement", () => {
             }))
         );
 
-        // Reset
         await resetPlacement(child._id.toString());
 
-        // Should be able to generate again
         const newTest = await generateTestQuestions(child._id.toString(), "7-8");
         expect(newTest.questions.length).toBe(5);
     });

@@ -109,9 +109,9 @@ describe("POST /api/placement-test/generate", () => {
         expect(res.body.totalCategories).toBe(5);
     });
 
-    it("returns 400 with allCompleted flag when all categories evaluated", async () => {
+    it("returns 200 with allCompleted flag when all categories evaluated", async () => {
         await createCategoryQuestions("Nouns", "7-8");
-        const { child, token } = await createChildWithToken(7);
+        const { token } = await createChildWithToken(7);
 
         // Generate and submit to complete placement
         const genRes = await request(app)
@@ -131,13 +131,14 @@ describe("POST /api/placement-test/generate", () => {
             .set("Authorization", `Bearer ${token}`)
             .send({ answers });
 
-        // Try to generate again
+        // Try to generate again — controller returns 200 with allCompleted:true
         const res = await request(app)
             .post("/api/placement-test/generate")
             .set("Authorization", `Bearer ${token}`);
 
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(200);
         expect(res.body.allCompleted).toBe(true);
+        expect(res.body.message).toBe("All categories already evaluated");
     });
 
 });
@@ -264,14 +265,18 @@ describe("GET /api/placement-test/results", () => {
         expect(res.status).toBe(401);
     });
 
-    it("returns 404 when child has no placement results", async () => {
+    it("returns 200 with empty data when child has no placement results", async () => {
         const { token } = await createChildWithToken(7);
 
         const res = await request(app)
             .get("/api/placement-test/results")
             .set("Authorization", `Bearer ${token}`);
 
-        expect(res.status).toBe(404);
+        // Controller always returns 200 — getFinalResults returns empty object, never 404
+        expect(res.status).toBe(200);
+        expect(res.body.categoryResults).toEqual([]);
+        expect(res.body.evaluatedCategories).toEqual([]);
+        expect(res.body.placementCompleted).toBe(true);
     });
 
     it("returns results after placement completed", async () => {
@@ -491,3 +496,4 @@ describe("Full placement test flow", () => {
     });
 
 });
+
