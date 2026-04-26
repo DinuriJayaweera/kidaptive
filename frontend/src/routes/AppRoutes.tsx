@@ -25,6 +25,7 @@ import PlacementQuizPage from "../features/child/pages/PlacementQuizPage";
 import PlacementResultsPage from "../features/child/pages/PlacementResultsPage";
 import AdaptiveQuizPage from "../features/child/pages/AdaptiveQuizPage";
 import CategoryProgressPage from "../features/child/pages/CategoryProgressPage";
+import LettersPage from "../features/child/pages/LettersPage";
 import AdminLoginPage from "../features/auth/pages/AdminLoginPage";
 import { PublicOnlyRoute, ParentRoute, ChildRoute, AdminRoute } from "../app/guards/RouteGuard";
 
@@ -86,6 +87,7 @@ export default function AppRoutes() {
             <Route path="/child/category-progress/:categoryId" element={<ChildRoute><CategoryProgressPage /></ChildRoute>} />
             <Route path="/child/quiz/:categoryId" element={<ChildRoute><AdaptiveQuizPage /></ChildRoute>} />
             <Route path="/child/dashboard" element={<ChildRoute><ChildDashboardPage /></ChildRoute>} />
+            <Route path="/child/letters" element={<ChildRoute><LettersPage /></ChildRoute>} />
 
             {/* Admin — protected (nested routes under layout) */}
             <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>

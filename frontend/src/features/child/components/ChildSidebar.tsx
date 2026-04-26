@@ -13,28 +13,46 @@ import questsIcon from "../../../assets/quests.png";
 import profileIcon from "../../../assets/profile.png";
 import moreIcon from "../../../assets/more.png";
 
+type NavLabel =
+  | "LEARN"
+  | "LETTERS"
+  | "PRACTICE"
+  | "LEADERBOARDS"
+  | "QUESTS"
+  | "PROFILE"
+  | "MORE";
+
 type NavItemObj = {
-  label: string;
+  label: NavLabel;
   iconSrc: string;
-  isActive?: boolean;
+  route: string;
 };
 
 const navItems: NavItemObj[] = [
-  { label: "LEARN", iconSrc: learnIcon, isActive: true },
-  { label: "LETTERS", iconSrc: lettersIcon },
-  { label: "PRACTICE", iconSrc: practiceIcon },
-  { label: "LEADERBOARDS", iconSrc: leaderboardIcon },
-  { label: "QUESTS", iconSrc: questsIcon },
-  { label: "PROFILE", iconSrc: profileIcon },
-  { label: "MORE", iconSrc: moreIcon },
+  { label: "LEARN", iconSrc: learnIcon, route: "/child/dashboard" },
+  { label: "LETTERS", iconSrc: lettersIcon, route: "/child/letters" },
+  { label: "PRACTICE", iconSrc: practiceIcon, route: "/child/practice" },
+  { label: "LEADERBOARDS", iconSrc: leaderboardIcon, route: "/child/leaderboards" },
+  { label: "QUESTS", iconSrc: questsIcon, route: "/child/quests" },
+  { label: "PROFILE", iconSrc: profileIcon, route: "/child/profile" },
+  { label: "MORE", iconSrc: moreIcon, route: "/child/more" },
 ];
 
-export default function ChildSidebar() {
+interface ChildSidebarProps {
+  /** Which nav item should be highlighted. Defaults to "LEARN". */
+  activePage?: NavLabel;
+}
+
+export default function ChildSidebar({ activePage = "LEARN" }: ChildSidebarProps) {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
   const handleLogout = async () => {
-    try { await logoutApi(); } catch { /* ignore */ }
+    try {
+      await logoutApi();
+    } catch {
+      /* ignore */
+    }
     logout();
     navigate("/");
   };
@@ -42,7 +60,8 @@ export default function ChildSidebar() {
   return (
     <Box
       sx={{
-        width: 250,
+        width: { xs: 64, sm: 80, md: 250 },   // Collapses to icon-only on mobile
+        minWidth: { xs: 64, sm: 80, md: 250 },
         height: "100vh",
         position: "sticky",
         top: 0,
@@ -52,18 +71,27 @@ export default function ChildSidebar() {
         display: "flex",
         flexDirection: "column",
         py: 4,
-        px: 3,
+        px: { xs: 1, md: 3 },
+        overflowY: "auto",
       }}
     >
       {/* ── Logo Area ── */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 0, mb: 6, pl: 0 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 0,
+          mb: 6,
+          pl: 0,
+        }}
+      >
         <Box
           component="img"
           src={logoImg}
           alt="Kidaptive Logo"
           sx={{
-            width: 72,
-            height: 65,
+            width: { xs: 40, md: 72 },
+            height: { xs: 36, md: 65 },
             objectFit: "contain",
             flexShrink: 0,
             filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.12))",
@@ -73,8 +101,10 @@ export default function ChildSidebar() {
             },
           }}
         />
+        {/* Hide text label on small screens */}
         <Typography
           sx={{
+            display: { xs: "none", md: "block" },
             ml: "-4px",
             fontFamily: "'Baloo 2', sans-serif",
             fontWeight: 800,
@@ -92,22 +122,29 @@ export default function ChildSidebar() {
       {/* ── Nav Items ── */}
       <Stack spacing={1.5}>
         {navItems.map((item) => {
+          const isActive = item.label === activePage;
           return (
             <Box
               key={item.label}
+              onClick={() => navigate(item.route)}
               sx={{
                 display: "flex",
                 alignItems: "center",
+                justifyContent: { xs: "center", md: "flex-start" },
                 gap: 2,
                 py: 1.2,
-                px: 2,
+                px: { xs: 1, md: 2 },
                 borderRadius: "30px",
                 cursor: "pointer",
                 transition: "all 0.2s",
-                border: item.isActive ? "2px solid #25AFF4" : "2px solid transparent",
-                backgroundColor: item.isActive ? "rgba(37,175,244,0.1)" : "transparent",
+                border: isActive ? "2px solid #25AFF4" : "2px solid transparent",
+                backgroundColor: isActive
+                  ? "rgba(37,175,244,0.1)"
+                  : "transparent",
                 "&:hover": {
-                  backgroundColor: item.isActive ? "rgba(37,175,244,0.15)" : "rgba(0,0,0,0.04)",
+                  backgroundColor: isActive
+                    ? "rgba(37,175,244,0.15)"
+                    : "rgba(0,0,0,0.04)",
                 },
               }}
             >
@@ -119,17 +156,20 @@ export default function ChildSidebar() {
                   width: 26,
                   height: 26,
                   objectFit: "contain",
-                  opacity: item.isActive ? 1 : 0.6,
-                  filter: item.isActive ? "none" : "grayscale(80%)",
+                  opacity: isActive ? 1 : 0.6,
+                  filter: isActive ? "none" : "grayscale(80%)",
                   transition: "all 0.2s",
+                  flexShrink: 0,
                 }}
               />
+              {/* Hide text labels on small screens */}
               <Typography
                 sx={{
+                  display: { xs: "none", md: "block" },
                   fontFamily: "'Poppins', sans-serif",
                   fontWeight: 700,
                   fontSize: "0.95rem",
-                  color: item.isActive ? "#25AFF4" : "#1A202C",
+                  color: isActive ? "#25AFF4" : "#1A202C",
                   letterSpacing: 0.5,
                 }}
               >
@@ -149,6 +189,7 @@ export default function ChildSidebar() {
           onClick={handleLogout}
           sx={{
             py: 1.2,
+            minWidth: 0,
             borderRadius: "30px",
             borderColor: "#FF5144",
             color: "#FF5144",
@@ -157,6 +198,13 @@ export default function ChildSidebar() {
             textTransform: "none",
             letterSpacing: 0.5,
             transition: "all 0.2s",
+            // On mobile, hide text and show only icon
+            "& .MuiButton-startIcon": {
+              mr: { xs: 0, md: 1 },
+            },
+            "& span:last-child": {
+              display: { xs: "none", md: "inline" },
+            },
             "&:hover": {
               backgroundColor: "rgba(255,81,68,0.1)",
               borderColor: "#FF5144",

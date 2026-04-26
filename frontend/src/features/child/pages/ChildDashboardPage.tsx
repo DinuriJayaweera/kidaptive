@@ -23,15 +23,12 @@ export default function ChildDashboardPage() {
     const [checkingStatus, setCheckingStatus] = useState(true);
 
     useEffect(() => {
-        // Enforce Placement Test fully completed before rendering
         placementTestApi.getStatus()
             .then(({ data }) => {
-                // If the user's placement test is not completed, redirect strictly
                 if (!data.placementCompleted) {
                     navigate("/child/placement", { replace: true });
                 } else {
                     setCheckingStatus(false);
-                    // Fetch real dashboard data now
                     getDashboardData()
                         .then((d) => setDashboardData(d))
                         .catch((err) => console.error("Failed to load dashboard data:", err));
@@ -43,7 +40,6 @@ export default function ChildDashboardPage() {
     }, [navigate]);
 
     const handleCategoryClick = (id: string, _level: string) => {
-        // Navigate to the category progress timeline
         navigate(`/child/category-progress/${id}`);
     };
 
@@ -60,10 +56,10 @@ export default function ChildDashboardPage() {
             minHeight: "100vh",
             backgroundColor: "#F4F8FB",
             display: "flex",
-            overflow: "hidden", // prevent global scroll if not desired, but let's allow content scroll
+            overflow: "hidden",
         }}>
-            {/* ── Left Sidebar ── */}
-            <ChildSidebar />
+            {/* ── Left Sidebar: pass activePage="LEARN" ── */}
+            <ChildSidebar activePage="LEARN" />
 
             {/* ── Main Content Area ── */}
             <Box
@@ -72,19 +68,18 @@ export default function ChildDashboardPage() {
                     display: "flex",
                     flexDirection: { xs: "column", lg: "row" },
                     gap: 4,
-                    p: 4,
+                    p: { xs: 2, sm: 3, md: 4 },
                     overflowY: "auto",
                 }}
             >
                 {/* Center Column: Grid */}
                 <Box sx={{ flex: 1, pt: 2 }}>
-                    {/* Greeting */}
                     <Box sx={{ mb: 4 }}>
                         <Typography
                             sx={{
                                 fontFamily: "'Baloo 2', sans-serif",
                                 fontWeight: 800,
-                                fontSize: "2.4rem",
+                                fontSize: { xs: "1.6rem", sm: "2rem", md: "2.4rem" },
                                 color: "#1A202C",
                                 lineHeight: 1.2,
                             }}
@@ -92,10 +87,10 @@ export default function ChildDashboardPage() {
                             Hi {user?.name ?? "Learner"}, ready to learn today? 😊
                         </Typography>
                     </Box>
-                    
-                    <CategoryGrid 
-                        categories={dashboardData.categories} 
-                        onCategoryClick={handleCategoryClick} 
+
+                    <CategoryGrid
+                        categories={dashboardData.categories}
+                        onCategoryClick={handleCategoryClick}
                     />
                 </Box>
 
