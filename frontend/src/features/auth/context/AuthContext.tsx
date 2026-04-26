@@ -28,17 +28,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Restore session on mount
     useEffect(() => {
         const token = localStorage.getItem("accessToken");
-        if (token) {
-            getMe()
-                .then((u) => setUserState(u))
-                .catch(() => {
-                    localStorage.removeItem("accessToken");
-                    localStorage.removeItem("user");
-                })
-                .finally(() => setLoading(false));
-        } else {
+        if (!token) {
             setLoading(false);
+            return;
         }
+
+        // 1. Immediately restore from localStorage so avatar/name show instantly
+        //    (no flicker, no waiting for the network)
+        const stored = localStorage.getItem("user");
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored) as AuthUser;
+                setUserState(parsed);
+            } catch {
+                // ignore malformed data
+            }
+        }
+
+        // 2. Verify the token is still valid and merge fresh data from the server.
+        //    getMe() returns the AuthUser shape from /auth/me.
+        //    We merge — not replace — so locally saved fields (like avatar) survive
+        //    even if the server response doesn't include them.
+        getMe()
+            .then((freshUser) => {
+                setUserState((prev) => {
+                    // Merge: server data wins for most fields, but avatar/avatarUrl
+                    // from localStorage win if the server omits them (the /auth/me
+                    // endpoint now returns avatarUrl, but guard it anyway).
+                    const merged: AuthUser = {
+                        ...prev,
+                        ...freshUser,
+                        avatar: freshUser.avatar || freshUser.avatarUrl || prev?.avatar || prev?.avatarUrl,
+                        avatarUrl: freshUser.avatarUrl || freshUser.avatar || prev?.avatarUrl || prev?.avatar,
+                    };
+                    localStorage.setItem("user", JSON.stringify(merged));
+                    return merged;
+                });
+            })
+            .catch(() => {
+                // Token is invalid — clear everything
+                localStorage.removeItem("accessToken");
+                localStorage.removeItem("user");
+                setUserState(null);
+            })
+            .finally(() => setLoading(false));
     }, []);
 
     const login = useCallback((user: AuthUser, accessToken: string) => {

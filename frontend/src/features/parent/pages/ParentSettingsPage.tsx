@@ -10,13 +10,14 @@ import {
     Notifications as NotifIcon, Visibility as MonitorIcon, Lock as LockIcon,
     Assessment as ReportIcon, Tune as PrefIcon, DeleteForever as DeleteIcon,
     Save as SaveIcon, RestartAlt as ResetIcon, Download as DownloadIcon,
-    CheckCircle as CheckIcon, Close as CloseIcon,
+    CheckCircle as CheckIcon, Close as CloseIcon, ArrowBack as ArrowBackIcon,
 } from "@mui/icons-material";
 import {
     getParentProfile, updateParentProfile, uploadParentAvatar,
     changeParentPassword, deleteParentAccount, getParentChildrenEnriched,
 } from "../api/parentApi";
 import type { ParentProfile, EnhancedChildProfile } from "../api/parentApi";
+import { forgotPassword, resetPassword } from "../../auth/api/authApi";
 import { useAuth } from "../../auth/context/AuthContext";
 import "../styles/parentSettings.css";
 
@@ -27,8 +28,11 @@ const DEFAULTS: Partial<ParentProfile> = {
     timezone: "UTC", dateFormat: "MM/DD/YYYY",
 };
 
-const TIMEZONES = ["UTC","America/New_York","America/Chicago","America/Denver","America/Los_Angeles","Europe/London","Europe/Paris","Asia/Tokyo","Asia/Kolkata","Australia/Sydney"];
-const DATE_FORMATS = ["MM/DD/YYYY","DD/MM/YYYY","YYYY-MM-DD"];
+const TIMEZONES = ["UTC", "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles", "Europe/London", "Europe/Paris", "Asia/Tokyo", "Asia/Kolkata", "Australia/Sydney"];
+const DATE_FORMATS = ["MM/DD/YYYY", "DD/MM/YYYY", "YYYY-MM-DD"];
+
+// Forgot-password step type
+type ForgotStep = "none" | "requestOtp" | "enterOtp";
 
 export default function ParentSettingsPage() {
     const navigate = useNavigate();
@@ -42,10 +46,10 @@ export default function ParentSettingsPage() {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState("");
-    const [toast, setToast] = useState<{msg: string; severity: "success"|"error"} | null>(null);
+    const [toast, setToast] = useState<{ msg: string; severity: "success" | "error" } | null>(null);
     const [dirty, setDirty] = useState(false);
 
-    // Password
+    // ── Change Password dialog state ──────────────────────────────────────────
     const [pwdDialog, setPwdDialog] = useState(false);
     const [currentPwd, setCurrentPwd] = useState("");
     const [newPwd, setNewPwd] = useState("");
@@ -53,12 +57,21 @@ export default function ParentSettingsPage() {
     const [pwdLoading, setPwdLoading] = useState(false);
     const [pwdError, setPwdError] = useState("");
 
-    // Delete
+    // ── Forgot-password flow state (lives inside the same dialog) ────────────
+    const [forgotStep, setForgotStep] = useState<ForgotStep>("none");
+    const [forgotEmail, setForgotEmail] = useState("");
+    const [forgotOtp, setForgotOtp] = useState("");
+    const [forgotNewPwd, setForgotNewPwd] = useState("");
+    const [forgotConfirmPwd, setForgotConfirmPwd] = useState("");
+    const [forgotLoading, setForgotLoading] = useState(false);
+    const [forgotError, setForgotError] = useState("");
+
+    // ── Delete dialog state ───────────────────────────────────────────────────
     const [deleteDialog, setDeleteDialog] = useState(false);
     const [deleteConfirm, setDeleteConfirm] = useState("");
     const [deleteLoading, setDeleteLoading] = useState(false);
 
-    // PDF
+    // ── PDF state ─────────────────────────────────────────────────────────────
     const [pdfLoading, setPdfLoading] = useState<string | null>(null);
 
     useEffect(() => {
@@ -87,6 +100,7 @@ export default function ParentSettingsPage() {
         setDirty(true);
     }, []);
 
+    // ── Save settings ─────────────────────────────────────────────────────────
     const handleSave = async () => {
         if (!dirty || !profile) return;
         setSaving(true);
@@ -114,13 +128,21 @@ export default function ParentSettingsPage() {
             setProfile(finalProfile);
             setDraft(finalProfile);
             setDirty(false);
-            
+
             if (user) {
-                const updatedUser = { ...user, name: payload.name || user.name, avatar: finalAvatarUrl || user.avatar };
+                // Write both avatar + avatarUrl so every component that reads
+                // either field (header, sidebar, etc.) stays in sync.
+                const resolvedAvatar = finalAvatarUrl || profile.avatarUrl || user.avatarUrl || user.avatar;
+                const updatedUser = {
+                    ...user,
+                    name: payload.name || user.name,
+                    avatar: resolvedAvatar,
+                    avatarUrl: resolvedAvatar,
+                };
                 setUser(updatedUser);
                 localStorage.setItem("user", JSON.stringify(updatedUser));
             }
-            
+
             setToast({ msg: "Settings saved successfully!", severity: "success" });
         } catch (err: any) {
             setToast({ msg: err.response?.data?.message ?? "Failed to save settings.", severity: "error" });
@@ -145,6 +167,15 @@ export default function ParentSettingsPage() {
         reader.readAsDataURL(file);
     };
 
+    // ── Close the password dialog and reset all its state ────────────────────
+    const closePwdDialog = () => {
+        setPwdDialog(false);
+        setCurrentPwd(""); setNewPwd(""); setConfirmPwd(""); setPwdError("");
+        setForgotStep("none"); setForgotEmail(""); setForgotOtp("");
+        setForgotNewPwd(""); setForgotConfirmPwd(""); setForgotError("");
+    };
+
+    // ── Change password (normal flow) ─────────────────────────────────────────
     const handleChangePassword = async () => {
         setPwdError("");
         if (!newPwd || !currentPwd) { setPwdError("All fields required"); return; }
@@ -153,8 +184,7 @@ export default function ParentSettingsPage() {
         setPwdLoading(true);
         try {
             await changeParentPassword({ currentPassword: currentPwd, newPassword: newPwd });
-            setPwdDialog(false);
-            setCurrentPwd(""); setNewPwd(""); setConfirmPwd("");
+            closePwdDialog();
             setToast({ msg: "Password changed! Please log in again.", severity: "success" });
             setTimeout(() => { logout(); navigate("/auth/login", { replace: true }); }, 2000);
         } catch (err: any) {
@@ -162,6 +192,43 @@ export default function ParentSettingsPage() {
         } finally { setPwdLoading(false); }
     };
 
+    // ── Forgot password step 1: request OTP ──────────────────────────────────
+    const handleForgotRequestOtp = async () => {
+        setForgotError("");
+        if (!forgotEmail) { setForgotError("Email is required"); return; }
+        setForgotLoading(true);
+        try {
+            await forgotPassword({ email: forgotEmail });
+            setForgotStep("enterOtp");
+        } catch (err: any) {
+            setForgotError(err.response?.data?.message ?? "Something went wrong.");
+        } finally { setForgotLoading(false); }
+    };
+
+    // ── Forgot password step 2: verify OTP + set new password ────────────────
+    const handleForgotReset = async () => {
+        setForgotError("");
+        if (!forgotOtp) { setForgotError("Please enter the code from your email"); return; }
+        if (!forgotNewPwd) { setForgotError("New password is required"); return; }
+        if (forgotNewPwd !== forgotConfirmPwd) { setForgotError("Passwords don't match"); return; }
+        if (forgotNewPwd.length < 8) { setForgotError("Password must be at least 8 characters"); return; }
+        setForgotLoading(true);
+        try {
+            await resetPassword({
+                email: forgotEmail,
+                otp: forgotOtp,
+                newPassword: forgotNewPwd,
+                confirmPassword: forgotConfirmPwd,
+            });
+            closePwdDialog();
+            setToast({ msg: "Password reset! Please log in again.", severity: "success" });
+            setTimeout(() => { logout(); navigate("/auth/login", { replace: true }); }, 2000);
+        } catch (err: any) {
+            setForgotError(err.response?.data?.message ?? "Invalid or expired code.");
+        } finally { setForgotLoading(false); }
+    };
+
+    // ── Delete account ────────────────────────────────────────────────────────
     const handleDeleteAccount = async () => {
         if (deleteConfirm !== "DELETE") return;
         setDeleteLoading(true);
@@ -174,6 +241,7 @@ export default function ParentSettingsPage() {
         } finally { setDeleteLoading(false); }
     };
 
+    // ── Generate PDF report ───────────────────────────────────────────────────
     const generatePDF = async (type: "weekly" | "monthly") => {
         setPdfLoading(type);
         try {
@@ -182,7 +250,6 @@ export default function ParentSettingsPage() {
             const now = new Date();
             const title = type === "weekly" ? "Weekly Learning Report" : "Monthly Learning Report";
 
-            // Header
             doc.setFillColor(37, 175, 244);
             doc.rect(0, 0, 210, 40, "F");
             doc.setTextColor(255, 255, 255);
@@ -203,7 +270,6 @@ export default function ParentSettingsPage() {
             } else {
                 for (const child of children) {
                     if (y > 250) { doc.addPage(); y = 20; }
-                    // Child header
                     doc.setFillColor(224, 242, 254);
                     doc.roundedRect(10, y - 5, 190, 12, 3, 3, "F");
                     doc.setFontSize(13);
@@ -211,7 +277,6 @@ export default function ParentSettingsPage() {
                     doc.text(`${child.name} (Age ${child.age})`, 15, y + 3);
                     y += 18;
 
-                    // Stats
                     doc.setFontSize(10);
                     doc.setTextColor(75, 85, 99);
                     const stats = [
@@ -229,7 +294,6 @@ export default function ParentSettingsPage() {
                     }
                     y += 3;
 
-                    // Categories
                     if (child.categories.length > 0) {
                         doc.setFontSize(11);
                         doc.setTextColor(37, 175, 244);
@@ -247,7 +311,6 @@ export default function ParentSettingsPage() {
                 }
             }
 
-            // Footer
             const pageCount = doc.getNumberOfPages();
             for (let i = 1; i <= pageCount; i++) {
                 doc.setPage(i);
@@ -258,11 +321,12 @@ export default function ParentSettingsPage() {
 
             doc.save(`kidaptive-${type}-report-${now.toISOString().slice(0, 10)}.pdf`);
             setToast({ msg: `${title} downloaded!`, severity: "success" });
-        } catch (err) {
+        } catch {
             setToast({ msg: "Failed to generate report.", severity: "error" });
         } finally { setPdfLoading(null); }
     };
 
+    // ── Guards ────────────────────────────────────────────────────────────────
     if (loading) return <Box className="ps-loading"><CircularProgress /><Typography sx={{ mt: 2, color: "#6b7280" }}>Loading settings…</Typography></Box>;
     if (error) return <Alert severity="error" sx={{ m: 3 }}>{error}</Alert>;
     if (!profile || !draft) return null;
@@ -271,13 +335,14 @@ export default function ParentSettingsPage() {
     const ns = draft.notificationSettings || profile.notificationSettings;
     const ms = draft.monitoringSettings || profile.monitoringSettings;
 
+
+
     return (
         <Box className="ps-container">
             <Box className="ps-page-header">
                 <Typography variant="h5" className="ps-page-title">Settings</Typography>
                 <Typography className="ps-page-subtitle">Manage your account, appearance, and preferences</Typography>
             </Box>
-
 
             <Grid container spacing={3}>
                 {/* LEFT COLUMN */}
@@ -359,7 +424,11 @@ export default function ParentSettingsPage() {
                             <Typography className="ps-section-title">Security</Typography>
                         </Box>
                         <Box className="ps-security-actions">
-                            <button className="ps-btn ps-btn-outline" onClick={() => setPwdDialog(true)}>
+                            <button className="ps-btn ps-btn-outline" onClick={() => {
+                                setForgotEmail(profile.email);
+                                setForgotStep("none");
+                                setPwdDialog(true);
+                            }}>
                                 <LockIcon sx={{ fontSize: 18 }} /> Change Password
                             </button>
                         </Box>
@@ -429,8 +498,8 @@ export default function ParentSettingsPage() {
                 </Grid>
             </Grid>
 
-            {/* Save bar (Moved to bottom) */}
-            <Box className="ps-save-bar" sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+            {/* Save bar */}
+            <Box className="ps-save-bar" sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}>
                 <button className="ps-btn ps-btn-reset" onClick={handleReset} disabled={saving}>
                     <ResetIcon sx={{ fontSize: 18 }} /> Reset to Defaults
                 </button>
@@ -440,32 +509,179 @@ export default function ParentSettingsPage() {
                 </button>
             </Box>
 
-            {/* Dialogs */}
-            <Dialog open={pwdDialog} onClose={() => setPwdDialog(false)} maxWidth="xs" fullWidth>
+            {/* ── Change Password / Forgot Password Dialog ── */}
+            <Dialog open={pwdDialog} onClose={closePwdDialog} maxWidth="xs" fullWidth>
                 <DialogTitle sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700 }}>
-                    Change Password
-                    <IconButton onClick={() => setPwdDialog(false)} sx={{ position: "absolute", right: 8, top: 8 }}><CloseIcon /></IconButton>
+                    {forgotStep === "none" && "Change Password"}
+                    {forgotStep === "requestOtp" && "Forgot Password"}
+                    {forgotStep === "enterOtp" && "Enter Reset Code"}
+                    <IconButton onClick={closePwdDialog} sx={{ position: "absolute", right: 8, top: 8 }}>
+                        <CloseIcon />
+                    </IconButton>
                 </DialogTitle>
+
                 <DialogContent sx={{ pt: "16px !important" }}>
-                    {pwdError && <Alert severity="error" sx={{ mb: 2 }}>{pwdError}</Alert>}
-                    <TextField label="Current Password" type="password" fullWidth sx={{ mb: 2 }} value={currentPwd} onChange={e => setCurrentPwd(e.target.value)} />
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: -1, mb: 2 }}>
-                        <Typography variant="caption" sx={{ color: '#25AFF4', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }} onClick={() => navigate("/auth/forgot-password")}>
-                            Forgot Password?
-                        </Typography>
-                    </Box>
-                    <TextField label="New Password" type="password" fullWidth sx={{ mb: 2 }} value={newPwd} onChange={e => setNewPwd(e.target.value)} helperText="Min 8 chars, 1 uppercase, 1 number, 1 special" />
-                    <TextField label="Confirm New Password" type="password" fullWidth value={confirmPwd} onChange={e => setConfirmPwd(e.target.value)} />
+
+                    {/* ── Normal change-password form ── */}
+                    {forgotStep === "none" && (
+                        <>
+                            {pwdError && <Alert severity="error" sx={{ mb: 2 }}>{pwdError}</Alert>}
+
+                            <TextField
+                                label="Current Password"
+                                type="password"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                value={currentPwd}
+                                onChange={e => setCurrentPwd(e.target.value)}
+                            />
+
+                            {/* Forgot password link */}
+                            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: -1, mb: 2 }}>
+                                <Typography
+                                    variant="caption"
+                                    sx={{ color: "#25AFF4", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}
+                                    onClick={() => {
+                                        setPwdError("");
+                                        setForgotEmail(profile.email);
+                                        setForgotStep("requestOtp");
+                                    }}
+                                >
+                                    Forgot Password?
+                                </Typography>
+                            </Box>
+
+                            <TextField
+                                label="New Password"
+                                type="password"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                value={newPwd}
+                                onChange={e => setNewPwd(e.target.value)}
+                                helperText="Min 8 chars, 1 uppercase, 1 number, 1 special"
+                            />
+                            <TextField
+                                label="Confirm New Password"
+                                type="password"
+                                fullWidth
+                                value={confirmPwd}
+                                onChange={e => setConfirmPwd(e.target.value)}
+                            />
+                        </>
+                    )}
+
+                    {/* ── Step 1: enter email to receive OTP ── */}
+                    {forgotStep === "requestOtp" && (
+                        <>
+                            {forgotError && <Alert severity="error" sx={{ mb: 2 }}>{forgotError}</Alert>}
+                            <Typography variant="body2" sx={{ color: "#888", mb: 2 }}>
+                                We'll send a 6-digit reset code to your email address.
+                            </Typography>
+                            <TextField
+                                label="Email Address"
+                                type="email"
+                                fullWidth
+                                value={forgotEmail}
+                                onChange={e => setForgotEmail(e.target.value)}
+                                sx={{ mb: 2 }}
+                            />
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: -1 }}>
+                                <ArrowBackIcon sx={{ fontSize: 14, color: "#888", cursor: "pointer" }} onClick={() => setForgotStep("none")} />
+                                <Typography
+                                    variant="caption"
+                                    sx={{ color: "#888", cursor: "pointer", "&:hover": { color: "#25AFF4" } }}
+                                    onClick={() => setForgotStep("none")}
+                                >
+                                    Back to change password
+                                </Typography>
+                            </Box>
+                        </>
+                    )}
+
+                    {/* ── Step 2: enter OTP + new password ── */}
+                    {forgotStep === "enterOtp" && (
+                        <>
+                            {forgotError && <Alert severity="error" sx={{ mb: 2 }}>{forgotError}</Alert>}
+                            <Alert severity="success" sx={{ mb: 2 }}>
+                                A reset code has been sent to <strong>{forgotEmail}</strong>. Check your inbox.
+                            </Alert>
+                            <TextField
+                                label="6-Digit Reset Code"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                value={forgotOtp}
+                                onChange={e => setForgotOtp(e.target.value)}
+                                inputProps={{ maxLength: 6 }}
+                            />
+                            <TextField
+                                label="New Password"
+                                type="password"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                value={forgotNewPwd}
+                                onChange={e => setForgotNewPwd(e.target.value)}
+                                helperText="Min 8 chars, 1 uppercase, 1 number, 1 special"
+                            />
+                            <TextField
+                                label="Confirm New Password"
+                                type="password"
+                                fullWidth
+                                value={forgotConfirmPwd}
+                                onChange={e => setForgotConfirmPwd(e.target.value)}
+                            />
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 2 }}>
+                                <ArrowBackIcon sx={{ fontSize: 14, color: "#888", cursor: "pointer" }} onClick={() => setForgotStep("requestOtp")} />
+                                <Typography
+                                    variant="caption"
+                                    sx={{ color: "#888", cursor: "pointer", "&:hover": { color: "#25AFF4" } }}
+                                    onClick={() => setForgotStep("requestOtp")}
+                                >
+                                    Resend code
+                                </Typography>
+                            </Box>
+                        </>
+                    )}
                 </DialogContent>
+
                 <DialogActions sx={{ p: 2 }}>
-                    <Button onClick={() => setPwdDialog(false)}>Cancel</Button>
-                    <Button variant="contained" onClick={handleChangePassword} disabled={pwdLoading} sx={{ bgcolor: "#25AFF4" }}>
-                        {pwdLoading ? <CircularProgress size={20} sx={{ color: "#fff" }} /> : "Change Password"}
-                    </Button>
+                    <Button onClick={closePwdDialog}>Cancel</Button>
+
+                    {forgotStep === "none" && (
+                        <Button
+                            variant="contained"
+                            onClick={handleChangePassword}
+                            disabled={pwdLoading}
+                            sx={{ bgcolor: "#25AFF4" }}
+                        >
+                            {pwdLoading ? <CircularProgress size={20} sx={{ color: "#fff" }} /> : "Change Password"}
+                        </Button>
+                    )}
+
+                    {forgotStep === "requestOtp" && (
+                        <Button
+                            variant="contained"
+                            onClick={handleForgotRequestOtp}
+                            disabled={forgotLoading}
+                            sx={{ bgcolor: "#25AFF4" }}
+                        >
+                            {forgotLoading ? <CircularProgress size={20} sx={{ color: "#fff" }} /> : "Send Reset Code"}
+                        </Button>
+                    )}
+
+                    {forgotStep === "enterOtp" && (
+                        <Button
+                            variant="contained"
+                            onClick={handleForgotReset}
+                            disabled={forgotLoading}
+                            sx={{ bgcolor: "#25AFF4" }}
+                        >
+                            {forgotLoading ? <CircularProgress size={20} sx={{ color: "#fff" }} /> : "Reset Password"}
+                        </Button>
+                    )}
                 </DialogActions>
             </Dialog>
 
-            {/* Delete Dialog */}
+            {/* ── Delete Account Dialog ── */}
             <Dialog open={deleteDialog} onClose={() => setDeleteDialog(false)} maxWidth="xs" fullWidth>
                 <DialogTitle sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#ef4444" }}>
                     Delete Account
@@ -483,7 +699,7 @@ export default function ParentSettingsPage() {
                 </DialogActions>
             </Dialog>
 
-            {/* Toast */}
+            {/* ── Toast ── */}
             <Snackbar open={!!toast} autoHideDuration={4000} onClose={() => setToast(null)} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
                 <Alert onClose={() => setToast(null)} severity={toast?.severity} variant="filled" icon={toast?.severity === "success" ? <CheckIcon /> : undefined} sx={{ borderRadius: "12px" }}>
                     {toast?.msg}

@@ -28,6 +28,11 @@ export default function ParentHeader({ userInitials, onDrawerToggle }: ParentHea
     }
     if (pageLabel === "Dashboard") pageLabel = "Overview";
 
+    // The auth user stores the avatar in `avatar`, but the parent profile
+    // stores it in `avatarUrl`. We check both so the header always shows
+    // the most recently saved image regardless of which field was written.
+    const avatarSrc = user?.avatarUrl || user?.avatar || null;
+
     return (
         <AppBar
             position="sticky"
@@ -64,13 +69,24 @@ export default function ParentHeader({ userInitials, onDrawerToggle }: ParentHea
                         <BellIcon sx={{ fontSize: 22 }} />
                         <span className="admin-header__notification-dot" />
                     </button>
-                    <Box 
-                        className="admin-header__avatar cursor-pointer" 
+                    <Box
+                        className="admin-header__avatar cursor-pointer"
                         onClick={() => navigate("/parent/profile")}
-                        sx={{ overflow: 'hidden', padding: user?.avatar ? 0 : undefined, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        sx={{
+                            overflow: "hidden",
+                            padding: avatarSrc ? 0 : undefined,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
                     >
-                        {user?.avatar ? (
-                            <Box component="img" src={user.avatar} alt="Profile" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        {avatarSrc ? (
+                            <Box
+                                component="img"
+                                src={avatarSrc}
+                                alt="Profile"
+                                sx={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
+                            />
                         ) : (
                             userInitials
                         )}

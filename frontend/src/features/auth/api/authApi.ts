@@ -10,6 +10,7 @@ export interface AuthUser {
     username?: string;
     age?: number;
     avatar?: string;
+    avatarUrl?: string;
     loginMethod?: "emoji";
     placementCompleted?: boolean;
 }

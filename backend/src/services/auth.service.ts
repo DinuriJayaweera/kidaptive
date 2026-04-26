@@ -46,6 +46,7 @@ function sanitizeUser(user: InstanceType<typeof User>) {
         username: user.username,
         age: user.age,
         avatar: user.avatar,
+        avatarUrl: user.avatarUrl,
         loginMethod: user.loginMethod,
         placementCompleted: user.placementCompleted,
     };
