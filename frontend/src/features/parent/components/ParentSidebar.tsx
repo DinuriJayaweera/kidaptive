@@ -13,9 +13,9 @@ interface ParentSidebarProps {
 
 export default function ParentSidebar({ onLogout, mobileOpen, onDrawerToggle }: ParentSidebarProps) {
     const drawerContent = (
-        <aside className="admin-sidebar" style={{ position: "static", width: "100%", height: "100%", borderRight: "none", zIndex: 1 }}>
+        <aside className="admin-sidebar admin-sidebar--drawer">
             {/* Brand */}
-            <div className="admin-sidebar__brand" style={{ padding: "0", margin: "20px 0 20px 10px" }}>
+            <div className="admin-sidebar__brand admin-sidebar__brand--drawer">
                 <Box
                     component="img"
                     src={logoImg}

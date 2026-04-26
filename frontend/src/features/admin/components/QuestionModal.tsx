@@ -29,14 +29,7 @@ interface Props {
   readOnly?: boolean;
 }
 
-export const AGE_GROUPS = ["5-6", "7-8", "9-10"];
-
-export const QUESTION_TYPES: { value: QuestionType; label: string; icon: string; helper: string }[] = [
-  { value: "mcq", label: "Multiple Choice", icon: "🔘", helper: "Add multiple answer options" },
-  { value: "fill", label: "Fill in the Blank", icon: "✏️", helper: "Use ____ in your question" },
-  { value: "input", label: "Text Input", icon: "⌨️", helper: "Child will type the answer" },
-  { value: "boolean", label: "True / False", icon: "✅", helper: "True or False question" },
-];
+import { AGE_GROUPS, QUESTION_TYPES } from "../constants";
 
 const DIFFICULTIES: { value: PlacementQuestion["difficulty"]; label: string; color: string; bg: string; border: string }[] = [
   { value: "easy", label: "Easy", color: "#8EE870", bg: "#f0fdf4", border: "#eee" },
@@ -80,10 +73,16 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
     ? activeDB.filter((c) => c.ageGroups.includes(formData.ageGroup!)).map((c) => c.name)
     : activeDB.map((c) => c.name);
 
-  useEffect(() => {
+  // A ref to track previous props to update state without an effect
+  const [prevInitialData, setPrevInitialData] = useState(initialData);
+  const [prevOpen, setPrevOpen] = useState(open);
+
+  if (initialData !== prevInitialData || open !== prevOpen) {
+    setPrevInitialData(initialData);
+    setPrevOpen(open);
     setFormData(getInitialFormData(initialData));
     setErrors({});
-  }, [initialData, open]);
+  }
 
   // ── When type changes, reset options/correctAnswer appropriately ──
   const handleTypeChange = (newType: QuestionType) => {

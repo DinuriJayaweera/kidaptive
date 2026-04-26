@@ -78,28 +78,28 @@ function StatItem({ target, suffix, label, delay, active, decimals = 0 }: {
 /* ─── Static wave: bumps UP ─── */
 const WaveUp = ({ from, to }: { from: string; to: string }) => (
   <Box sx={{ lineHeight: 0, overflow: "hidden", height: 70, mt: "-2px", mb: "-1px" }}>
-    <svg viewBox="0 0 1440 70" xmlns="http://www.w3.org/2000/svg"
-      style={{ display: "block", width: "100%", height: "72px" }}
+    <Box component="svg" viewBox="0 0 1440 70" xmlns="http://www.w3.org/2000/svg"
+      sx={{ display: "block", width: "100%", height: "72px" }}
       preserveAspectRatio="none">
       <rect width="1440" height="70" fill={from} />
       <path fill={to}
         d="M0,35 Q60,0 120,35 Q180,70 240,35 Q300,0 360,35 Q420,70 480,35 Q540,0 600,35 Q660,70 720,35 Q780,0 840,35 Q900,70 960,35 Q1020,0 1080,35 Q1140,70 1200,35 Q1260,0 1320,35 Q1380,70 1440,35 L1440,70 L0,70 Z"
       />
-    </svg>
+    </Box>
   </Box>
 );
 
 /* ─── Static wave: bumps DOWN ─── */
 const WaveDown = ({ from, to }: { from: string; to: string }) => (
   <Box sx={{ lineHeight: 0, overflow: "hidden", height: 70, mt: "-1px", mb: "-2px" }}>
-    <svg viewBox="0 0 1440 70" xmlns="http://www.w3.org/2000/svg"
-      style={{ display: "block", width: "100%", height: "72px" }}
+    <Box component="svg" viewBox="0 0 1440 70" xmlns="http://www.w3.org/2000/svg"
+      sx={{ display: "block", width: "100%", height: "72px" }}
       preserveAspectRatio="none">
       <rect width="1440" height="70" fill={to} />
       <path fill={from}
         d="M0,35 Q60,70 120,35 Q180,0 240,35 Q300,70 360,35 Q420,0 480,35 Q540,70 600,35 Q660,0 720,35 Q780,70 840,35 Q900,0 960,35 Q1020,70 1080,35 Q1140,0 1200,35 Q1260,70 1320,35 Q1380,0 1440,35 L1440,0 L0,0 Z"
       />
-    </svg>
+    </Box>
   </Box>
 );
 

@@ -398,7 +398,7 @@ function DeleteDialog({ open, categoryName, onClose, onConfirm, loading }: Delet
       </DialogTitle>
       <DialogContent>
         <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#64748b", fontSize: 14 }}>
-          Are you sure you want to delete <strong style={{ color: "#1a1a2e" }}>"{categoryName}"</strong>?
+          Are you sure you want to delete <Box component="strong" sx={{ color: "#1a1a2e" }}>"{categoryName}"</Box>?
           {" "}This action cannot be undone.
         </Typography>
       </DialogContent>

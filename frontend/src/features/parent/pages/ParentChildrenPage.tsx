@@ -153,7 +153,7 @@ export default function ParentChildrenPage() {
                                         {avatarEmojis[child.avatar || "default"] ?? "🦖"}
                                     </Avatar>
                                     <Typography variant="h6" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>{child.name}</Typography>
-                                    <Typography sx={{ fontSize: 13, color: "#6b7280", mb: 2 }}>Age {child.age} • Level: <span style={{ textTransform: "capitalize" }}>{dominantLevel}</span></Typography>
+                                    <Typography sx={{ fontSize: 13, color: "#6b7280", mb: 2 }}>Age {child.age} • Level: <Box component="span" sx={{ textTransform: "capitalize" }}>{dominantLevel}</Box></Typography>
 
                                     <Box sx={{ background: "#f8fafc", borderRadius: 2, p: 1.5, mb: 3, display: "flex", justifyContent: "center", gap: 3 }}>
                                         <Box>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { Box } from "@mui/material";
 import {
   placementTestApi,
   type PlacementQuestion,
@@ -217,7 +218,7 @@ export default function PlacementQuizPage() {
             ×
           </button>
           <div className="pq-progress-track">
-            <div className="pq-progress-fill" style={{ width: `${progress}%` }} />
+            <Box className="pq-progress-fill" sx={{ width: `${progress}%` }} />
           </div>
           <span className="pq-counter">
             {currentIndex + 1}/{totalQuestions}

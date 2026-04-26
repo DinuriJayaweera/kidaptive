@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Box } from "@mui/material";
 import { startQuiz, submitQuiz } from "../services/quizApi";
 import type { PlacementQuestion } from "../services/placementTestApi"; // For typing purposes
 import "./PlacementQuiz.css";
@@ -153,41 +154,41 @@ export default function PracticeQuizPage() {
   if (result) {
     return (
       <div className="pq-page">
-        <div className="pq-card" style={{ textAlign: "center", padding: "40px 20px" }}>
-          <h1 style={{ fontFamily: "'Baloo 2', cursive", fontSize: "3rem", color: result.passed ? "#8EE870" : "#FF5144", margin: "0" }}>
+        <Box className="pq-card" sx={{ textAlign: "center", padding: "40px 20px" }}>
+          <Box component="h1" sx={{ fontFamily: "'Baloo 2', cursive", fontSize: "3rem", color: result.passed ? "#8EE870" : "#FF5144", margin: "0" }}>
             {result.passed ? "Great Job!" : "Keep Trying!"}
-          </h1>
-          <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "1.2rem", margin: "20px 0", color: "#64748b" }}>
+          </Box>
+          <Box component="p" sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "1.2rem", margin: "20px 0", color: "#64748b" }}>
             You scored {result.score}%
-          </p>
-          <div style={{ background: "#f0f4f8", borderRadius: "16px", display: "inline-block", padding: "20px 40px", marginBottom: "30px" }}>
-             <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "1.2rem", margin: "0", color: "#111827", fontWeight: 600 }}>
+          </Box>
+          <Box sx={{ background: "#f0f4f8", borderRadius: "16px", display: "inline-block", padding: "20px 40px", marginBottom: "30px" }}>
+             <Box component="p" sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "1.2rem", margin: "0", color: "#111827", fontWeight: 600 }}>
                 +{result.xpGained} XP
-             </p>
-             <p style={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.9rem", color: "#64748b", margin: "5px 0 0 0" }}>
+             </Box>
+             <Box component="p" sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.9rem", color: "#64748b", margin: "5px 0 0 0" }}>
                 Total XP: {result.totalXP}
-             </p>
-          </div>
+             </Box>
+          </Box>
           {result.levelUp && (
-             <div style={{ background: "#fffbe6", color: "#d97706", padding: "12px 24px", borderRadius: "8px", fontWeight: "bold", width: "fit-content", margin: "0 auto 30px auto" }}>
+             <Box sx={{ background: "#fffbe6", color: "#d97706", padding: "12px 24px", borderRadius: "8px", fontWeight: "bold", width: "fit-content", margin: "0 auto 30px auto" }}>
                🎉 Category Level Up: {result.newLevel.toUpperCase()} 🎉
-             </div>
+             </Box>
           )}
-          <div style={{ display: "flex", gap: "12px", justifyContent: "center" }}>
-              <button 
+          <Box sx={{ display: "flex", gap: "12px", justifyContent: "center" }}>
+              <Box component="button" 
                 onClick={handleExit}
-                style={{ background: "#25AFF4", color: "#fff", border: "none", borderRadius: "999px", padding: "12px 32px", fontSize: "16px", fontWeight: "bold", cursor: "pointer" }}>
+                sx={{ background: "#25AFF4", color: "#fff", border: "none", borderRadius: "999px", padding: "12px 32px", fontSize: "16px", fontWeight: "bold", cursor: "pointer" }}>
                 Back to Dashboard
-              </button>
+              </Box>
               {result.passed ? null : (
-                <button 
+                <Box component="button" 
                   onClick={loadTest}
-                  style={{ background: "#f1f5f9", color: "#1e293b", border: "none", borderRadius: "999px", padding: "12px 32px", fontSize: "16px", fontWeight: "bold", cursor: "pointer" }}>
+                  sx={{ background: "#f1f5f9", color: "#1e293b", border: "none", borderRadius: "999px", padding: "12px 32px", fontSize: "16px", fontWeight: "bold", cursor: "pointer" }}>
                   Try Again
-                </button>
+                </Box>
               )}
-          </div>
-        </div>
+          </Box>
+        </Box>
       </div>
     );
   }
@@ -206,10 +207,10 @@ export default function PracticeQuizPage() {
     return (
       <div className="pq-error">
         <p>{error}</p>
-        <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+        <Box sx={{ display: "flex", gap: "10px", justifyContent: "center" }}>
           <button onClick={loadTest}>Try Again</button>
           <button onClick={handleExit}>Dashboard</button>
-        </div>
+        </Box>
       </div>
     );
   }
@@ -231,7 +232,7 @@ export default function PracticeQuizPage() {
         <div className="pq-header">
           <button className="pq-exit" onClick={handleExit} aria-label="Exit">×</button>
           <div className="pq-progress-track">
-            <div className="pq-progress-fill" style={{ width: `${progress}%` }} />
+            <Box className="pq-progress-fill" sx={{ width: `${progress}%` }} />
           </div>
           <span className="pq-counter">{currentIndex + 1}/{totalQuestions}</span>
         </div>

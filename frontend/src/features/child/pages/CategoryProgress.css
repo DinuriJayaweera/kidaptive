@@ -10,12 +10,34 @@
   flex-direction: column;
 }
 
+.cp-page.centered {
+  justify-content: center;
+  align-items: center;
+}
+
+.cp-page.centered-text {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.cp-spacer {
+  width: 80px;
+}
+
+.cp-trophy-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
 .cp-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20px 40px;
   background: rgba(255, 255, 255, 0.7);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   position: sticky;
   top: 0;

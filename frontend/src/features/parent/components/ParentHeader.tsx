@@ -47,7 +47,7 @@ export default function ParentHeader({ userInitials, onDrawerToggle }: ParentHea
                     >
                         <MenuIcon />
                     </IconButton>
-                    <div className="admin-header__breadcrumb" style={{ padding: 0 }}>
+                    <div className="admin-header__breadcrumb">
                         <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>
                             <span>Dashboard</span>
                             <span className="admin-header__breadcrumb-separator">/</span>
@@ -56,8 +56,8 @@ export default function ParentHeader({ userInitials, onDrawerToggle }: ParentHea
                     </div>
                 </Box>
 
-                <div className="admin-header__actions" style={{ paddingRight: "28px" }}>
-                    <button className="admin-header__notification-btn">
+                <div className="admin-header__actions">
+                    <button className="admin-header__notification-btn" title="Notifications" aria-label="Notifications">
                         <BellIcon style={{ fontSize: 22 }} />
                         <span className="admin-header__notification-dot" />
                     </button>

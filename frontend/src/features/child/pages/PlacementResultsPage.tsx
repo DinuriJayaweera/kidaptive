@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Box } from "@mui/material";
 import { useAuth } from "../../auth/context/AuthContext";
 import { placementTestApi, type CategoryResult } from "../services/placementTestApi";
 import kipImg from "../../../assets/kip.png";
@@ -106,40 +107,41 @@ export default function PlacementResultsPage() {
         {results.map((r, i) => {
           const config = LEVEL_CONFIG[r.level] || LEVEL_CONFIG.starter;
           return (
-            <div
+            <Box
               key={r.categoryId}
               className={`pr-card ${showResults ? "pr-card--visible" : ""}`}
-              style={{
+              sx={{
                 animationDelay: `${0.2 + i * 0.12}s`,
                 borderLeftColor: config.color,
               }}
             >
               <div className="pr-card-left">
-                <span className="pr-card-emoji" style={{ background: config.bg }}>
+                <Box component="span" className="pr-card-emoji" sx={{ background: config.bg }}>
                   {config.emoji}
-                </span>
+                </Box>
                 <div className="pr-card-info">
                   <strong className="pr-card-category">{r.categoryId}</strong>
-                  <span className="pr-card-level" style={{ color: config.color }}>
+                  <Box component="span" className="pr-card-level" sx={{ color: config.color }}>
                     {config.label}
-                  </span>
+                  </Box>
                 </div>
               </div>
               <div className="pr-card-right">
                 <span className="pr-card-score">{r.score}%</span>
                 <div className="pr-stars">
                   {[1, 2, 3].map((s) => (
-                    <span
+                    <Box
+                      component="span"
                       key={s}
                       className={`pr-star ${s <= config.stars ? "pr-star--filled" : ""}`}
-                      style={s <= config.stars ? { color: config.color } : {}}
+                      sx={s <= config.stars ? { color: config.color } : {}}
                     >
                       ★
-                    </span>
+                    </Box>
                   ))}
                 </div>
               </div>
-            </div>
+            </Box>
           );
         })}
       </div>

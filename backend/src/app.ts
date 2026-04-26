@@ -50,4 +50,4 @@ app.use("/api/quiz", quizRoutes);
 // ── Centralized Error Handler ────────────────────────────────────────────────
 app.use(errorHandler);
 
-export default app;
+export default app;

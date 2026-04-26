@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { Box } from "@mui/material";
 import { startQuiz, submitQuiz } from "../services/quizApi";
 import type { PlacementQuestion } from "../services/placementTestApi";
 
@@ -278,7 +279,7 @@ export default function AdaptiveQuizPage() {
         <div className="aq-result">
           <div className="aq-result-card">
             <div className="aq-result-emoji">
-              <img src={getResultEmojiSrc(result.passed, false, true)} alt="Result" style={{ width: 80, height: 80, objectFit: "contain" }} />
+              <img src={getResultEmojiSrc(result.passed, false, true)} alt="Result" className="aq-img-80" />
             </div>
             <h1 className={`aq-result-title ${result.passed ? "pass" : "fail"}`}>
               {result.passed ? "Great Practice!" : "Good Try!"}
@@ -307,7 +308,7 @@ export default function AdaptiveQuizPage() {
       <div className="aq-result">
         <div className={`aq-result-card ${resultIsChampion ? "champion-result" : ""}`}>
           <div className="aq-result-emoji">
-            <img src={getResultEmojiSrc(result.passed, resultIsChampion || false, false)} alt="Result" style={{ width: 80, height: 80, objectFit: "contain" }} />
+            <img src={getResultEmojiSrc(result.passed, resultIsChampion || false, false)} alt="Result" className="aq-img-80" />
           </div>
 
           <h1 className={`aq-result-title ${result.passed ? "pass" : "fail"}`}>
@@ -324,7 +325,7 @@ export default function AdaptiveQuizPage() {
           {resultIsChampion && result.newBadge && result.championBadge && (
             <div className="aq-badge-earned">
               <span className="aq-badge-earned-icon">
-                <img src={BADGE_EMOJI[result.championBadge.current] || medalImg} alt="Badge" style={{ width: 40, height: 40 }} />
+                <img src={BADGE_EMOJI[result.championBadge.current] || medalImg} alt="Badge" className="aq-img-40" />
               </span>
               <p className="aq-badge-earned-text">
                 New Badge: {BADGE_LABELS[result.championBadge.current]}!
@@ -336,11 +337,11 @@ export default function AdaptiveQuizPage() {
           {!resultIsChampion && result.levelUp && (
             <div className="aq-level-up-banner">
               <p className="aq-level-up-text">
-                <img src={starImg} alt="Level Up" style={{ width: 16, height: 16, verticalAlign: "middle" }} /> Level Up! → {LEVEL_LABELS[result.newLevel || ""] || result.newLevel} <img src={LEVEL_EMOJI[result.newLevel || ""] || starImg} alt="Level" style={{ width: 16, height: 16, verticalAlign: "middle" }} />
+                <img src={starImg} alt="Level Up" className="aq-img-16" /> Level Up! → {LEVEL_LABELS[result.newLevel || ""] || result.newLevel} <img src={LEVEL_EMOJI[result.newLevel || ""] || starImg} alt="Level" className="aq-img-16" />
               </p>
               <p className="aq-level-up-sub">
                 {result.newLevel === "champion"
-                  ? <>You've unlocked Champion Mode! <img src={crownImg} alt="Crown" style={{ width: 14, height: 14, verticalAlign: "middle" }} /></>
+                  ? <>You've unlocked Champion Mode! <img src={crownImg} alt="Crown" className="aq-img-14" /></>
                   : "You've unlocked harder questions!"}
               </p>
             </div>
@@ -349,7 +350,7 @@ export default function AdaptiveQuizPage() {
           {/* Quiz Milestone (starter/explorer only) */}
           {isQuizMilestone && (
             <div className="aq-milestone">
-              <img src={gemsImg} alt="Gems" style={{ width: 18, height: 18 }} />
+              <img src={gemsImg} alt="Gems" className="aq-img-18" />
               <span className="aq-milestone-text">{result.quizzesCompleted} Quizzes Completed! +2 Bonus Gems</span>
             </div>
           )}
@@ -357,17 +358,17 @@ export default function AdaptiveQuizPage() {
           {/* Rewards */}
           <div className="aq-rewards">
             <div className={`aq-reward-item ${result.xpGained > 0 ? "highlight" : ""}`}>
-              <span className="aq-reward-icon"><img src={xpsImg} alt="XP" style={{ width: 28, height: 28, objectFit: "contain" }} /></span>
+              <span className="aq-reward-icon"><img src={xpsImg} alt="XP" className="aq-img-28" /></span>
               <span className="aq-reward-value">+{result.xpGained}</span>
               <span className="aq-reward-label">XP Earned</span>
             </div>
             <div className={`aq-reward-item ${result.gemsEarned > 0 ? "highlight" : ""}`}>
-              <span className="aq-reward-icon"><img src={gemsImg} alt="Gems" style={{ width: 28, height: 28, objectFit: "contain" }} /></span>
+              <span className="aq-reward-icon"><img src={gemsImg} alt="Gems" className="aq-img-28" /></span>
               <span className="aq-reward-value">+{result.gemsEarned}</span>
               <span className="aq-reward-label">Gems</span>
             </div>
             <div className="aq-reward-item">
-              <span className="aq-reward-icon"><img src={resultIsChampion ? winsImg : xpsImg} alt="Total" style={{ width: 28, height: 28, objectFit: "contain" }} /></span>
+              <span className="aq-reward-icon"><img src={resultIsChampion ? winsImg : xpsImg} alt="Total" className="aq-img-28" /></span>
               <span className="aq-reward-value">{resultIsChampion ? (result.championWins || 0) : result.totalXP}</span>
               <span className="aq-reward-label">{resultIsChampion ? "Wins" : "Total XP"}</span>
             </div>
@@ -386,8 +387,8 @@ export default function AdaptiveQuizPage() {
                   const reached = (result.championWins || 0) >= thresholds[badge];
                   return (
                     <div key={badge} className={`aq-badge-dot ${reached ? "reached" : ""}`}>
-                      <span style={{ filter: reached ? "none" : "grayscale(100%) opacity(0.5)" }}>
-                        <img src={BADGE_EMOJI[badge]} alt={badge} style={{ width: 24, height: 24 }} />
+                      <span className={reached ? "aq-badge-reached" : "aq-badge-unreached"}>
+                        <img src={BADGE_EMOJI[badge]} alt={badge} className="aq-img-24" />
                       </span>
                       <span className="aq-badge-dot-label">{thresholds[badge]}</span>
                     </div>
@@ -409,7 +410,7 @@ export default function AdaptiveQuizPage() {
                 </span>
               </div>
               <div className="aq-result-bar-track">
-                <div className="aq-result-bar-fill" style={{ width: `${xpPercent}%` }} />
+                <Box className="aq-result-bar-fill" sx={{ width: `${xpPercent}%` }} />
               </div>
               <div className="aq-next-level">
                 <span>→</span>
@@ -421,7 +422,7 @@ export default function AdaptiveQuizPage() {
           {/* Actions */}
           <div className="aq-result-actions">
             <button className={resultIsChampion ? "aq-btn-champion" : (result.passed ? "aq-btn-success" : "aq-btn-primary")} onClick={handleNextQuiz}>
-              {resultIsChampion ? <><img src={winsImg} alt="Wins" style={{ width: 14, height: 14, verticalAlign: "middle", marginRight: 6 }} /> Play Again</> : (result.passed ? "Next Quiz →" : "Try Again →")}
+              {resultIsChampion ? <><img src={winsImg} alt="Wins" className="aq-img-14-mr" /> Play Again</> : (result.passed ? "Next Quiz →" : "Try Again →")}
             </button>
             <button className="aq-btn-secondary" onClick={handleBackToHub}>Back to Hub</button>
           </div>
@@ -447,16 +448,16 @@ export default function AdaptiveQuizPage() {
           <div className="pq-header">
             <button className="pq-exit" onClick={handleExit} aria-label="Exit">×</button>
             <div className="pq-progress-track">
-              <div
+              <Box
                 className="pq-progress-fill"
-                style={{
+                sx={{
                   width: `${quizProgress}%`,
                   ...(isChampion ? { background: "linear-gradient(90deg, #f59e0b, #ef4444)" } : {}),
                 }}
               />
             </div>
             <span className="aq-counter">
-              {isChampion && <img src={crownImg} alt="Crown" style={{ width: 14, height: 14, verticalAlign: "middle", marginRight: 4 }} />}{currentIndex + 1}/{totalQuestions}
+              {isChampion && <img src={crownImg} alt="Crown" className="aq-img-14-mr4" />}{currentIndex + 1}/{totalQuestions}
             </span>
           </div>
 

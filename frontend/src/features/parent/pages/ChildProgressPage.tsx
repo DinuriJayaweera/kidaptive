@@ -47,13 +47,17 @@ export default function ChildProgressPage() {
     const [timeView, setTimeView] = useState<"weekly" | "monthly">("weekly");
 
     useEffect(() => {
-        const raf = requestAnimationFrame(() => setMounted(true));
+        let outer = 0;
+        let inner = 0;
+        outer = requestAnimationFrame(() => {
+            inner = requestAnimationFrame(() => setMounted(true));
+        });
         if (!childId) return;
         getChildProgress(childId)
             .then(setChild)
             .catch((err) => setError(err.response?.data?.message ?? "Failed to load progress."))
             .finally(() => setLoading(false));
-        return () => cancelAnimationFrame(raf);
+        return () => { cancelAnimationFrame(outer); cancelAnimationFrame(inner); };
     }, [childId]);
 
     if (loading) {
@@ -197,7 +201,7 @@ export default function ChildProgressPage() {
                         <Typography variant="h5" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>{child.name}</Typography>
 
                         <Typography sx={{ fontSize: 14, color: "#6b7280", mb: 3 }}>
-                            Age {child.age} • Level: <span style={{ textTransform: "capitalize" }}>{levelLabels[overallLevel]}</span>
+                            Age {child.age} • Level: <Box component="span" sx={{ textTransform: "capitalize" }}>{levelLabels[overallLevel]}</Box>
                         </Typography>
 
                         {/* Total XP & Gems */}

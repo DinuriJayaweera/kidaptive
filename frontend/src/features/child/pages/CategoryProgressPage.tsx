@@ -38,17 +38,30 @@ export default function CategoryProgressPage() {
 
   useEffect(() => {
     if (!categoryId) return;
-    setLoading(true);
-    getCategoryProgress(categoryId)
-      .then((data) => {
-        setProgress(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError("Failed to load progress path.");
-        setLoading(false);
-      });
+
+    let isSubscribed = true;
+    const fetchProgress = async () => {
+      setLoading(true);
+      try {
+        const data = await getCategoryProgress(categoryId);
+        if (isSubscribed) {
+          setProgress(data);
+          setLoading(false);
+        }
+      } catch (err) {
+        if (isSubscribed) {
+          console.error(err);
+          setError("Failed to load progress path.");
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchProgress();
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [categoryId]);
 
   // Scroll to current node when loaded
@@ -60,7 +73,7 @@ export default function CategoryProgressPage() {
 
   if (loading) {
     return (
-      <div className="cp-page" style={{ justifyContent: "center", alignItems: "center" }}>
+      <div className="cp-page centered">
         <div className="aq-loading-spinner" />
       </div>
     );
@@ -68,7 +81,7 @@ export default function CategoryProgressPage() {
 
   if (error || !progress) {
     return (
-      <div className="cp-page" style={{ justifyContent: "center", alignItems: "center", textAlign: "center" }}>
+      <div className="cp-page centered-text">
         <h2>Oops!</h2>
         <p>{error}</p>
         <button className="cp-back-btn" onClick={() => navigate("/child/dashboard")}>
@@ -159,7 +172,7 @@ export default function CategoryProgressPage() {
           ← Back
         </button>
         <h1 className="cp-title">{categoryId} Journey</h1>
-        <div style={{ width: 80 }} /> {/* spacer for center alignment */}
+        <div className="cp-spacer" /> {/* spacer for center alignment */}
       </header>
 
       <div className="cp-timeline-container">
@@ -177,7 +190,7 @@ export default function CategoryProgressPage() {
                   {item.locked ? (
                     <LockIcon sx={{ fontSize: 32, color: "#A0AEC0" }} />
                   ) : (
-                    <img src={TrophyIconSrc} alt={item.level} style={{ width: 44, height: 44, objectFit: "contain" }} />
+                    <img src={TrophyIconSrc} alt={item.level} className="cp-trophy-img" />
                   )}
                 </div>
                 <div className="cp-trophy-label">{item.label}</div>

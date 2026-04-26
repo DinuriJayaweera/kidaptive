@@ -28,11 +28,13 @@ export default function ParentDashboardPage() {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        // Delay chart render until after the browser has painted and computed layout.
-        // requestAnimationFrame guarantees at least one frame has been drawn,
-        // so ResponsiveContainer can measure real pixel dimensions (not -1x-1).
-        const raf = requestAnimationFrame(() => {
-            setMounted(true);
+        // Double-rAF: wait two animation frames so the browser has fully
+        // painted *and* computed CSS layout before ResponsiveContainer
+        // measures its parent — prevents the -1×-1 size warning.
+        let outer = 0;
+        let inner = 0;
+        outer = requestAnimationFrame(() => {
+            inner = requestAnimationFrame(() => setMounted(true));
         });
 
         getParentChildrenEnriched()
@@ -40,7 +42,7 @@ export default function ParentDashboardPage() {
             .catch((err) => setError(err.response?.data?.message ?? "Failed to load dashboard data."))
             .finally(() => setLoading(false));
 
-        return () => cancelAnimationFrame(raf);
+        return () => { cancelAnimationFrame(outer); cancelAnimationFrame(inner); };
     }, []);
 
     const totalXp = children.reduce((acc, c) => acc + (c.totalXP || 0), 0);

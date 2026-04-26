@@ -124,7 +124,7 @@ export default function AdminDashboardPage() {
                 </Typography>
                 <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", lineHeight: 1.8, fontSize: 13.5 }}>
                     You are logged in as{" "}
-                    <strong style={{ color: "#25AFF4", fontWeight: 600 }}>admin</strong>. Use this console
+                    <Box component="strong" sx={{ color: "#25AFF4", fontWeight: 600 }}>admin</Box>. Use this console
                     to manage users, monitor activity, and configure the Kidaptive
                     platform. More admin tools will be available here as the platform
                     grows.

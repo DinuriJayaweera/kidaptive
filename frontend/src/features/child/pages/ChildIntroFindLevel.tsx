@@ -29,7 +29,7 @@ export default function ChildIntroFindLevel() {
             ‹
           </button>
           <div className="intro-progress-track">
-            <div className="intro-progress-fill" style={{ width: "75%" }} />
+            <div className="intro-progress-fill w-75" />
           </div>
         </div>
 

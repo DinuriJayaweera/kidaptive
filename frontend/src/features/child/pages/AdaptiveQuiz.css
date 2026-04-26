@@ -64,6 +64,20 @@
   100% { transform: scale(1) rotate(360deg); opacity: 1; }
 }
 
+/* ── Helpers ──────────────────────────────────────── */
+.aq-img-80 { width: 80px; height: 80px; object-fit: contain; }
+.aq-img-40 { width: 40px; height: 40px; }
+.aq-img-16 { width: 16px; height: 16px; vertical-align: middle; }
+.aq-img-14 { width: 14px; height: 14px; vertical-align: middle; }
+.aq-img-14-mr { width: 14px; height: 14px; vertical-align: middle; margin-right: 6px; }
+.aq-img-14-mr4 { width: 14px; height: 14px; vertical-align: middle; margin-right: 4px; }
+.aq-img-18 { width: 18px; height: 18px; }
+.aq-img-28 { width: 28px; height: 28px; object-fit: contain; }
+.aq-img-24 { width: 24px; height: 24px; }
+
+.aq-badge-unreached { filter: grayscale(100%) opacity(0.5); }
+.aq-badge-reached { filter: none; }
+
 /* ── Category Hub Page ────────────────────────────── */
 .aq-hub {
   min-height: 100vh;
@@ -95,6 +109,7 @@
   padding: 10px 20px;
   cursor: pointer;
   transition: all 0.25s ease;
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 
@@ -161,6 +176,7 @@
 
 .aq-xp-card {
   background: rgba(255, 255, 255, 0.85);
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   border: 2px solid rgba(255, 255, 255, 0.6);
   border-radius: 28px;
@@ -261,6 +277,7 @@
   justify-content: center;
   gap: 8px;
   background: rgba(255, 255, 255, 0.75);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border: 2px solid rgba(255, 255, 255, 0.5);
   border-radius: 20px;
@@ -366,6 +383,7 @@
 
 .aq-result-card {
   background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border: 2px solid rgba(255, 255, 255, 0.6);
   border-radius: 32px;
@@ -779,6 +797,7 @@
 
 .aq-champion-card {
   background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
   border: 2px solid transparent;
   border-radius: 28px;

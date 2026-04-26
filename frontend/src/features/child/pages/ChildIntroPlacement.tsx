@@ -29,7 +29,7 @@ export default function ChildIntroPlacement() {
             ‹
           </button>
           <div className="intro-progress-track">
-            <div className="intro-progress-fill" style={{ width: "90%" }} />
+            <div className="intro-progress-fill w-90" />
           </div>
         </div>
 

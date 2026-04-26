@@ -48,7 +48,7 @@ export default function ChildIntroAchievements() {
             ‹
           </button>
           <div className="intro-progress-track">
-            <div className="intro-progress-fill" style={{ width: "50%" }} />
+            <div className="intro-progress-fill w-50" />
           </div>
         </div>
 
@@ -67,8 +67,7 @@ export default function ChildIntroAchievements() {
           {ACHIEVEMENTS.map((a, i) => (
             <div
               key={i}
-              className="intro-achieve-item"
-              style={{ animationDelay: `${0.3 + i * 0.15}s` }}
+              className={`intro-achieve-item delay-${i}`}
             >
               <div className="intro-achieve-icon">{a.icon}</div>
               <div className="intro-achieve-text">

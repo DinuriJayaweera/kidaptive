@@ -41,7 +41,8 @@ import {
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getQuestions, getStats, createQuestion, updateQuestion, deleteQuestion } from "../api/adminQuizApi";
 import type { QuizQuestion } from "../api/adminQuizApi";
-import QuestionModal, { AGE_GROUPS } from "../components/QuestionModal";
+import QuestionModal from "../components/QuestionModal";
+import { AGE_GROUPS } from "../constants";
 import { getCategories } from "../api/categoryApi";
 import { Badge } from "../../../components/ui/Badge";
 
