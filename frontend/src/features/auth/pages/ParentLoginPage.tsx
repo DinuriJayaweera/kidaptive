@@ -21,7 +21,7 @@ import AnimatedPage, { AnimatedItem } from "../components/AnimatedPage";
 import kipImg from "../../../assets/kip_b.png";
 
 const GoogleColorIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 18 18" style={{ marginRight: 8 }}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 18 18" className="google-btn-icon">
         <path fill="#4285F4" d="M17.64 9.2c0-.63-.06-1.25-.16-1.84H9v3.47h4.84c-.21 1.12-.84 2.07-1.8 2.7v2.24h2.91c1.7-1.57 2.69-3.89 2.69-6.57z" />
         <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.91-2.24c-.8.54-1.84.87-3.05.87-2.35 0-4.33-1.59-5.05-3.73H.96v2.3C2.44 15.96 5.48 18 9 18z" />
         <path fill="#FBBC05" d="M3.95 10.73c-.18-.54-.28-1.12-.28-1.73s.1-1.19.28-1.73V4.97H.96c-.61 1.22-.96 2.6-.96 4.03s.35 2.81.96 4.03l2.99-2.3z" />

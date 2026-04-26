@@ -3,6 +3,13 @@ import User, { IUser } from "../models/User.js";
 import CategoryProgress from "../models/categoryProgress.model.js";
 import PlacementResult from "../models/placementResult.model.js";
 import ActivityLog from "../models/activityLog.model.js";
+import {
+    getParentProfile,
+    updateParentProfile,
+    updateParentAvatar,
+    deleteParentAccount,
+    changeParentPassword,
+} from "../services/parent-profile.service.js";
 
 // Utility to get child enhanced structure
 async function getChildEnhancedData(child: IUser, includePlacement = false) {
@@ -248,5 +255,99 @@ export const deleteChild = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error in deleteChild:", error);
     res.status(500).json({ message: "Failed to delete child." });
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PARENT PROFILE ENDPOINTS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── GET /parent/profile ──
+export const getProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.userId;
+    const profile = await getParentProfile(userId);
+    res.json(profile);
+  } catch (error: any) {
+    console.error("Error in getProfile:", error);
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+    res.status(500).json({ message: "Failed to load profile." });
+  }
+};
+
+// ── PATCH /parent/profile ──
+export const patchProfile = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.userId;
+    const result = await updateParentProfile(userId, req.body);
+    res.json(result);
+  } catch (error: any) {
+    console.error("Error in patchProfile:", error);
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+    res.status(500).json({ message: "Failed to update profile." });
+  }
+};
+
+// ── POST /parent/avatar ──
+export const uploadAvatar = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.userId;
+
+    // Support base64 uploads
+    const { avatarData } = req.body;
+    if (!avatarData || typeof avatarData !== "string") {
+      return res.status(400).json({ message: "Avatar data is required (base64 string)." });
+    }
+
+    // Store as data URL directly in DB (for simplicity without cloud storage)
+    const result = await updateParentAvatar(userId, avatarData);
+    res.json(result);
+  } catch (error: any) {
+    console.error("Error in uploadAvatar:", error);
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+    res.status(500).json({ message: "Failed to upload avatar." });
+  }
+};
+
+// ── POST /parent/change-password ──
+export const changePassword = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.userId;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Current and new passwords are required." });
+    }
+
+    const result = await changeParentPassword(userId, { currentPassword, newPassword });
+    res.json(result);
+  } catch (error: any) {
+    console.error("Error in changePassword:", error);
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+    res.status(500).json({ message: "Failed to change password." });
+  }
+};
+
+// ── DELETE /parent/account ──
+export const removeAccount = async (req: Request, res: Response) => {
+  try {
+    const userId = (req as any).user.userId;
+    const { confirmation } = req.body;
+    const result = await deleteParentAccount(userId, confirmation);
+    res.json(result);
+  } catch (error: any) {
+    console.error("Error in removeAccount:", error);
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
+    res.status(500).json({ message: "Failed to delete account." });
   }
 };

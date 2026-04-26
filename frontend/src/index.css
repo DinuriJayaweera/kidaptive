@@ -27,3 +27,5 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
+.cursor-pointer { cursor: pointer; }

@@ -1,7 +1,8 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { NotificationsNoneOutlined as BellIcon, Menu as MenuIcon } from "@mui/icons-material";
 import { parentNavSections } from "../navigation/parentNavConfig";
 import { AppBar, Toolbar, IconButton, Box } from "@mui/material";
+import { useAuth } from "../../auth/context/AuthContext";
 import "../../admin/styles/adminLayout.css";
 
 interface ParentHeaderProps {
@@ -11,6 +12,8 @@ interface ParentHeaderProps {
 
 export default function ParentHeader({ userInitials, onDrawerToggle }: ParentHeaderProps) {
     const { pathname } = useLocation();
+    const navigate = useNavigate();
+    const { user } = useAuth();
 
     // Derive breadcrumb from current path using parent nav sections
     const currentNav = parentNavSections
@@ -58,10 +61,20 @@ export default function ParentHeader({ userInitials, onDrawerToggle }: ParentHea
 
                 <div className="admin-header__actions">
                     <button className="admin-header__notification-btn" title="Notifications" aria-label="Notifications">
-                        <BellIcon style={{ fontSize: 22 }} />
+                        <BellIcon sx={{ fontSize: 22 }} />
                         <span className="admin-header__notification-dot" />
                     </button>
-                    <div className="admin-header__avatar">{userInitials}</div>
+                    <Box 
+                        className="admin-header__avatar cursor-pointer" 
+                        onClick={() => navigate("/parent/profile")}
+                        sx={{ overflow: 'hidden', padding: user?.avatar ? 0 : undefined, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                        {user?.avatar ? (
+                            <Box component="img" src={user.avatar} alt="Profile" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                            userInitials
+                        )}
+                    </Box>
                 </div>
             </Toolbar>
         </AppBar>

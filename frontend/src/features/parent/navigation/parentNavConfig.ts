@@ -2,7 +2,6 @@ import {
     Dashboard as DashboardIcon,
     People as PeopleIcon,
     Settings as SettingsIcon,
-    Person as PersonIcon,
 } from "@mui/icons-material";
 
 export const parentNavSections = [
@@ -16,7 +15,6 @@ export const parentNavSections = [
     {
         title: "Account",
         items: [
-            { label: "Profile", path: "/parent/profile", icon: PersonIcon },
             { label: "Settings", path: "/parent/settings", icon: SettingsIcon },
         ],
     },

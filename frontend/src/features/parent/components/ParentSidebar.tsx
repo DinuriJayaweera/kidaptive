@@ -15,7 +15,7 @@ export default function ParentSidebar({ onLogout, mobileOpen, onDrawerToggle }: 
     const drawerContent = (
         <aside className="admin-sidebar admin-sidebar--drawer">
             {/* Brand */}
-            <div className="admin-sidebar__brand admin-sidebar__brand--drawer">
+            <div className="admin-sidebar__brand admin-sidebar__brand--drawer cursor-pointer" onClick={() => window.location.href = '/'}>
                 <Box
                     component="img"
                     src={logoImg}

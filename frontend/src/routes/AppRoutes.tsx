@@ -12,6 +12,8 @@ import ParentDashboardPage from "../features/parent/pages/ParentDashboardPage";
 import CreateChildPage from "../features/parent/pages/CreateChildPage";
 import ParentChildrenPage from "../features/parent/pages/ParentChildrenPage";
 import ChildProgressPage from "../features/parent/pages/ChildProgressPage";
+import ParentProfilePage from "../features/parent/pages/ParentProfilePage";
+import ParentSettingsPage from "../features/parent/pages/ParentSettingsPage";
 import ParentLayout from "../features/parent/layouts/ParentLayout";
 import ChildDashboardPage from "../features/child/pages/ChildDashboardPage";
 import ChildIntroPage from "../features/child/pages/ChildIntroPage";
@@ -69,8 +71,8 @@ export default function AppRoutes() {
                 <Route path="/parent/children/new" element={<CreateChildPage />} />
                 <Route path="/parent/children" element={<ParentChildrenPage />} />
                 <Route path="/parent/child/:childId" element={<ChildProgressPage />} />
-                <Route path="/parent/settings" element={<ParentDashboardPage />} />
-                <Route path="/parent/profile" element={<ParentDashboardPage />} />
+                <Route path="/parent/settings" element={<ParentSettingsPage />} />
+                <Route path="/parent/profile" element={<ParentProfilePage />} />
             </Route>
 
             {/* Child — protected */}

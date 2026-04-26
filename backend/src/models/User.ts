@@ -2,6 +2,20 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 
 // ── Types ────────────────────────────────────────────────────────────────────
+export interface INotificationSettings {
+    emailNotifications: boolean;
+    learningReminders: boolean;
+    progressReports: boolean;
+    weeklyDigest: boolean;
+}
+
+export interface IMonitoringSettings {
+    trackScreenTime: boolean;
+    dailyLimitMinutes: number;
+    contentFiltering: boolean;
+    activityAlerts: boolean;
+}
+
 export interface IUser {
     _id: Types.ObjectId;
     name: string;
@@ -22,6 +36,15 @@ export interface IUser {
     resetOtp?: string;
     resetOtpExpiry?: Date;
     resetOtpAttempts: number;
+
+    // Parent profile/settings
+    phone?: string;
+    avatarUrl?: string;
+    themePreference: "light" | "dark" | "system";
+    notificationSettings: INotificationSettings;
+    monitoringSettings: IMonitoringSettings;
+    timezone: string;
+    dateFormat: string;
 
     // Child-specific
     parentId?: Types.ObjectId;
@@ -74,6 +97,25 @@ const userSchema = new Schema<IUser>(
         resetOtp: { type: String },
         resetOtpExpiry: { type: Date },
         resetOtpAttempts: { type: Number, default: 0 },
+
+        // Parent profile/settings
+        phone: { type: String, trim: true },
+        avatarUrl: { type: String },
+        themePreference: { type: String, enum: ["light", "dark", "system"], default: "system" },
+        notificationSettings: {
+            emailNotifications: { type: Boolean, default: true },
+            learningReminders: { type: Boolean, default: true },
+            progressReports: { type: Boolean, default: true },
+            weeklyDigest: { type: Boolean, default: false },
+        },
+        monitoringSettings: {
+            trackScreenTime: { type: Boolean, default: true },
+            dailyLimitMinutes: { type: Number, default: 60 },
+            contentFiltering: { type: Boolean, default: true },
+            activityAlerts: { type: Boolean, default: false },
+        },
+        timezone: { type: String, default: "UTC" },
+        dateFormat: { type: String, default: "MM/DD/YYYY" },
 
         // Child-specific
         parentId: { type: Schema.Types.ObjectId, ref: "User" },

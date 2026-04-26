@@ -76,3 +76,56 @@ export const deleteChild = async (childId: string) => {
     const res = await api.delete(`/parent/child/${childId}`);
     return res.data;
 };
+
+// ── Parent Profile & Settings ────────────────────────────────────────────────
+export interface ParentProfile {
+    _id: string;
+    name: string;
+    email: string;
+    phone: string;
+    avatarUrl: string;
+    memberSince: string;
+    emailVerified: boolean;
+    authProvider: "local" | "google";
+    themePreference: "light" | "dark" | "system";
+    notificationSettings: {
+        emailNotifications: boolean;
+        learningReminders: boolean;
+        progressReports: boolean;
+        weeklyDigest: boolean;
+    };
+    monitoringSettings: {
+        trackScreenTime: boolean;
+        dailyLimitMinutes: number;
+        contentFiltering: boolean;
+        activityAlerts: boolean;
+    };
+    timezone: string;
+    dateFormat: string;
+    childCount: number;
+}
+
+export const getParentProfile = async (): Promise<ParentProfile> => {
+    const res = await api.get("/parent/profile");
+    return res.data;
+};
+
+export const updateParentProfile = async (data: Partial<Omit<ParentProfile, "_id" | "email" | "memberSince" | "emailVerified" | "authProvider" | "childCount">>): Promise<{ message: string; profile: ParentProfile }> => {
+    const res = await api.patch("/parent/profile", data);
+    return res.data;
+};
+
+export const uploadParentAvatar = async (avatarData: string): Promise<{ message: string; avatarUrl: string }> => {
+    const res = await api.post("/parent/avatar", { avatarData });
+    return res.data;
+};
+
+export const changeParentPassword = async (data: { currentPassword: string; newPassword: string }): Promise<{ message: string }> => {
+    const res = await api.post("/parent/change-password", data);
+    return res.data;
+};
+
+export const deleteParentAccount = async (confirmation: string): Promise<{ message: string }> => {
+    const res = await api.delete("/parent/account", { data: { confirmation } });
+    return res.data;
+};

@@ -1,0 +1,112 @@
+/* ─── Parent Settings Page ────────────────────────────────── */
+.ps-container { max-width: 1100px; margin: 0 auto; }
+.ps-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; }
+
+.ps-page-header { margin-bottom: 8px; }
+.ps-page-title { font-family: 'Baloo 2', cursive !important; font-weight: 700 !important; color: var(--text-primary, #111827); }
+.ps-page-subtitle { font-family: 'Poppins', sans-serif; color: var(--text-secondary, #6b7280); font-size: 14px; margin-top: 4px; }
+
+/* Save Bar */
+.ps-save-bar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.ps-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 24px; font-family: 'Poppins', sans-serif;
+    font-weight: 600; font-size: 13px; cursor: pointer; border: none;
+    transition: all 0.2s ease; white-space: nowrap;
+}
+.ps-btn-save { background: #25AFF4; color: #fff; }
+.ps-btn-save:hover:not(.ps-btn-disabled) { background: #0fa8ef; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37,175,244,0.3); }
+.ps-btn-disabled { opacity: 0.5; cursor: not-allowed !important; }
+.ps-btn-reset { background: var(--bg-subtle, #f3f4f6); color: var(--text-secondary, #6b7280); border: 1px solid var(--border-color, #e5e7eb); }
+.ps-btn-reset:hover { background: var(--bg-hover, #e5e7eb); }
+.ps-btn-outline { background: transparent; color: #25AFF4; border: 1.5px solid #25AFF4; border-radius: 24px; }
+.ps-btn-outline:hover { background: #e0f2fe; }
+.ps-btn-danger { background: #ef4444; color: #fff; margin-top: 12px; }
+.ps-btn-danger:hover { background: #dc2626; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(239,68,68,0.3); }
+
+/* Section Card */
+.ps-section {
+    border-radius: 16px !important; padding: 24px !important; margin-bottom: 20px;
+    background: var(--card-bg, #fff) !important;
+    border: 1px solid var(--border-color, #e8ecf1) !important;
+    transition: box-shadow 0.2s;
+}
+.ps-section:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+.ps-section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border-color, #e8ecf1); }
+.ps-section-icon { font-size: 22px !important; color: #25AFF4; }
+.ps-section-title { font-family: 'Poppins', sans-serif !important; font-weight: 600 !important; font-size: 15px !important; color: var(--text-primary, #111827) !important; }
+
+/* Avatar Area */
+.ps-avatar-area { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.ps-avatar-wrap { position: relative; }
+.ps-avatar-upload {
+    position: absolute; bottom: 0; right: 0;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: #25AFF4; color: #fff; border: 2px solid var(--card-bg, #fff);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s;
+}
+.ps-avatar-upload:hover { background: #0fa8ef; transform: scale(1.1); }
+.ps-avatar-hint { font-size: 12px; color: var(--text-tertiary, #9ca3af); font-family: 'Poppins', sans-serif; }
+
+/* Fields */
+.ps-fields { display: flex; flex-direction: column; gap: 16px; }
+.ps-field .MuiInputBase-root { border-radius: 12px !important; }
+
+/* Toggle Rows */
+.ps-toggle-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid var(--border-light, #f3f4f6);
+}
+.ps-toggle-row:last-child { border-bottom: none; }
+.ps-toggle-label { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 14px; color: var(--text-primary, #111827); }
+.ps-toggle-desc { font-family: 'Poppins', sans-serif; font-size: 12px; color: var(--text-tertiary, #9ca3af); margin-top: 2px; }
+
+/* Security */
+.ps-security-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* Report Cards */
+.ps-report-cards { display: flex; flex-direction: column; gap: 12px; }
+.ps-report-card {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px; border-radius: 14px;
+    background: var(--bg-subtle, #f9fafb);
+    border: 1px solid var(--border-color, #e8ecf1);
+    cursor: pointer; transition: all 0.2s;
+}
+.ps-report-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); border-color: #25AFF4; }
+.ps-report-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.ps-report-title { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; color: var(--text-primary, #111827); }
+.ps-report-desc { font-family: 'Poppins', sans-serif; font-size: 12px; color: var(--text-tertiary, #9ca3af); }
+
+/* Danger Zone */
+.ps-danger-zone { border-color: #fecaca !important; background: var(--danger-bg, #fff5f5) !important; }
+.ps-danger-zone .ps-section-header { border-bottom-color: #fecaca; }
+.ps-danger-icon { color: #ef4444 !important; }
+.ps-danger-title { color: #ef4444 !important; }
+.ps-danger-desc { font-family: 'Poppins', sans-serif; font-size: 13px; color: var(--text-secondary, #6b7280); margin-bottom: 8px; line-height: 1.6; }
+
+.ps-icon-blue { background: #e0f2fe; }
+.ps-icon-green { background: #f0fdf4; }
+
+/* ─── Dark Mode ───────────────────────────────────────────── */
+[data-theme="dark"] .ps-section { background: #1e293b !important; border-color: #334155 !important; }
+[data-theme="dark"] .ps-section-header { border-bottom-color: #334155; }
+[data-theme="dark"] .ps-toggle-row { border-bottom-color: #1e293b; }
+[data-theme="dark"] .ps-report-card { background: #0f172a; border-color: #334155; }
+[data-theme="dark"] .ps-danger-zone { background: #1c1015 !important; border-color: #7f1d1d !important; }
+[data-theme="dark"] .ps-danger-zone .ps-section-header { border-bottom-color: #7f1d1d; }
+[data-theme="dark"] .ps-btn-reset { background: #334155; color: #94a3b8; border-color: #475569; }
+[data-theme="dark"] .ps-field .MuiInputBase-root { background: #0f172a; color: #e2e8f0; }
+[data-theme="dark"] .ps-field .MuiInputLabel-root { color: #94a3b8; }
+[data-theme="dark"] .ps-icon-blue { background: #0c4a6e; }
+[data-theme="dark"] .ps-icon-green { background: #14532d; }
+
+/* ─── Responsive ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .ps-save-bar { justify-content: stretch; }
+    .ps-save-bar .ps-btn { flex: 1; justify-content: center; }
+    .ps-security-actions { flex-direction: column; }
+    .ps-security-actions .ps-btn { width: 100%; justify-content: center; }
+    .ps-avatar-area { flex-direction: column; align-items: center; text-align: center; }
+}

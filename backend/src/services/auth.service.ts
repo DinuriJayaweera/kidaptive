@@ -442,13 +442,13 @@ export async function googleLoginParent(token: string, res: Response) {
     if (!user) throw NotFound("No account found with this Google email. Please sign up first.");
 
     user.emailVerified = true;
-    user.authProvider  = "google";
+    user.authProvider = "google";
     await user.save();
 
-    const accessToken  = signAccessToken({ userId: user._id.toString(), role: user.role });
+    const accessToken = signAccessToken({ userId: user._id.toString(), role: user.role });
     const refreshToken = signRefreshToken({
-        userId:       user._id.toString(),
-        role:         user.role,
+        userId: user._id.toString(),
+        role: user.role,
         tokenVersion: user.tokenVersion,
     });
     setTokenCookies(res, refreshToken);
@@ -475,16 +475,16 @@ export async function googleSignupParent(token: string, res: Response) {
     const user = await User.create({
         name,
         email,
-        password:      "google-oauth-" + Math.random().toString(36).slice(2),
-        role:          "parent",
-        authProvider:  "google",
+        password: "google-oauth-" + Math.random().toString(36).slice(2),
+        role: "parent",
+        authProvider: "google",
         emailVerified: true,
     });
 
-    const accessToken  = signAccessToken({ userId: user._id.toString(), role: user.role });
+    const accessToken = signAccessToken({ userId: user._id.toString(), role: user.role });
     const refreshToken = signRefreshToken({
-        userId:       user._id.toString(),
-        role:         user.role,
+        userId: user._id.toString(),
+        role: user.role,
         tokenVersion: user.tokenVersion,
     });
     setTokenCookies(res, refreshToken);

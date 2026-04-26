@@ -125,13 +125,13 @@ export default function LandingPage() {
   return (
     <Box>
       {/* ═══════════════ HERO ═══════════════ */}
-      <Box sx={{ backgroundColor: "#c8e6f7", mt: "-100px", pt: "100px" }}>
+      <Box sx={{ backgroundColor: "var(--landing-hero-bg, #c8e6f7)", mt: "-100px", pt: "100px" }}>
         <Container maxWidth="lg">
           <Grid container alignItems="center" sx={{ minHeight: { xs: "auto", md: "420px" }, py: { xs: 6, md: 5 } }} spacing={4}>
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography
                 variant="h2"
-                sx={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 900, color: "#1a1a2e", lineHeight: 1.15, fontSize: { xs: "2.1rem", sm: "2.5rem", md: "3.2rem" }, mb: 2 }}
+                sx={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 900, color: "var(--landing-text-main, #1a1a2e)", lineHeight: 1.15, fontSize: { xs: "2.1rem", sm: "2.5rem", md: "3.2rem" }, mb: 2 }}
               >
                 Learn English{" "}
                 <Box component="span" sx={{ display: "block" }}>
@@ -139,7 +139,7 @@ export default function LandingPage() {
                   <Box component="span" sx={{ color: "#86DB8C" }}>Kip!</Box>
                 </Box>
               </Typography>
-              <Typography variant="body1" sx={{ fontFamily: "'Poppins', sans-serif", color: "#444", mb: 4, maxWidth: 420, lineHeight: 1.8 }}>
+              <Typography variant="body1" sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--landing-text-muted, #444)", mb: 4, maxWidth: 420, lineHeight: 1.8 }}>
                 Fun grammar, writing, and vocabulary lessons designed for young learners. Personalized learning paths that adapt to your child's level and progress.
               </Typography>
               <Button
@@ -200,11 +200,11 @@ export default function LandingPage() {
             </Grid>
           </Grid>
         </Container>
-        <WaveDown from="#c8e6f7" to="#ffffff" />
+        <WaveDown from="var(--landing-hero-bg, #c8e6f7)" to="var(--landing-bg, #ffffff)" />
       </Box>
 
       {/* ═══════════════ WHO ARE YOU? ═══════════════ */}
-      <Box ref={whoRef} sx={{ backgroundColor: "#fff", py: 8 }}>
+      <Box ref={whoRef} sx={{ backgroundColor: "var(--landing-bg, #ffffff)", py: 8 }}>
         <Container maxWidth="md">
           <Box
             sx={{
@@ -213,10 +213,10 @@ export default function LandingPage() {
               transition: "opacity 0.7s ease, transform 0.7s cubic-bezier(0.34,1.56,0.64,1)",
             }}
           >
-            <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "#1a1a2e", mb: 0.5 }}>
+            <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "var(--landing-text-main, #1a1a2e)", mb: 0.5 }}>
               WHO ARE YOU?
             </Typography>
-            <Typography variant="body1" sx={{ fontFamily: "'Poppins', sans-serif", textAlign: "center", color: "#777", mb: 5 }}>
+            <Typography variant="body1" sx={{ fontFamily: "'Poppins', sans-serif", textAlign: "center", color: "var(--landing-text-muted, #777)", mb: 5 }}>
               Select your profile to continue your journey
             </Typography>
 
@@ -261,11 +261,11 @@ export default function LandingPage() {
 
               <Grid container spacing={3} justifyContent="center">
                 <Grid size={{ xs: 12, sm: 5 }}>
-                  <Card
+                  <Box
                     onClick={() => navigate("/auth/child/pin")}
                     sx={{
                       backgroundColor: "#3ab5e6",
-                      color: "#fff",
+                      color: "var(--landing-bg, #ffffff)",
                       borderRadius: 5,
                       textAlign: "center",
                       py: 4,
@@ -291,14 +291,14 @@ export default function LandingPage() {
                       <Typography variant="h6" fontWeight={700}>I'm a child</Typography>
                       <Typography variant="caption" sx={{ opacity: 0.85 }}>Start your adventure!</Typography>
                     </CardContent>
-                  </Card>
+                  </Box>
                 </Grid>
 
                 <Grid size={{ xs: 12, sm: 5 }}>
-                  <Card
+                  <Box
                     onClick={() => navigate("/auth/login")}
                     sx={{
-                      backgroundColor: "#fff",
+                      backgroundColor: "var(--landing-bg, #ffffff)",
                       border: "2px solid #e0e0e0",
                       borderRadius: 5,
                       textAlign: "center",
@@ -325,7 +325,7 @@ export default function LandingPage() {
                       <Typography variant="h6" fontWeight={700} color="#4caf50">I'm a Parent</Typography>
                       <Typography variant="caption" color="text.secondary">Monitor progress</Typography>
                     </CardContent>
-                  </Card>
+                  </Box>
                 </Grid>
               </Grid>
             </Box>
@@ -335,8 +335,8 @@ export default function LandingPage() {
 
       {/* ═══════════════ FEATURES ═══════════════ */}
       <Box>
-        <WaveUp from="#ffffff" to="#E0F2FE" />
-        <Box sx={{ backgroundColor: "#E0F2FE", py: 6 }}>
+        <WaveUp from="var(--landing-bg, #ffffff)" to="var(--landing-feature-bg, #E0F2FE)" />
+        <Box sx={{ backgroundColor: "var(--landing-feature-bg, #E0F2FE)", py: 6 }}>
           {/* Narrow centered wrapper — stops cards from stretching wall-to-wall */}
           <Box sx={{ maxWidth: 900, mx: "auto", px: { xs: 2, sm: 3 } }}>
             <Box
@@ -368,7 +368,7 @@ export default function LandingPage() {
                   fontFamily: "'Baloo 2', sans-serif",
                   textAlign: "center",
                   fontWeight: 900,
-                  color: "#1a1a2e",
+                  color: "var(--landing-text-main, #1a1a2e)",
                   mb: 3.5,
                   fontSize: { xs: "1.6rem", md: "2rem" },
                   lineHeight: 1.2,
@@ -428,7 +428,7 @@ export default function LandingPage() {
                       display: "flex",
                     }}
                   >
-                    <Card
+                    <Box
                       sx={{
                         borderRadius: "22px",
                         overflow: "hidden",
@@ -513,18 +513,18 @@ export default function LandingPage() {
                           {f.desc}
                         </Typography>
                       </Box>
-                    </Card>
+                    </Box>
                   </Box>
                 ))}
               </Box>
             </Box>
           </Box>
         </Box>
-        <WaveDown from="#E0F2FE" to="#ffffff" />
+        <WaveDown from="var(--landing-feature-bg, #E0F2FE)" to="var(--landing-bg, #ffffff)" />
       </Box>
 
       {/* ═══════════════ WHY PARENTS ═══════════════ */}
-      <Box sx={{ backgroundColor: "#fff", py: 8 }}>
+      <Box sx={{ backgroundColor: "var(--landing-bg, #ffffff)", py: 8 }}>
         <Container maxWidth="lg">
           <Box
             ref={whyParentsRef}
@@ -534,10 +534,10 @@ export default function LandingPage() {
               transition: "opacity 0.7s ease, transform 0.7s cubic-bezier(0.34,1.56,0.64,1)",
             }}
           >
-            <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "#1a1a2e", mb: 0.5 }}>
+            <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "var(--landing-text-main, #1a1a2e)", mb: 0.5 }}>
               Why Parents Choose Us
             </Typography>
-            <Typography variant="body1" sx={{ fontFamily: "'Poppins', sans-serif", textAlign: "center", color: "#777", mb: 6 }}>
+            <Typography variant="body1" sx={{ fontFamily: "'Poppins', sans-serif", textAlign: "center", color: "var(--landing-text-muted, #777)", mb: 6 }}>
               We prioritize education, safety, and transparency above all else.
             </Typography>
             <Grid container spacing={3} justifyContent="center">
@@ -551,8 +551,8 @@ export default function LandingPage() {
                     borderRadius: 4,
                     p: 1,
                     height: "100%",
-                    backgroundColor: "#f5f9ff",
-                    border: "1px solid #e3effe",
+                    backgroundColor: "var(--bg-subtle, #f5f9ff)",
+                    border: "1px solid var(--border-color, #e3effe)",
                     boxShadow: "none",
                     transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
                     cursor: "pointer",
@@ -560,11 +560,11 @@ export default function LandingPage() {
                       transform: "translateY(-8px)",
                       boxShadow: "0 16px 36px rgba(58,181,230,0.18)",
                       borderColor: "#3ab5e6",
-                      backgroundColor: "#eaf6fd",
+                      backgroundColor: "var(--bg-hover, #eaf6fd)",
                     },
                   }}>
                     <CardContent sx={{ textAlign: "center" }}>
-                      <Box sx={{ width: 56, height: 56, borderRadius: "50%", backgroundColor: "#e3effe", display: "flex", alignItems: "center", justifyContent: "center", mx: "auto", mb: 2, fontSize: "1.6rem", transition: "transform 0.3s", ".MuiCard-root:hover &": { transform: "scale(1.18) rotate(8deg)" } }}>
+                      <Box sx={{ width: 56, height: 56, borderRadius: "50%", backgroundColor: "var(--bg-hover, #e3effe)", display: "flex", alignItems: "center", justifyContent: "center", mx: "auto", mb: 2, fontSize: "1.6rem", transition: "transform 0.3s", ".MuiCard-root:hover &": { transform: "scale(1.18) rotate(8deg)" } }}>
                         {item.icon}
                       </Box>
                       <Typography variant="subtitle1" fontWeight={700} gutterBottom>{item.title}</Typography>
@@ -579,7 +579,7 @@ export default function LandingPage() {
       </Box>
 
       {/* ═══════════════ STATS ═══════════════ */}
-      <Box sx={{ backgroundColor: "#fff", pb: 8 }}>
+      <Box sx={{ backgroundColor: "var(--landing-bg, #ffffff)", pb: 8 }}>
         <Container maxWidth="md" sx={{ px: { xs: 2, sm: 3, md: 0 } }}>
           <Box
             ref={statsRef}
@@ -631,8 +631,8 @@ export default function LandingPage() {
 
       {/* ═══════════════ TESTIMONIALS ═══════════════ */}
       <Box>
-        <WaveUp from="#ffffff" to="#deeefe" />
-        <Box sx={{ backgroundColor: "#deeefe", py: 7 }}>
+        <WaveUp from="var(--landing-bg, #ffffff)" to="var(--landing-testim-bg, #deeefe)" />
+        <Box sx={{ backgroundColor: "var(--landing-testim-bg, #deeefe)", py: 7 }}>
           <Container maxWidth="lg">
             <Box
               ref={testimonialsRef}
@@ -642,7 +642,7 @@ export default function LandingPage() {
                 transition: "opacity 0.7s ease, transform 0.7s cubic-bezier(0.34,1.56,0.64,1)",
               }}
             >
-              <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "#1a1a2e", mb: 5, fontSize: { xs: "2rem", md: "2.5rem" } }}>
+              <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "var(--landing-text-main, #1a1a2e)", mb: 5, fontSize: { xs: "2rem", md: "2.5rem" } }}>
                 Loved By Parents
               </Typography>
               <Grid container spacing={3}>
@@ -684,7 +684,7 @@ export default function LandingPage() {
             </Box>
           </Container>
         </Box>
-        <WaveDown from="#deeefe" to="#1a1a2e" />
+        <WaveDown from="var(--landing-testim-bg, #deeefe)" to="#1a1a2e" />
       </Box>
     </Box>
   );

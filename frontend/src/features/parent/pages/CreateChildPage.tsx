@@ -13,7 +13,6 @@ import {
     ChildCare as ChildCareIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import ParentSidebar from "../components/ParentSidebar";
 import { createChild } from "../../auth/api/authApi";
 import EmojiKeypad from "../../auth/components/EmojiKeypad";
 
@@ -69,10 +68,8 @@ export default function CreateChildPage() {
     };
 
     return (
-        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, minHeight: "100vh" }}>
-            <ParentSidebar />
-            <Box sx={{ flex: 1, backgroundColor: "#f0f6ff", p: { xs: 3, md: 5 } }}>
-                <Box sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 5 }, maxWidth: 700, mx: "auto", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
+        <Box sx={{ flex: 1, backgroundColor: "var(--bg-subtle)", p: { xs: 3, md: 5 }, borderRadius: 4 }}>
+            <Box sx={{ backgroundColor: "var(--card-bg)", borderRadius: 5, p: { xs: 3, md: 5 }, maxWidth: 700, mx: "auto", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}>
                     {success && createdChild ? (
                         <Box sx={{ textAlign: "center", py: 4 }}>
                             <ChildCareIcon sx={{ color: "#4caf50", fontSize: 64, mb: 2 }} />
@@ -81,7 +78,7 @@ export default function CreateChildPage() {
                                 You successfully created an account for {createdChild.name}.
                             </Typography>
 
-                            <Box sx={{ backgroundColor: "#f8fafc", border: "2px dashed #3ab5e6", borderRadius: 4, p: 4, mb: 4, maxWidth: 400, mx: "auto" }}>
+                            <Box sx={{ backgroundColor: "var(--bg-hover)", border: "2px dashed #25AFF4", borderRadius: 4, p: 4, mb: 4, maxWidth: 400, mx: "auto" }}>
                                 <Typography variant="subtitle2" sx={{ color: "#888", fontWeight: 700, mb: 1, textTransform: "uppercase", letterSpacing: 1 }}>
                                     Child Credential Card
                                 </Typography>
@@ -91,14 +88,14 @@ export default function CreateChildPage() {
 
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, pb: 2, borderBottom: "1px solid #eee" }}>
                                     <Typography variant="body2" sx={{ color: "#888", fontWeight: 600 }}>Username</Typography>
-                                    <Typography variant="body1" sx={{ fontWeight: 800, color: "#1a1a2e" }}>{createdChild.username}</Typography>
+                                    <Typography variant="body1" sx={{ fontWeight: 800, color: "var(--text-primary)" }}>{createdChild.username}</Typography>
                                 </Box>
 
                                 <Box sx={{ mb: 1 }}>
                                     <Typography variant="body2" sx={{ color: "#888", fontWeight: 600, textAlign: "left", mb: 2 }}>Emoji Password</Typography>
                                     <Box sx={{ display: "flex", justifyContent: "center", gap: 1.5 }}>
                                         {createdChild.emojiPassword.map((emoji: string, i: number) => (
-                                            <Box key={i} sx={{ width: 50, height: 50, borderRadius: "50%", backgroundColor: "#fff", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.6rem" }}>
+                                            <Box key={i} sx={{ width: 50, height: 50, borderRadius: "50%", backgroundColor: "var(--card-bg)", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.6rem" }}>
                                                 {emoji}
                                             </Box>
                                         ))}
@@ -106,14 +103,14 @@ export default function CreateChildPage() {
                                 </Box>
                             </Box>
 
-                            <Button variant="contained" onClick={() => navigate("/parent/dashboard")} sx={{ backgroundColor: "#3ab5e6", borderRadius: "50px", px: 5, py: 1.5, fontWeight: 700, textTransform: "none", "&:hover": { backgroundColor: "#1ea0d0" } }}>
+                            <Button variant="contained" onClick={() => navigate("/parent/dashboard")} sx={{ backgroundColor: "#25AFF4", borderRadius: "24px", px: 5, py: 1.5, fontWeight: 700, textTransform: "none", "&:hover": { backgroundColor: "#1e8cc3" } }}>
                                 Go to Dashboard
                             </Button>
                         </Box>
                     ) : (
                         <>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
-                                <ChildCareIcon sx={{ color: "#3ab5e6", fontSize: 28 }} />
+                                <ChildCareIcon sx={{ color: "#25AFF4", fontSize: 28 }} />
                                 <Typography variant="h5" sx={{ fontWeight: 800 }}>Create a New Profile</Typography>
                             </Box>
                             <Typography variant="body2" sx={{ color: "#888", mb: 4 }}>Set up a learning space for your child.</Typography>
@@ -138,8 +135,8 @@ export default function CreateChildPage() {
                                 {avatarOptions.map((o) => (
                                     <Avatar key={o.id} onClick={() => setForm({ ...form, avatar: o.id })} sx={{
                                         width: 56, height: 56, fontSize: "1.6rem", cursor: "pointer",
-                                        backgroundColor: form.avatar === o.id ? "#3ab5e6" : "#e8f4fd",
-                                        border: form.avatar === o.id ? "3px solid #3ab5e6" : "3px solid transparent",
+                                        backgroundColor: form.avatar === o.id ? "#25AFF4" : "var(--bg-subtle)",
+                                        border: form.avatar === o.id ? "3px solid #25AFF4" : "3px solid transparent",
                                         transition: "all 0.2s", "&:hover": { transform: "scale(1.1)" },
                                     }}>{o.emoji}</Avatar>
                                 ))}
@@ -160,7 +157,7 @@ export default function CreateChildPage() {
                                 Select 4 emojis below to serve as your child's easy, fun password. They will need this to log in.
                             </Typography>
 
-                            <Box sx={{ p: { xs: 2, sm: 3 }, backgroundColor: "#f8fafc", borderRadius: 4, mb: 3 }}>
+                            <Box sx={{ p: { xs: 2, sm: 3 }, backgroundColor: "var(--bg-subtle)", borderRadius: 4, mb: 3 }}>
                                 <EmojiKeypad
                                     value={form.emojiPassword}
                                     onChange={(val) => setForm({ ...form, emojiPassword: val })}
@@ -171,14 +168,13 @@ export default function CreateChildPage() {
                                 <Button variant="text" startIcon={<CancelIcon />} onClick={() => navigate("/parent/dashboard")}
                                     sx={{ textTransform: "none", color: "#888" }}>Cancel</Button>
                                 <Button variant="contained" startIcon={!loading ? <SaveIcon /> : undefined} onClick={handleSubmit} disabled={loading}
-                                    sx={{ backgroundColor: "#3ab5e6", borderRadius: "50px", textTransform: "none", fontWeight: 700, px: 4, "&:hover": { backgroundColor: "#1ea0d0" } }}>
+                                    sx={{ backgroundColor: "#25AFF4", borderRadius: "24px", textTransform: "none", fontWeight: 700, px: 4, "&:hover": { backgroundColor: "#1e8cc3" } }}>
                                     {loading ? <CircularProgress size={24} color="inherit" /> : "Save Child Profile"}
                                 </Button>
                             </Box>
                         </>
                     )}
                 </Box>
-            </Box>
         </Box>
     );
 }

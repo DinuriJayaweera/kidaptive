@@ -20,6 +20,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { theme } from "./shared/theme/theme";
 import { AuthProvider } from "./features/auth/context/AuthContext";
 import App from "./App";
+import "./styles/theme.css";
+
+// Apply persisted theme before first paint
+const savedTheme = localStorage.getItem("kidaptive-theme") || "light";
+const isDark = savedTheme === "dark";
+document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
 
 const queryClient = new QueryClient({
   defaultOptions: {

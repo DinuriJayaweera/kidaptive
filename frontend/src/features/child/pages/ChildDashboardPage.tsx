@@ -42,7 +42,7 @@ export default function ChildDashboardPage() {
             });
     }, [navigate]);
 
-    const handleCategoryClick = (id: string, level: string) => {
+    const handleCategoryClick = (id: string, _level: string) => {
         // Navigate to the category progress timeline
         navigate(`/child/category-progress/${id}`);
     };

@@ -186,7 +186,7 @@ export default function ChildProgressPage() {
             <Button
                 startIcon={<BackIcon />}
                 onClick={() => navigate("/parent/children")}
-                sx={{ mb: 3, textTransform: "none", color: "#6b7280", fontWeight: 600, "&:hover": { color: "#25AFF4", background: "transparent" } }}
+                sx={{ mb: 3, textTransform: "none", color: "var(--text-secondary)", fontWeight: 600, "&:hover": { color: "#25AFF4", background: "transparent" } }}
             >
                 Back to Children
             </Button>
@@ -194,30 +194,33 @@ export default function ChildProgressPage() {
             <Grid container spacing={4} sx={{ mt: 1 }}>
                 {/* ── Left Side: Child Card ── */}
                 <Grid size={{ xs: 12, md: 4 }}>
-                    <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "#fff", border: "1px solid #e8ecf1", textAlign: "center", position: "sticky", top: 20 }}>
-                        <Avatar sx={{ width: 80, height: 80, mx: "auto", mb: 2, fontSize: "2.5rem", backgroundColor: "#e0f2fe" }}>
+                    <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "var(--card-bg)", border: "1px solid var(--border-color)", textAlign: "center", position: "sticky", top: 20 }}>
+                        <Avatar sx={{ width: 80, height: 80, mx: "auto", mb: 2, fontSize: "2.5rem", backgroundColor: "var(--bg-subtle)" }}>
                             {avatarEmojis[child.avatar || "default"] ?? "🦖"}
                         </Avatar>
-                        <Typography variant="h5" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#111827", lineHeight: 1.2 }}>{child.name}</Typography>
+                        <Typography variant="h5" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.2 }}>{child.name}</Typography>
 
-                        <Typography sx={{ fontSize: 14, color: "#6b7280", mb: 3 }}>
+                        <Typography sx={{ fontSize: 14, color: "var(--text-secondary)", mb: 0.5 }}>
                             Age {child.age} • Level: <Box component="span" sx={{ textTransform: "capitalize" }}>{levelLabels[overallLevel]}</Box>
+                        </Typography>
+                        <Typography sx={{ fontSize: 12, color: "var(--text-tertiary)", mb: 3 }}>
+                            Learning since {new Date(child.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                         </Typography>
 
                         {/* Total XP & Gems */}
-                        <Box sx={{ background: "#f8fafc", borderRadius: 3, p: 2, mb: 2, display: "flex", justifyContent: "space-around" }}>
+                        <Box sx={{ background: "var(--bg-subtle)", borderRadius: 3, p: 2, mb: 2, display: "flex", justifyContent: "space-around" }}>
                             <Box>
-                                <Typography sx={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, textTransform: "uppercase" }}>Total XP</Typography>
+                                <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase" }}>Total XP</Typography>
                                 <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#25AFF4", fontSize: 22 }}>{child.totalXP}</Typography>
                             </Box>
                             <Box>
-                                <Typography sx={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, textTransform: "uppercase" }}>Total Gems</Typography>
+                                <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase" }}>Total Gems</Typography>
                                 <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#FFCC35", fontSize: 22, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}><GemsIcon sx={{ fontSize: 20 }} /> {child.gems}</Typography>
                             </Box>
                         </Box>
 
                         {/* Streak */}
-                        <Box sx={{ background: "#fef3c7", borderRadius: 3, p: 2, display: "flex", justifyContent: "space-around", color: "#d97706" }}>
+                        <Box sx={{ background: "var(--progress-streak-bg)", borderRadius: 3, p: 2, display: "flex", justifyContent: "space-around", color: "#d97706" }}>
                             <Box>
                                 <Typography sx={{ fontSize: 11, color: "#d97706", fontWeight: 600, textTransform: "uppercase", opacity: 0.8 }}>Current Streak</Typography>
                                 <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 22, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}><StreakIcon sx={{ fontSize: 20 }} /> {child.streak} Days</Typography>
@@ -231,8 +234,8 @@ export default function ChildProgressPage() {
 
                     {/* ═══ Section 1: Overall English Progress ═══ */}
                     {child.categories.length > 0 && (
-                        <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "#fff", border: "1px solid #e8ecf1", mb: 4 }}>
-                            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "#6b7280", fontWeight: 600, mb: 3, textTransform: "uppercase" }}>
+                        <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "var(--card-bg)", border: "1px solid var(--border-color)", mb: 4 }}>
+                            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "var(--text-secondary)", fontWeight: 600, mb: 3, textTransform: "uppercase" }}>
                                 Overall English Progress
                             </Typography>
 
@@ -249,10 +252,10 @@ export default function ChildProgressPage() {
                                     </Typography>
                                 </Box>
                                 <Box>
-                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 24, color: "#111827", textTransform: "capitalize" }}>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 24, color: "var(--text-primary)", textTransform: "capitalize" }}>
                                         {levelLabels[overallLevel]}
                                     </Typography>
-                                    <Typography sx={{ fontSize: 13, color: "#6b7280" }}>
+                                    <Typography sx={{ fontSize: 13, color: "var(--text-secondary)" }}>
                                         Overall English proficiency based on {child.categories.length} categories
                                     </Typography>
                                 </Box>
@@ -261,7 +264,7 @@ export default function ChildProgressPage() {
                             {/* Level progress bar */}
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 4 }}>
                                 <Chip label="Starter" size="small" sx={{ fontSize: 10, fontWeight: 700, backgroundColor: "#FFCC3520", color: "#FFCC35", border: "1px solid #FFCC3540" }} />
-                                <Box sx={{ flex: 1, height: 10, borderRadius: 5, background: "#f1f5f9", overflow: "hidden" }}>
+                                <Box sx={{ flex: 1, height: 10, borderRadius: 5, background: "var(--bg-hover)", overflow: "hidden" }}>
                                     <Box sx={{ width: `${overallPercent}%`, height: "100%", borderRadius: 5, background: `linear-gradient(90deg, #FFCC35, #25AFF4, #8EE870)`, transition: "width 0.8s ease" }} />
                                 </Box>
                                 <Chip label="Champion" size="small" sx={{ fontSize: 10, fontWeight: 700, backgroundColor: overallPercent >= 75 ? "#8EE87020" : "#f1f5f9", color: overallPercent >= 75 ? "#8EE870" : "#94a3b8", border: `1px solid ${overallPercent >= 75 ? "#8EE87040" : "#e2e8f0"}` }} />
@@ -269,28 +272,28 @@ export default function ChildProgressPage() {
 
                             {/* Summary stats */}
                             <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 4 }}>
-                                <Box sx={{ flex: 1, minWidth: 120, background: "#f0f9ff", borderRadius: 3, p: 2, textAlign: "center" }}>
-                                    <Typography sx={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Total XP Earned</Typography>
+                                <Box sx={{ flex: 1, minWidth: 120, background: "var(--summary-xp-bg)", borderRadius: "999px", py: 2, px: 3, textAlign: "center", border: "1px solid var(--border-color)" }}>
+                                    <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Total XP Earned</Typography>
                                     <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#25AFF4", fontSize: 26 }}>{child.totalXP}</Typography>
                                 </Box>
-                                <Box sx={{ flex: 1, minWidth: 120, background: "#f0fdf4", borderRadius: 3, p: 2, textAlign: "center" }}>
-                                    <Typography sx={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Total Quizzes</Typography>
+                                <Box sx={{ flex: 1, minWidth: 120, background: "var(--summary-quizzes-bg)", borderRadius: "999px", py: 2, px: 3, textAlign: "center", border: "1px solid var(--border-color)" }}>
+                                    <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Total Quizzes</Typography>
                                     <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#8EE870", fontSize: 26 }}>
                                         {child.categories.reduce((sum, c) => sum + (c.quizzesCompleted || 0), 0)}
                                     </Typography>
                                 </Box>
-                                <Box sx={{ flex: 1, minWidth: 120, background: "#fffbeb", borderRadius: 3, p: 2, textAlign: "center" }}>
-                                    <Typography sx={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Categories</Typography>
+                                <Box sx={{ flex: 1, minWidth: 120, background: "var(--summary-categories-bg)", borderRadius: "999px", py: 2, px: 3, textAlign: "center", border: "1px solid var(--border-color)" }}>
+                                    <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Categories</Typography>
                                     <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#FFCC35", fontSize: 26 }}>{child.categories.length}</Typography>
                                 </Box>
                             </Box>
 
                             {/* Progress Trend Graph */}
                             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14, color: "#111827", fontWeight: 600 }}>
+                                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14, color: "var(--text-primary)", fontWeight: 600 }}>
                                     Progress Trend
                                 </Typography>
-                                <Box sx={{ display: "flex", gap: 1, background: "#f1f5f9", p: 0.5, borderRadius: 2 }}>
+                                <Box sx={{ display: "flex", gap: 1, background: "var(--bg-hover)", p: 0.5, borderRadius: 2 }}>
                                     <Button 
                                         size="small" 
                                         onClick={() => setTimeView("weekly")}
@@ -355,58 +358,52 @@ export default function ChildProgressPage() {
                     )}
 
                     {/* ═══ Section 1B: Learning Activity / Screen Time ═══ */}
-                    <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "#fff", border: "1px solid #e8ecf1", mb: 4 }}>
-                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "#6b7280", fontWeight: 600, mb: 3, textTransform: "uppercase" }}>
+                    <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "var(--card-bg)", border: "1px solid var(--border-color)", mb: 4 }}>
+                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "var(--text-secondary)", fontWeight: 600, mb: 3, textTransform: "uppercase" }}>
                             Learning Activity / Screen Time
                         </Typography>
 
                         <Grid container spacing={3} sx={{ mb: 3 }}>
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <Box sx={{ background: "#f8fafc", borderRadius: 3, p: 3, border: "1px solid #e2e8f0" }}>
-                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#111827", mb: 1 }}>
+                                <Box sx={{ background: "var(--bg-subtle)", borderRadius: 3, p: 3, border: "1px solid var(--border-color)" }}>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "var(--text-primary)", mb: 1 }}>
                                         Today
                                     </Typography>
                                     <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                                        <TimeIcon sx={{ fontSize: 18, color: "#64748b" }} />
-                                        <Typography sx={{ fontSize: 14, color: "#475569" }}>
+                                        <TimeIcon sx={{ fontSize: 18, color: "var(--text-tertiary)" }} />
+                                        <Typography sx={{ fontSize: 14, color: "var(--text-secondary)" }}>
                                             {formatDuration(activitySummary.today.totalLearningSeconds)} - {formatTime(activitySummary.today.startTime)} / {formatTime(activitySummary.today.endTime)}
                                         </Typography>
                                     </Box>
                                     <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                                         <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
                                             <QuizzesIcon sx={{ fontSize: 18, color: "#25AFF4" }} />
-                                            <Typography sx={{ fontSize: 13, color: "#475569" }}>{activitySummary.today.quizzesCompleted} quizzes</Typography>
+                                            <Typography sx={{ fontSize: 13, color: "var(--text-secondary)" }}>{activitySummary.today.quizzesCompleted} quizzes</Typography>
                                         </Box>
                                         <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
                                             <XpIcon sx={{ fontSize: 18, color: "#FFCC35" }} />
-                                            <Typography sx={{ fontSize: 13, color: "#475569" }}>{activitySummary.today.xpEarned} XP</Typography>
+                                            <Typography sx={{ fontSize: 13, color: "var(--text-secondary)" }}>{activitySummary.today.xpEarned} XP</Typography>
                                         </Box>
                                     </Box>
                                 </Box>
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <Box sx={{ background: "#f8fafc", borderRadius: 3, p: 3, border: "1px solid #e2e8f0" }}>
-                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#111827", mb: 2 }}>
+                                <Box sx={{ background: "var(--bg-subtle)", borderRadius: 3, p: 3, border: "1px solid var(--border-color)" }}>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "var(--text-primary)", mb: 2 }}>
                                         Weekly Activity
                                     </Typography>
                                     <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                                        <Box sx={{ flex: 1, minWidth: 120, background: "#eff6ff", borderRadius: 2, p: 2, textAlign: "center" }}>
-                                            <Typography sx={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>This Week Learning Time</Typography>
+                                        <Box sx={{ flex: 1, minWidth: 120, background: "var(--progress-time-bg)", borderRadius: 2, p: 2, textAlign: "center" }}>
+                                            <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>This Week Learning Time</Typography>
                                             <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 20, color: "#2563eb" }}>
                                                 {formatDuration(activitySummary.weekly.totalLearningSeconds)}
                                             </Typography>
                                         </Box>
-                                        <Box sx={{ flex: 1, minWidth: 120, background: "#f0fdf4", borderRadius: 2, p: 2, textAlign: "center" }}>
-                                            <Typography sx={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>This Week Quizzes</Typography>
+                                        <Box sx={{ flex: 1, minWidth: 120, background: "var(--progress-quizzes-bg)", borderRadius: 2, p: 2, textAlign: "center" }}>
+                                            <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>This Week Quizzes</Typography>
                                             <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 20, color: "#16a34a" }}>
                                                 {activitySummary.weekly.quizzesCompleted}
-                                            </Typography>
-                                        </Box>
-                                        <Box sx={{ flex: 1, minWidth: 120, background: "#fffbeb", borderRadius: 2, p: 2, textAlign: "center" }}>
-                                            <Typography sx={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Current Streak</Typography>
-                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 20, color: "#d97706", display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}>
-                                                <StreakIcon sx={{ fontSize: 18 }} /> {activitySummary.weekly.streak} days
                                             </Typography>
                                         </Box>
                                     </Box>
@@ -416,21 +413,21 @@ export default function ChildProgressPage() {
 
                         <Grid container spacing={3}>
                             <Grid size={{ xs: 12, md: 7 }}>
-                                <Box sx={{ background: "#f8fafc", borderRadius: 3, p: 3, border: "1px solid #e2e8f0" }}>
-                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#111827", mb: 2 }}>
+                                <Box sx={{ background: "var(--bg-subtle)", borderRadius: 3, p: 3, border: "1px solid var(--border-color)" }}>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "var(--text-primary)", mb: 2 }}>
                                         Recent Activity Timeline
                                     </Typography>
                                     {activitySummary.timeline.length === 0 ? (
-                                        <Typography sx={{ color: "#94a3b8", fontSize: 14 }}>
+                                        <Typography sx={{ color: "var(--text-tertiary)", fontSize: 14 }}>
                                             No activity yet. Once lessons start, updates will appear here.
                                         </Typography>
                                     ) : (
                                         activitySummary.timeline.map((item, index) => (
                                             <Box key={item.id} sx={{ display: "flex", alignItems: "center", gap: 2, py: 1.2, borderBottom: index === activitySummary.timeline.length - 1 ? "none" : "1px dashed #e2e8f0" }}>
-                                                <Typography sx={{ fontSize: 12, fontWeight: 700, color: "#64748b", minWidth: 70 }}>
+                                                <Typography sx={{ fontSize: 12, fontWeight: 700, color: "var(--text-tertiary)", minWidth: 70 }}>
                                                     {new Date(item.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                                                 </Typography>
-                                                <Typography sx={{ fontSize: 14, color: "#334155" }}>{item.description}</Typography>
+                                                <Typography sx={{ fontSize: 14, color: "var(--text-secondary)" }}>{item.description}</Typography>
                                             </Box>
                                         ))
                                     )}
@@ -438,25 +435,25 @@ export default function ChildProgressPage() {
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 5 }}>
-                                <Box sx={{ background: "#f8fafc", borderRadius: 3, p: 3, border: "1px solid #e2e8f0" }}>
-                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#111827", mb: 2 }}>
+                                <Box sx={{ background: "var(--bg-subtle)", borderRadius: 3, p: 3, border: "1px solid var(--border-color)" }}>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "var(--text-primary)", mb: 2 }}>
                                         Child Usage Insights
                                     </Typography>
                                     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                                        <Box sx={{ background: "#ecfeff", borderRadius: 2, p: 2 }}>
-                                            <Typography sx={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Most Practiced Category</Typography>
+                                        <Box sx={{ background: "var(--progress-insight-bg)", borderRadius: 2, p: 2 }}>
+                                            <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Most Practiced Category</Typography>
                                             <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#0f766e" }}>
                                                 {formatCategory(activitySummary.insights.mostPracticedCategory)}
                                             </Typography>
                                         </Box>
-                                        <Box sx={{ background: "#f5f3ff", borderRadius: 2, p: 2 }}>
-                                            <Typography sx={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Best Score This Week</Typography>
+                                        <Box sx={{ background: "var(--progress-insight-bg)", borderRadius: 2, p: 2 }}>
+                                            <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Best Score This Week</Typography>
                                             <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#6d28d9" }}>
                                                 {activitySummary.insights.bestScoreThisWeek ?? "-"}
                                             </Typography>
                                         </Box>
-                                        <Box sx={{ background: "#fff7ed", borderRadius: 2, p: 2 }}>
-                                            <Typography sx={{ fontSize: 11, color: "#64748b", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Average Daily Learning Time</Typography>
+                                        <Box sx={{ background: "var(--bg-hover)", borderRadius: 2, p: 2 }}>
+                                            <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Average Daily Learning Time</Typography>
                                             <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#c2410c" }}>
                                                 {formatDuration(activitySummary.insights.averageDailyLearningSeconds)}
                                             </Typography>
@@ -468,13 +465,13 @@ export default function ChildProgressPage() {
                     </Paper>
 
                     {/* ═══ Section 2: Category Cards ═══ */}
-                    <Typography variant="h5" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#111827", mb: 3 }}>
+                    <Typography variant="h5" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "var(--text-primary)", mb: 3 }}>
                         Learning Progress
                     </Typography>
 
                     {child.categories.length === 0 ? (
-                        <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "#fff", border: "1px solid #e8ecf1", textAlign: "center" }}>
-                            <Typography sx={{ color: "#6b7280" }}>{child.name} hasn't started playing any categories yet.</Typography>
+                        <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "var(--card-bg)", border: "1px solid var(--border-color)", textAlign: "center" }}>
+                            <Typography sx={{ color: "var(--text-secondary)" }}>{child.name} hasn't started playing any categories yet.</Typography>
                         </Paper>
                     ) : (
                         <Grid container spacing={3}>
@@ -484,7 +481,7 @@ export default function ChildProgressPage() {
                                 return (
                                     <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={cat.categoryId}>
                                         <Paper elevation={0} sx={{
-                                            borderRadius: "16px", p: 3, background: "#fff", border: `2px solid ${progressColor}30`,
+                                            borderRadius: "16px", p: 3, background: "var(--card-bg)", border: `2px solid ${progressColor}30`,
                                             transition: "all 0.2s", "&:hover": { transform: "translateY(-3px)", boxShadow: `0 8px 20px ${progressColor}15`, borderColor: `${progressColor}60` },
                                             textAlign: "center",
                                         }}>
@@ -504,20 +501,20 @@ export default function ChildProgressPage() {
                                             />
 
                                             {/* Category name */}
-                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#111827", textTransform: "capitalize", mb: 1.5 }}>
+                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "var(--text-primary)", textTransform: "capitalize", mb: 1.5 }}>
                                                 {cat.categoryId}
                                             </Typography>
 
                                             {/* Stats row */}
                                             <Box sx={{ display: "flex", justifyContent: "center", gap: 3 }}>
                                                 <Box>
-                                                    <Typography sx={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, textTransform: "uppercase" }}>XP</Typography>
+                                                    <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase" }}>XP</Typography>
                                                     <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#FFCC35", fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.3 }}>
                                                         <XpIcon sx={{ fontSize: 16 }} /> {cat.xp}
                                                     </Typography>
                                                 </Box>
                                                 <Box>
-                                                    <Typography sx={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, textTransform: "uppercase" }}>Quizzes</Typography>
+                                                    <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase" }}>Quizzes</Typography>
                                                     <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#25AFF4", fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.3 }}>
                                                         <QuizzesIcon sx={{ fontSize: 16 }} /> {cat.quizzesCompleted}
                                                     </Typography>
@@ -534,7 +531,7 @@ export default function ChildProgressPage() {
                     <Box sx={{ mt: 5 }}>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 3 }}>
                             <PlacementIcon sx={{ fontSize: 28, color: "#7c3aed" }} />
-                            <Typography variant="h5" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#111827" }}>
+                            <Typography variant="h5" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "var(--text-primary)" }}>
                                 Placement Test Results
                             </Typography>
                         </Box>
@@ -550,21 +547,21 @@ export default function ChildProgressPage() {
                                 </Typography>
                             </Paper>
                         ) : child.placementResults && child.placementResults.length > 0 ? (
-                            <TableContainer component={Paper} elevation={0} sx={{ borderRadius: "16px", border: "1px solid #e8ecf1", overflow: "hidden" }}>
+                            <TableContainer component={Paper} elevation={0} sx={{ borderRadius: "16px", border: "1px solid var(--border-color)", overflow: "hidden" }}>
                                 <Table>
                                     <TableHead>
-                                        <TableRow sx={{ background: "#f8fafc" }}>
-                                            <TableCell sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 13, color: "#475569", textTransform: "uppercase", borderBottom: "2px solid #e2e8f0" }}>Category</TableCell>
-                                            <TableCell align="center" sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 13, color: "#475569", textTransform: "uppercase", borderBottom: "2px solid #e2e8f0" }}>Score</TableCell>
-                                            <TableCell align="center" sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 13, color: "#475569", textTransform: "uppercase", borderBottom: "2px solid #e2e8f0" }}>Assigned Level</TableCell>
+                                        <TableRow sx={{ background: "var(--bg-subtle)" }}>
+                                            <TableCell sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 13, color: "var(--text-secondary)", textTransform: "uppercase", borderBottom: "2px solid var(--border-color)" }}>Category</TableCell>
+                                            <TableCell align="center" sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 13, color: "var(--text-secondary)", textTransform: "uppercase", borderBottom: "2px solid var(--border-color)" }}>Score</TableCell>
+                                            <TableCell align="center" sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 13, color: "var(--text-secondary)", textTransform: "uppercase", borderBottom: "2px solid var(--border-color)" }}>Assigned Level</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {child.placementResults.map((pr) => {
                                             const levelColor = levelColors[pr.assignedLevel] || "#94a3b8";
                                             return (
-                                                <TableRow key={pr.categoryId} sx={{ "&:last-child td": { borderBottom: 0 }, "&:hover": { background: "#f8fafc" } }}>
-                                                    <TableCell sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 600, fontSize: 16, color: "#1e293b", textTransform: "capitalize" }}>
+                                                <TableRow key={pr.categoryId} sx={{ "&:last-child td": { borderBottom: 0 }, "&:hover": { background: "var(--bg-subtle)" } }}>
+                                                    <TableCell sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 600, fontSize: 16, color: "var(--text-primary)", textTransform: "capitalize" }}>
                                                         {pr.categoryId}
                                                     </TableCell>
                                                     <TableCell align="center">
@@ -572,7 +569,7 @@ export default function ChildProgressPage() {
                                                             <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 20, color: pr.score >= 70 ? "#16a34a" : pr.score >= 40 ? "#f59e0b" : "#ef4444" }}>
                                                                 {pr.score}
                                                             </Typography>
-                                                            <Typography sx={{ fontSize: 12, color: "#94a3b8", fontWeight: 600 }}>/ 100</Typography>
+                                                            <Typography sx={{ fontSize: 12, color: "var(--text-tertiary)", fontWeight: 600 }}>/ 100</Typography>
                                                         </Box>
                                                     </TableCell>
                                                     <TableCell align="center">
@@ -597,16 +594,16 @@ export default function ChildProgressPage() {
                                 </Table>
                             </TableContainer>
                         ) : (
-                            <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "#fff", border: "1px solid #e8ecf1", textAlign: "center" }}>
-                                <Typography sx={{ color: "#6b7280" }}>No category results recorded for placement test.</Typography>
+                            <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "var(--card-bg)", border: "1px solid var(--border-color)", textAlign: "center" }}>
+                                <Typography sx={{ color: "var(--text-secondary)" }}>No category results recorded for placement test.</Typography>
                             </Paper>
                         )}
                     </Box>
 
                     {/* Recent Activity */}
                     {child.lastPlayedDate && (
-                        <Box sx={{ mt: 5, p: 3, background: "#f8fafc", borderRadius: "16px", border: "1px dashed #cbd5e1" }}>
-                            <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontSize: 14 }}>
+                        <Box sx={{ mt: 5, p: 3, background: "var(--bg-subtle)", borderRadius: "16px", border: "1px dashed var(--border-color)" }}>
+                            <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontSize: 14 }}>
                                 <strong>Recent Activity:</strong> {child.name} last played on {new Date(child.lastPlayedDate).toLocaleDateString()} at {new Date(child.lastPlayedDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.
                             </Typography>
                         </Box>
