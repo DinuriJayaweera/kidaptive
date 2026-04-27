@@ -149,7 +149,7 @@ function CategoryModal({ open, onClose, onSaved, editing, readOnly = false }: Ca
   }, [open, editing]);
 
   const toggleAgeGroup = (ag: string) => {
-    setAgeGroups((prev) => 
+    setAgeGroups((prev) =>
       prev.includes(ag) ? prev.filter((g) => g !== ag) : [...prev, ag]
     );
   };
@@ -251,11 +251,11 @@ function CategoryModal({ open, onClose, onSaved, editing, readOnly = false }: Ca
 
               let selectedBg = '#25AFF4';
               let selectedColor = '#fff';
-              
+
               if (selected) {
-                 if (is5to6) { selectedBg = '#fee2e2'; selectedColor = '#dc2626'; }
-                 else if (is7to8) { selectedBg = '#fef9c3'; selectedColor = '#a16207'; }
-                 else if (is9to10) { selectedBg = '#dcfce3'; selectedColor = '#15803d'; }
+                if (is5to6) { selectedBg = '#fee2e2'; selectedColor = '#dc2626'; }
+                else if (is7to8) { selectedBg = '#fef9c3'; selectedColor = '#a16207'; }
+                else if (is9to10) { selectedBg = '#dcfce3'; selectedColor = '#15803d'; }
               }
 
               if (readOnly && selected) {

@@ -53,11 +53,10 @@ export async function createPlacementResult(
 ) {
     return PlacementResult.create({
         childId,
-        ageGroup: "7-8",                    // 👈 required field, was missing
+        ageGroup: "7-8",
         categoryResults: [{ categoryId, level, score: level === "starter" ? 30 : level === "explorer" ? 65 : 90 }],
         evaluatedCategories: [categoryId],
         placementCompleted: true,
-        // totalCategories removed — not in schema
     });
 }
 

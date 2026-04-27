@@ -10,14 +10,14 @@ import { useAuth } from "../../auth/context/AuthContext";
 import { getParentChildrenEnriched } from "../api/parentApi";
 import type { EnhancedChildProfile } from "../api/parentApi";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    ResponsiveContainer,
+    Legend,
 } from "recharts";
 
 export default function ParentDashboardPage() {
@@ -25,24 +25,12 @@ export default function ParentDashboardPage() {
     const [children, setChildren] = useState<EnhancedChildProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        // Double-rAF: wait two animation frames so the browser has fully
-        // painted *and* computed CSS layout before ResponsiveContainer
-        // measures its parent — prevents the -1×-1 size warning.
-        let outer = 0;
-        let inner = 0;
-        outer = requestAnimationFrame(() => {
-            inner = requestAnimationFrame(() => setMounted(true));
-        });
-
         getParentChildrenEnriched()
             .then(setChildren)
             .catch((err) => setError(err.response?.data?.message ?? "Failed to load dashboard data."))
             .finally(() => setLoading(false));
-
-        return () => { cancelAnimationFrame(outer); cancelAnimationFrame(inner); };
     }, []);
 
     const totalXp = children.reduce((acc, c) => acc + (c.totalXP || 0), 0);
@@ -65,10 +53,10 @@ export default function ParentDashboardPage() {
 
     // Category breakdown across all children
     const categoryDataMap = children.flatMap(c => c.categories).reduce((acc, cat) => {
-        if(!acc[cat.categoryId]) acc[cat.categoryId] = { name: cat.categoryId.charAt(0).toUpperCase() + cat.categoryId.slice(1), xp: 0 };
+        if (!acc[cat.categoryId]) acc[cat.categoryId] = { name: cat.categoryId.charAt(0).toUpperCase() + cat.categoryId.slice(1), xp: 0 };
         acc[cat.categoryId].xp += cat.xp;
         return acc;
-    }, {} as Record<string, {name: string; xp: number}>);
+    }, {} as Record<string, { name: string; xp: number }>);
 
     const categoryChartData = Object.values(categoryDataMap);
 
@@ -113,20 +101,16 @@ export default function ParentDashboardPage() {
                     <Grid size={{ xs: 12, md: 6 }}>
                         <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "var(--card-bg)", border: "1px solid var(--border-color)" }}>
                             <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "var(--text-secondary)", fontWeight: 600, mb: 3, textTransform: "uppercase" }}>Child Performance Comparison</Typography>
-                            <Box sx={{ width: '100%', height: 300, minHeight: 100 }}>
-                                {mounted && (
-                                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-                                        <BarChart data={childChartData} margin={{ top: 5, right: 20, left: 0, bottom: 30 }}>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
-                                            <XAxis dataKey="name" tick={{fill: 'var(--text-secondary)', fontSize: 12}} axisLine={false} tickLine={false} interval={0} />
-                                            <YAxis tick={{fill: 'var(--text-secondary)', fontSize: 12}} axisLine={false} tickLine={false} />
-                                            <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', background: 'var(--card-bg)', color: 'var(--text-primary)' }} />
-                                            <Legend wrapperStyle={{ bottom: 0 }} />
-                                            <Bar dataKey="xp" fill="#FFCC35" name="XP" radius={[6, 6, 0, 0]} barSize={40} />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                )}
-                            </Box>
+                            <ResponsiveContainer width="100%" height={300}>
+                                <BarChart data={childChartData} margin={{ top: 5, right: 20, left: 0, bottom: 30 }}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                                    <XAxis dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} axisLine={false} tickLine={false} interval={0} />
+                                    <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                    <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', background: 'var(--card-bg)', color: 'var(--text-primary)' }} />
+                                    <Legend wrapperStyle={{ bottom: 0 }} />
+                                    <Bar dataKey="xp" fill="#FFCC35" name="XP" radius={[6, 6, 0, 0]} barSize={40} />
+                                </BarChart>
+                            </ResponsiveContainer>
                         </Paper>
                     </Grid>
 
@@ -135,19 +119,15 @@ export default function ParentDashboardPage() {
                         <Grid size={{ xs: 12, md: 6 }}>
                             <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "var(--card-bg)", border: "1px solid var(--border-color)" }}>
                                 <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "var(--text-secondary)", fontWeight: 600, mb: 3, textTransform: "uppercase" }}>XP by Category</Typography>
-                                <Box sx={{ width: '100%', height: 300, minHeight: 100 }}>
-                                    {mounted && (
-                                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-                                            <BarChart data={categoryChartData} margin={{ top: 5, right: 20, left: 0, bottom: 45 }}>
-                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
-                                                <XAxis dataKey="name" tick={{fill: 'var(--text-secondary)', fontSize: 11}} axisLine={false} tickLine={false} interval={0} angle={-30} textAnchor="end" />
-                                                <YAxis tick={{fill: 'var(--text-secondary)', fontSize: 12}} axisLine={false} tickLine={false} />
-                                                <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', background: 'var(--card-bg)', color: 'var(--text-primary)' }} />
-                                                <Bar dataKey="xp" fill="#8EE870" name="XP" radius={[6, 6, 0, 0]} barSize={40} />
-                                            </BarChart>
-                                        </ResponsiveContainer>
-                                    )}
-                                </Box>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <BarChart data={categoryChartData} margin={{ top: 5, right: 20, left: 0, bottom: 45 }}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
+                                        <XAxis dataKey="name" tick={{ fill: 'var(--text-secondary)', fontSize: 11 }} axisLine={false} tickLine={false} interval={0} angle={-30} textAnchor="end" />
+                                        <YAxis tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} axisLine={false} tickLine={false} />
+                                        <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '12px', border: '1px solid var(--border-color)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', background: 'var(--card-bg)', color: 'var(--text-primary)' }} />
+                                        <Bar dataKey="xp" fill="#8EE870" name="XP" radius={[6, 6, 0, 0]} barSize={40} />
+                                    </BarChart>
+                                </ResponsiveContainer>
                             </Paper>
                         </Grid>
                     )}

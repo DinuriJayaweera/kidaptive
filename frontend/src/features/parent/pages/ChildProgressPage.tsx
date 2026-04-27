@@ -37,27 +37,24 @@ const levelLabels: Record<string, string> = {
     champion: "Champion",
 };
 
+// Max XP a category can reach (50 starter + 50 explorer + some champion wins)
+// We use 150 as a reasonable upper cap for "100% proficiency" per category
+const MAX_XP_PER_CATEGORY = 150;
+
 export default function ChildProgressPage() {
     const { childId } = useParams<{ childId: string }>();
     const navigate = useNavigate();
     const [child, setChild] = useState<EnhancedChildProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const [mounted, setMounted] = useState(false);
     const [timeView, setTimeView] = useState<"weekly" | "monthly">("weekly");
 
     useEffect(() => {
-        let outer = 0;
-        let inner = 0;
-        outer = requestAnimationFrame(() => {
-            inner = requestAnimationFrame(() => setMounted(true));
-        });
         if (!childId) return;
         getChildProgress(childId)
             .then(setChild)
             .catch((err) => setError(err.response?.data?.message ?? "Failed to load progress."))
             .finally(() => setLoading(false));
-        return () => { cancelAnimationFrame(outer); cancelAnimationFrame(inner); };
     }, [childId]);
 
     if (loading) {
@@ -68,99 +65,66 @@ export default function ChildProgressPage() {
         return <Alert severity="error" sx={{ mb: 3 }}>{error || "Child not found."}</Alert>;
     }
 
-    // Compute overall English level from all categories
-    const MAX_XP_PER_CATEGORY = 150; // Expected XP per category (Starter+Explorer+some Champion)
-    let totalEarned = 0;
-    let totalPossible = child.categories.length * MAX_XP_PER_CATEGORY;
-    if (totalPossible === 0) totalPossible = MAX_XP_PER_CATEGORY;
+    // ── Overall English Score: average XP% across all categories (real 0–100 score) ──
+    // Each category contributes: min(earnedXP, MAX_XP_PER_CATEGORY) / MAX_XP_PER_CATEGORY * 100
+    let overallScore = 0;
+    if (child.categories.length > 0) {
+        const totalEarned = child.categories.reduce((sum, c) => sum + Math.min(c.xp || 0, MAX_XP_PER_CATEGORY), 0);
+        const totalPossible = child.categories.length * MAX_XP_PER_CATEGORY;
+        overallScore = Math.round((totalEarned / totalPossible) * 100);
+    }
 
-    child.categories.forEach(c => {
-        totalEarned += Math.min(c.xp || 0, MAX_XP_PER_CATEGORY);
-    });
+    const overallLevel = overallScore >= 75 ? "champion" : overallScore >= 40 ? "explorer" : "starter";
 
-    const overallPercent = Math.round((totalEarned / totalPossible) * 100);
-    const overallLevel = overallPercent >= 75 ? "champion" : overallPercent >= 40 ? "explorer" : "starter";
-
-    // Build dynamic trend chart data based on child's account age
+    // ── Chart data based on account age ──
     const startDate = new Date(child.createdAt);
     const now = new Date();
-    
-    // Difference in time
-    const diffTime = Math.abs(now.getTime() - startDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffDays = Math.max(1, Math.ceil((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)));
     const diffWeeks = Math.ceil(diffDays / 7);
-    const diffMonths = (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth()) + 1;
+    const diffMonths = Math.max(1, (now.getFullYear() - startDate.getFullYear()) * 12 + (now.getMonth() - startDate.getMonth()) + 1);
 
     const isWeekly = timeView === "weekly";
-    
-    // Determine number of points and build chart data
     const chartData = [];
-    
+
     if (isWeekly) {
-        // Show up to 4 weeks, but only if they exist
         const weeksToShow = Math.min(Math.max(diffWeeks, 1), 4);
         for (let i = 1; i <= weeksToShow; i++) {
             const label = i === weeksToShow ? "This Week" : `Week ${i}`;
             const factor = i / weeksToShow;
-            
-            // Mock growth curve ending at current overallPercent
-            const val = overallPercent * (0.3 + 0.7 * Math.pow(factor, 1.5));
-            const expectedVal = 50 * factor;
-            
+            const val = overallScore * (0.3 + 0.7 * Math.pow(factor, 1.5));
             chartData.push({
                 name: label,
-                progress: i === weeksToShow ? overallPercent : Math.round(val),
-                expected: Math.round(expectedVal)
+                progress: i === weeksToShow ? overallScore : Math.round(val),
+                expected: Math.round(50 * factor),
             });
         }
     } else {
-        // Show months from start month to current month
         const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const startMonthIndex = startDate.getMonth();
-        const startYear = startDate.getFullYear();
-        
-        // Limit to last 6 months max for sanity, but only if they exist
         const monthsToShow = Math.min(diffMonths, 6);
-        
         for (let i = 0; i < monthsToShow; i++) {
-            const currentMonthDate = new Date(startYear, startMonthIndex + i, 1);
-            const label = (currentMonthDate.getMonth() === now.getMonth() && currentMonthDate.getFullYear() === now.getFullYear())
+            const d = new Date(startDate.getFullYear(), startDate.getMonth() + i, 1);
+            const label = (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear())
                 ? "This Month"
-                : monthNames[currentMonthDate.getMonth()];
-            
+                : monthNames[d.getMonth()];
             const factor = (i + 1) / monthsToShow;
-            const val = overallPercent * (0.3 + 0.7 * Math.pow(factor, 1.5));
-            const expectedVal = 50 * factor;
-            
+            const val = overallScore * (0.3 + 0.7 * Math.pow(factor, 1.5));
             chartData.push({
                 name: label,
-                progress: i === monthsToShow - 1 ? overallPercent : Math.round(val),
-                expected: Math.round(expectedVal)
+                progress: i === monthsToShow - 1 ? overallScore : Math.round(val),
+                expected: Math.round(50 * factor),
             });
         }
     }
 
-
     const activitySummary = child.activitySummary ?? {
-        today: {
-            startTime: null,
-            endTime: null,
-            totalLearningSeconds: 0,
-            quizzesCompleted: 0,
-            xpEarned: 0,
-        },
-        weekly: {
-            totalLearningSeconds: 0,
-            quizzesCompleted: 0,
-            streak: child.streak || 0,
-        },
-        insights: {
-            mostPracticedCategory: null,
-            bestScoreThisWeek: null,
-            averageDailyLearningSeconds: 0,
-        },
+        today: { startTime: null, endTime: null, totalLearningSeconds: 0, quizzesCompleted: 0, xpEarned: 0 },
+        weekly: { totalLearningSeconds: 0, quizzesCompleted: 0, streak: child.streak || 0 },
+        insights: { mostPracticedCategory: null, bestScoreThisWeek: null, averageDailyLearningSeconds: 0 },
         timeline: [],
     };
+
+    // Limit recent activity timeline to 5 entries max
+    const recentTimeline = (activitySummary.timeline || []).slice(0, 5);
 
     const formatDuration = (totalSeconds: number) => {
         const minutes = Math.round(totalSeconds / 60);
@@ -168,7 +132,7 @@ export default function ChildProgressPage() {
         if (minutes < 60) return `${minutes}m`;
         const hours = Math.floor(minutes / 60);
         const remainingMinutes = minutes % 60;
-        return `${hours}h ${remainingMinutes}m`;
+        return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
     };
 
     const formatTime = (value: string | null) =>
@@ -176,10 +140,12 @@ export default function ChildProgressPage() {
 
     const formatCategory = (value: string | null) =>
         value
-            ? value
-                .replace(/[-_]+/g, " ")
-                .replace(/\b\w/g, (char) => char.toUpperCase())
+            ? value.replace(/[-_]+/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())
             : "-";
+
+    const hasActivityToday = activitySummary.today.totalLearningSeconds > 0
+        || activitySummary.today.quizzesCompleted > 0
+        || activitySummary.today.xpEarned > 0;
 
     return (
         <Box sx={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -215,7 +181,9 @@ export default function ChildProgressPage() {
                             </Box>
                             <Box>
                                 <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase" }}>Total Gems</Typography>
-                                <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#FFCC35", fontSize: 22, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}><GemsIcon sx={{ fontSize: 20 }} /> {child.gems}</Typography>
+                                <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#FFCC35", fontSize: 22, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}>
+                                    <GemsIcon sx={{ fontSize: 20 }} /> {child.gems}
+                                </Typography>
                             </Box>
                         </Box>
 
@@ -223,7 +191,9 @@ export default function ChildProgressPage() {
                         <Box sx={{ background: "var(--progress-streak-bg)", borderRadius: 3, p: 2, display: "flex", justifyContent: "space-around", color: "#d97706" }}>
                             <Box>
                                 <Typography sx={{ fontSize: 11, color: "#d97706", fontWeight: 600, textTransform: "uppercase", opacity: 0.8 }}>Current Streak</Typography>
-                                <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 22, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}><StreakIcon sx={{ fontSize: 20 }} /> {child.streak} Days</Typography>
+                                <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 22, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5 }}>
+                                    <StreakIcon sx={{ fontSize: 20 }} /> {child.streak} Days
+                                </Typography>
                             </Box>
                         </Box>
                     </Paper>
@@ -239,24 +209,28 @@ export default function ChildProgressPage() {
                                 Overall English Progress
                             </Typography>
 
-                            {/* Level indicator */}
+                            {/* Score indicator — real avg across categories */}
                             <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>
                                 <Box sx={{
-                                    width: 80, height: 80, borderRadius: "50%",
+                                    width: 90, height: 90, borderRadius: "50%",
                                     background: `${levelColors[overallLevel]}15`,
                                     border: `4px solid ${levelColors[overallLevel]}`,
-                                    display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flexShrink: 0,
                                 }}>
-                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 800, fontSize: 24, color: levelColors[overallLevel] }}>
-                                        {overallPercent}%
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 800, fontSize: 22, color: levelColors[overallLevel], lineHeight: 1 }}>
+                                        {overallScore}
                                     </Typography>
+                                    <Typography sx={{ fontSize: 10, color: levelColors[overallLevel], fontWeight: 600, opacity: 0.8 }}>/ 100</Typography>
                                 </Box>
                                 <Box>
                                     <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 24, color: "var(--text-primary)", textTransform: "capitalize" }}>
                                         {levelLabels[overallLevel]}
                                     </Typography>
                                     <Typography sx={{ fontSize: 13, color: "var(--text-secondary)" }}>
-                                        Overall English proficiency based on {child.categories.length} categories
+                                        Overall English score — average across {child.categories.length} {child.categories.length === 1 ? "category" : "categories"}
+                                    </Typography>
+                                    <Typography sx={{ fontSize: 12, color: "var(--text-tertiary)", mt: 0.5 }}>
+                                        {overallScore < 40 ? "Keep practising to reach Explorer level (40+)" : overallScore < 75 ? "Great progress! Champion level unlocks at 75+" : "🏆 Champion level achieved!"}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -265,12 +239,12 @@ export default function ChildProgressPage() {
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 4 }}>
                                 <Chip label="Starter" size="small" sx={{ fontSize: 10, fontWeight: 700, backgroundColor: "#FFCC3520", color: "#FFCC35", border: "1px solid #FFCC3540" }} />
                                 <Box sx={{ flex: 1, height: 10, borderRadius: 5, background: "var(--bg-hover)", overflow: "hidden" }}>
-                                    <Box sx={{ width: `${overallPercent}%`, height: "100%", borderRadius: 5, background: `linear-gradient(90deg, #FFCC35, #25AFF4, #8EE870)`, transition: "width 0.8s ease" }} />
+                                    <Box sx={{ width: `${overallScore}%`, height: "100%", borderRadius: 5, background: `linear-gradient(90deg, #FFCC35, #25AFF4, #8EE870)`, transition: "width 0.8s ease" }} />
                                 </Box>
-                                <Chip label="Champion" size="small" sx={{ fontSize: 10, fontWeight: 700, backgroundColor: overallPercent >= 75 ? "#8EE87020" : "#f1f5f9", color: overallPercent >= 75 ? "#8EE870" : "#94a3b8", border: `1px solid ${overallPercent >= 75 ? "#8EE87040" : "#e2e8f0"}` }} />
+                                <Chip label="Champion" size="small" sx={{ fontSize: 10, fontWeight: 700, backgroundColor: overallScore >= 75 ? "#8EE87020" : "#f1f5f9", color: overallScore >= 75 ? "#8EE870" : "#94a3b8", border: `1px solid ${overallScore >= 75 ? "#8EE87040" : "#e2e8f0"}` }} />
                             </Box>
 
-                            {/* Summary stats */}
+                            {/* Summary stats — from real child data */}
                             <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 4 }}>
                                 <Box sx={{ flex: 1, minWidth: 120, background: "var(--summary-xp-bg)", borderRadius: "999px", py: 2, px: 3, textAlign: "center", border: "1px solid var(--border-color)" }}>
                                     <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Total XP Earned</Typography>
@@ -283,8 +257,8 @@ export default function ChildProgressPage() {
                                     </Typography>
                                 </Box>
                                 <Box sx={{ flex: 1, minWidth: 120, background: "var(--summary-categories-bg)", borderRadius: "999px", py: 2, px: 3, textAlign: "center", border: "1px solid var(--border-color)" }}>
-                                    <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Categories</Typography>
-                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#FFCC35", fontSize: 26 }}>{child.categories.length}</Typography>
+                                    <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Gems</Typography>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#FFCC35", fontSize: 26 }}>{child.gems}</Typography>
                                 </Box>
                             </Box>
 
@@ -294,14 +268,11 @@ export default function ChildProgressPage() {
                                     Progress Trend
                                 </Typography>
                                 <Box sx={{ display: "flex", gap: 1, background: "var(--bg-hover)", p: 0.5, borderRadius: 2 }}>
-                                    <Button 
-                                        size="small" 
+                                    <Button
+                                        size="small"
                                         onClick={() => setTimeView("weekly")}
-                                        sx={{ 
-                                            textTransform: "none", 
-                                            fontSize: 12, 
-                                            fontWeight: 600, 
-                                            borderRadius: 1.5,
+                                        sx={{
+                                            textTransform: "none", fontSize: 12, fontWeight: 600, borderRadius: 1.5,
                                             background: timeView === "weekly" ? "#fff" : "transparent",
                                             color: timeView === "weekly" ? "#25AFF4" : "#64748b",
                                             boxShadow: timeView === "weekly" ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
@@ -310,14 +281,11 @@ export default function ChildProgressPage() {
                                     >
                                         Weekly
                                     </Button>
-                                    <Button 
-                                        size="small" 
+                                    <Button
+                                        size="small"
                                         onClick={() => setTimeView("monthly")}
-                                        sx={{ 
-                                            textTransform: "none", 
-                                            fontSize: 12, 
-                                            fontWeight: 600, 
-                                            borderRadius: 1.5,
+                                        sx={{
+                                            textTransform: "none", fontSize: 12, fontWeight: 600, borderRadius: 1.5,
                                             background: timeView === "monthly" ? "#fff" : "transparent",
                                             color: timeView === "monthly" ? "#25AFF4" : "#64748b",
                                             boxShadow: timeView === "monthly" ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
@@ -329,31 +297,27 @@ export default function ChildProgressPage() {
                                 </Box>
                             </Box>
 
-                            <Box sx={{ width: '100%', height: 260 }}>
-                                {mounted && (
-                                    <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
-                                        <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                            <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} interval={0} />
-                                            <YAxis 
-                                                tick={{ fill: '#64748b', fontSize: 12 }} 
-                                                axisLine={false} 
-                                                tickLine={false} 
-                                                domain={[0, 100]}
-                                                tickFormatter={(value) => `${value}%`}
-                                            />
-                                            <Tooltip 
-                                                cursor={{ fill: 'transparent' }} 
-                                                contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                                formatter={(value: any, name: any) => [`${value}%`, name === 'progress' ? 'Child Progress' : 'Expected Average']}
-                                            />
-                                            <Legend wrapperStyle={{ bottom: -5 }} />
-                                            <Line type="monotone" dataKey="progress" stroke="#25AFF4" strokeWidth={3} dot={{ fill: '#25AFF4', r: 5 }} activeDot={{ r: 7 }} name="Child Progress" />
-                                            <Line type="monotone" dataKey="expected" stroke="#ef4444" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Expected Average" />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                )}
-                            </Box>
+                            <ResponsiveContainer width="100%" height={260}>
+                                <LineChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                    <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} interval={0} />
+                                    <YAxis
+                                        tick={{ fill: '#64748b', fontSize: 12 }}
+                                        axisLine={false} tickLine={false}
+                                        domain={[0, 100]}
+                                        tickFormatter={(value) => `${value}`}
+                                        label={{ value: "Score", angle: -90, position: "insideLeft", offset: 10, style: { fill: "#94a3b8", fontSize: 11 } }}
+                                    />
+                                    <Tooltip
+                                        cursor={{ fill: 'transparent' }}
+                                        contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                        formatter={(value: any, name: any) => [`${value} / 100`, name === 'progress' ? `${child.name}'s Score` : 'Expected Average']}
+                                    />
+                                    <Legend wrapperStyle={{ bottom: -5 }} />
+                                    <Line type="monotone" dataKey="progress" stroke="#25AFF4" strokeWidth={3} dot={{ fill: '#25AFF4', r: 5 }} activeDot={{ r: 7 }} name={`${child.name}'s Score`} />
+                                    <Line type="monotone" dataKey="expected" stroke="#ef4444" strokeWidth={2} strokeDasharray="5 5" dot={false} name="Expected Average" />
+                                </LineChart>
+                            </ResponsiveContainer>
                         </Paper>
                     )}
 
@@ -364,32 +328,60 @@ export default function ChildProgressPage() {
                         </Typography>
 
                         <Grid container spacing={3} sx={{ mb: 3 }}>
+                            {/* Today card */}
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <Box sx={{ background: "var(--bg-subtle)", borderRadius: 3, p: 3, border: "1px solid var(--border-color)" }}>
-                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "var(--text-primary)", mb: 1 }}>
-                                        Today
+                                <Box sx={{ background: "var(--bg-subtle)", borderRadius: 3, p: 3, border: "1px solid var(--border-color)", height: "100%" }}>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "var(--text-primary)", mb: 1.5 }}>
+                                        Today's Activity
                                     </Typography>
-                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-                                        <TimeIcon sx={{ fontSize: 18, color: "var(--text-tertiary)" }} />
-                                        <Typography sx={{ fontSize: 14, color: "var(--text-secondary)" }}>
-                                            {formatDuration(activitySummary.today.totalLearningSeconds)} - {formatTime(activitySummary.today.startTime)} / {formatTime(activitySummary.today.endTime)}
+
+                                    {!hasActivityToday ? (
+                                        <Typography sx={{ fontSize: 13, color: "var(--text-tertiary)", fontStyle: "italic" }}>
+                                            No activity yet today. Encourage {child.name} to start a lesson!
                                         </Typography>
-                                    </Box>
-                                    <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
-                                            <QuizzesIcon sx={{ fontSize: 18, color: "#25AFF4" }} />
-                                            <Typography sx={{ fontSize: 13, color: "var(--text-secondary)" }}>{activitySummary.today.quizzesCompleted} quizzes</Typography>
-                                        </Box>
-                                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.6 }}>
-                                            <XpIcon sx={{ fontSize: 18, color: "#FFCC35" }} />
-                                            <Typography sx={{ fontSize: 13, color: "var(--text-secondary)" }}>{activitySummary.today.xpEarned} XP</Typography>
-                                        </Box>
-                                    </Box>
+                                    ) : (
+                                        <>
+                                            {/* Screen time with from/to */}
+                                            <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1, mb: 1.5 }}>
+                                                <TimeIcon sx={{ fontSize: 18, color: "#2563eb", mt: 0.2 }} />
+                                                <Box>
+                                                    <Typography sx={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 600 }}>
+                                                        Screen Time: <Box component="span" sx={{ color: "#2563eb", fontFamily: "'Baloo 2', cursive", fontSize: 15 }}>{formatDuration(activitySummary.today.totalLearningSeconds)}</Box>
+                                                    </Typography>
+                                                    {activitySummary.today.startTime && (
+                                                        <Typography sx={{ fontSize: 12, color: "var(--text-tertiary)" }}>
+                                                            {formatTime(activitySummary.today.startTime)}
+                                                            {activitySummary.today.endTime && activitySummary.today.endTime !== activitySummary.today.startTime
+                                                                ? ` → ${formatTime(activitySummary.today.endTime)}`
+                                                                : ""}
+                                                        </Typography>
+                                                    )}
+                                                </Box>
+                                            </Box>
+
+                                            {/* Quizzes today */}
+                                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                                                <QuizzesIcon sx={{ fontSize: 18, color: "#25AFF4" }} />
+                                                <Typography sx={{ fontSize: 13, color: "var(--text-secondary)" }}>
+                                                    <Box component="span" sx={{ fontWeight: 700, color: "#25AFF4" }}>{activitySummary.today.quizzesCompleted}</Box> quiz{activitySummary.today.quizzesCompleted !== 1 ? "zes" : ""} completed
+                                                </Typography>
+                                            </Box>
+
+                                            {/* XP today */}
+                                            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                                <XpIcon sx={{ fontSize: 18, color: "#FFCC35" }} />
+                                                <Typography sx={{ fontSize: 13, color: "var(--text-secondary)" }}>
+                                                    <Box component="span" sx={{ fontWeight: 700, color: "#FFCC35" }}>{activitySummary.today.xpEarned}</Box> XP earned today
+                                                </Typography>
+                                            </Box>
+                                        </>
+                                    )}
                                 </Box>
                             </Grid>
 
+                            {/* Weekly card */}
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <Box sx={{ background: "var(--bg-subtle)", borderRadius: 3, p: 3, border: "1px solid var(--border-color)" }}>
+                                <Box sx={{ background: "var(--bg-subtle)", borderRadius: 3, p: 3, border: "1px solid var(--border-color)", height: "100%" }}>
                                     <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "var(--text-primary)", mb: 2 }}>
                                         Weekly Activity
                                     </Typography>
@@ -412,18 +404,19 @@ export default function ChildProgressPage() {
                         </Grid>
 
                         <Grid container spacing={3}>
+                            {/* Recent Activity Timeline — limited to 5 entries */}
                             <Grid size={{ xs: 12, md: 7 }}>
                                 <Box sx={{ background: "var(--bg-subtle)", borderRadius: 3, p: 3, border: "1px solid var(--border-color)" }}>
                                     <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "var(--text-primary)", mb: 2 }}>
-                                        Recent Activity Timeline
+                                        Recent Activity
                                     </Typography>
-                                    {activitySummary.timeline.length === 0 ? (
+                                    {recentTimeline.length === 0 ? (
                                         <Typography sx={{ color: "var(--text-tertiary)", fontSize: 14 }}>
                                             No activity yet. Once lessons start, updates will appear here.
                                         </Typography>
                                     ) : (
-                                        activitySummary.timeline.map((item, index) => (
-                                            <Box key={item.id} sx={{ display: "flex", alignItems: "center", gap: 2, py: 1.2, borderBottom: index === activitySummary.timeline.length - 1 ? "none" : "1px dashed #e2e8f0" }}>
+                                        recentTimeline.map((item, index) => (
+                                            <Box key={item.id} sx={{ display: "flex", alignItems: "center", gap: 2, py: 1.2, borderBottom: index === recentTimeline.length - 1 ? "none" : "1px dashed #e2e8f0" }}>
                                                 <Typography sx={{ fontSize: 12, fontWeight: 700, color: "var(--text-tertiary)", minWidth: 70 }}>
                                                     {new Date(item.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                                                 </Typography>
@@ -434,6 +427,7 @@ export default function ChildProgressPage() {
                                 </Box>
                             </Grid>
 
+                            {/* Insights */}
                             <Grid size={{ xs: 12, md: 5 }}>
                                 <Box sx={{ background: "var(--bg-subtle)", borderRadius: 3, p: 3, border: "1px solid var(--border-color)" }}>
                                     <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "var(--text-primary)", mb: 2 }}>
@@ -449,11 +443,11 @@ export default function ChildProgressPage() {
                                         <Box sx={{ background: "var(--progress-insight-bg)", borderRadius: 2, p: 2 }}>
                                             <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Best Score This Week</Typography>
                                             <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#6d28d9" }}>
-                                                {activitySummary.insights.bestScoreThisWeek ?? "-"}
+                                                {activitySummary.insights.bestScoreThisWeek != null ? `${activitySummary.insights.bestScoreThisWeek} / 100` : "-"}
                                             </Typography>
                                         </Box>
                                         <Box sx={{ background: "var(--bg-hover)", borderRadius: 2, p: 2 }}>
-                                            <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Average Daily Learning Time</Typography>
+                                            <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Avg Daily Learning Time</Typography>
                                             <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#c2410c" }}>
                                                 {formatDuration(activitySummary.insights.averageDailyLearningSeconds)}
                                             </Typography>
@@ -466,7 +460,7 @@ export default function ChildProgressPage() {
 
                     {/* ═══ Section 2: Category Cards ═══ */}
                     <Typography variant="h5" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "var(--text-primary)", mb: 3 }}>
-                        Learning Progress
+                        Learning Progress by Category
                     </Typography>
 
                     {child.categories.length === 0 ? (
@@ -477,6 +471,8 @@ export default function ChildProgressPage() {
                         <Grid container spacing={3}>
                             {child.categories.map((cat) => {
                                 const progressColor = levelColors[cat.level] || "#25AFF4";
+                                // Per-category score out of 100
+                                const catScore = Math.min(Math.round((cat.xp / MAX_XP_PER_CATEGORY) * 100), 100);
 
                                 return (
                                     <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={cat.categoryId}>
@@ -485,7 +481,6 @@ export default function ChildProgressPage() {
                                             transition: "all 0.2s", "&:hover": { transform: "translateY(-3px)", boxShadow: `0 8px 20px ${progressColor}15`, borderColor: `${progressColor}60` },
                                             textAlign: "center",
                                         }}>
-                                            {/* Level badge */}
                                             <Chip
                                                 label={levelLabels[cat.level] || cat.level}
                                                 size="small"
@@ -500,23 +495,26 @@ export default function ChildProgressPage() {
                                                 }}
                                             />
 
-                                            {/* Category name */}
-                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "var(--text-primary)", textTransform: "capitalize", mb: 1.5 }}>
-                                                {cat.categoryId}
+                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "var(--text-primary)", textTransform: "capitalize", mb: 1 }}>
+                                                {cat.categoryId.replace(/[-_]+/g, " ")}
                                             </Typography>
 
-                                            {/* Stats row */}
+                                            {/* Score badge */}
+                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 800, fontSize: 28, color: progressColor, mb: 1 }}>
+                                                {catScore}<Box component="span" sx={{ fontSize: 14, fontWeight: 600, color: "var(--text-tertiary)" }}>/100</Box>
+                                            </Typography>
+
                                             <Box sx={{ display: "flex", justifyContent: "center", gap: 3 }}>
                                                 <Box>
                                                     <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase" }}>XP</Typography>
-                                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#FFCC35", fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.3 }}>
-                                                        <XpIcon sx={{ fontSize: 16 }} /> {cat.xp}
+                                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#FFCC35", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.3 }}>
+                                                        <XpIcon sx={{ fontSize: 15 }} /> {cat.xp}
                                                     </Typography>
                                                 </Box>
                                                 <Box>
                                                     <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase" }}>Quizzes</Typography>
-                                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#25AFF4", fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.3 }}>
-                                                        <QuizzesIcon sx={{ fontSize: 16 }} /> {cat.quizzesCompleted}
+                                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#25AFF4", fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", gap: 0.3 }}>
+                                                        <QuizzesIcon sx={{ fontSize: 15 }} /> {cat.quizzesCompleted}
                                                     </Typography>
                                                 </Box>
                                             </Box>
@@ -562,7 +560,7 @@ export default function ChildProgressPage() {
                                             return (
                                                 <TableRow key={pr.categoryId} sx={{ "&:last-child td": { borderBottom: 0 }, "&:hover": { background: "var(--bg-subtle)" } }}>
                                                     <TableCell sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 600, fontSize: 16, color: "var(--text-primary)", textTransform: "capitalize" }}>
-                                                        {pr.categoryId}
+                                                        {pr.categoryId.replace(/[-_]+/g, " ")}
                                                     </TableCell>
                                                     <TableCell align="center">
                                                         <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1 }}>
@@ -600,7 +598,7 @@ export default function ChildProgressPage() {
                         )}
                     </Box>
 
-                    {/* Recent Activity */}
+                    {/* Recent Activity footer */}
                     {child.lastPlayedDate && (
                         <Box sx={{ mt: 5, p: 3, background: "var(--bg-subtle)", borderRadius: "16px", border: "1px dashed var(--border-color)" }}>
                             <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontSize: 14 }}>
