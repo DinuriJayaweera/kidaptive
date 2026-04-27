@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import QuizQuestion from "../models/quizQuestion.model.js";
 import CategoryProgress from "../models/categoryProgress.model.js";
 import PlacementResult from "../models/placementResult.model.js";
+import { recordMistake } from "./mistakes.service.js";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 interface QuizAnswer {
@@ -168,6 +169,20 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
       if (isCorrect) {
         correctCount++;
         correctTimings.push(a.timeTaken || 0);
+      } else {
+        // Record this as a mistake for the Mistakes practice mode
+        recordMistake({
+          childId,
+          questionId: q._id.toString(),
+          questionSource: "quiz",
+          questionText: q.questionText,
+          questionType: q.type as "mcq" | "fill" | "input" | "boolean",
+          category: q.category,
+          difficulty: q.difficulty as "easy" | "medium" | "hard",
+          options: q.options || [],
+          correctAnswer: q.correctAnswer,
+          childAnswer: a.selectedAnswer || "",
+        }).catch(() => {}); // fire-and-forget, don't block quiz flow
       }
     }
   }

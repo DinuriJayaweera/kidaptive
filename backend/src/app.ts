@@ -36,6 +36,7 @@ import placementTestRoutes from "./routes/placement-test.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import quizRoutes from "./routes/quiz.routes.js";
 import parentRoutes from "./routes/parent.routes.js";
+import childRoutes from "./routes/child.routes.js";
 
 // ── Routes ───────────────────────────────────────────────────────────────────
 app.use("/api", healthRoutes);
@@ -46,8 +47,9 @@ app.use("/api/placement-test", placementTestRoutes);
 app.get("/api/placement/status", authenticate, requireRole("child"), userPlacementStatus);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/quiz", quizRoutes);
+app.use("/api/child", childRoutes);
 
 // ── Centralized Error Handler ────────────────────────────────────────────────
 app.use(errorHandler);
 
-export default app;
+export default app;

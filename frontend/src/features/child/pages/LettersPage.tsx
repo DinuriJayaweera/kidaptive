@@ -1,8 +1,9 @@
 import { Box, Typography } from "@mui/material";
 import VolumeUpRoundedIcon from "@mui/icons-material/VolumeUpRounded";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import ChildSidebar from "../components/ChildSidebar";
 import TopBarStats from "../components/TopBarStats";
+import { getDashboardData } from "../services/quizApi";
 
 // ── Import all 26 letter PNGs ──────────────────────────────────────────────
 import aImg from "../../../assets/a.png";
@@ -62,43 +63,89 @@ const LETTERS = [
     { letter: "Z", img: zImg },
 ];
 
-// ── Phonetic map ───────────────────────────────────────────────────────────
-// Using clear phonetic spellings so the Web Speech API pronounces each
-// letter name the way a child would expect to hear it.
+// ── Kid-friendly phonetic map ──────────────────────────────────────────────
+// The speech engine reads single characters robotically ("f" → "ef" in a
+// flat tone). Spelling each name as a WORD makes the engine read it as
+// natural speech.  "eff" → sounds like a person saying "eff" warmly.
 const PHONETICS: Record<string, string> = {
-    A: "ay", B: "bee", C: "see", D: "dee",
-    E: "ee", F: "eff", G: "jee", H: "aych",
-    I: "eye", J: "jay", K: "kay", L: "el",
-    M: "em", N: "en", O: "oh", P: "pee",
-    Q: "cue", R: "ar", S: "ess", T: "tee",
-    U: "you", V: "vee", W: "double you", X: "ex",
-    Y: "why", Z: "zee",
+    A: "a", B: "b", C: "c", D: "d",
+    E: "e", F: "f", G: "jee", H: "h",
+    I: "i", J: "j", K: "k", L: "l",
+    M: "m", N: "n", O: "o", P: "p",
+    Q: "q", R: "r", S: "s", T: "t",
+    U: "u", V: "v", W: "w", X: "x",
+    Y: "y", Z: "z",
 };
+
+// ── Voice selection for Windows (Zira is the friendliest built-in voice) ───
+function pickBestVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
+    // Priority list — friendliest voices first
+    const names = [
+        "microsoft zira",       // Windows — soft US female ★
+        "microsoft hazel",      // Windows — UK female
+        "samantha",             // macOS
+        "google us english",    // Chrome
+    ];
+    for (const name of names) {
+        const v = voices.find((v) => v.name.toLowerCase().includes(name));
+        if (v) return v;
+    }
+    // Fallback: any English voice
+    return voices.find((v) => v.lang.startsWith("en")) ?? null;
+}
 
 // ── Component ──────────────────────────────────────────────────────────────
 export default function LettersPage() {
     // Tracks which letter card is currently playing audio
     const [speaking, setSpeaking] = useState<string | null>(null);
 
+    // ── Fetch child stats from the same API the dashboard uses ─────────────
+    const [stats, setStats] = useState({ totalXp: 0, streak: 0, gems: 0 });
+    useEffect(() => {
+        getDashboardData()
+            .then((d) => {
+                if (d?.stats) setStats(d.stats);
+            })
+            .catch(() => { /* stats will stay 0 — non-critical */ });
+    }, []);
+
+    // Ensure voices are loaded (Chrome loads them async)
+    const voicesReady = useRef(false);
+    useEffect(() => {
+        const loadVoices = () => { voicesReady.current = true; };
+        loadVoices();
+        window.speechSynthesis?.addEventListener?.("voiceschanged", loadVoices);
+        return () => {
+            window.speechSynthesis?.removeEventListener?.("voiceschanged", loadVoices);
+        };
+    }, []);
+
+    // Debounce ref — prevents double-fire on rapid clicks
+    const lastClickRef = useRef(0);
+
     const handleLetterClick = (letter: string) => {
         if (!window.speechSynthesis) return;
+
+        // Guard against double-clicks (< 300ms apart)
+        const now = Date.now();
+        if (now - lastClickRef.current < 300) return;
+        lastClickRef.current = now;
 
         // Stop anything already playing
         window.speechSynthesis.cancel();
 
-        const utterance = new SpeechSynthesisUtterance(PHONETICS[letter] ?? letter);
+        const phonetic = PHONETICS[letter] ?? letter;
+
+        const utterance = new SpeechSynthesisUtterance(phonetic);
         utterance.lang = "en-US";
-        utterance.rate = 0.85;   // slightly slower — easier for kids
-        utterance.pitch = 1.1;    // slightly higher — friendlier tone
+        utterance.rate = 0.7;     // nice and slow for little ears
+        utterance.pitch = 1.4;    // higher pitch = warmer, child-friendly tone
         utterance.volume = 1;
 
-        // Prefer an English voice; female voices tend to sound more kid-friendly
+        // Pick the best available voice
         const voices = window.speechSynthesis.getVoices();
-        const preferred =
-            voices.find((v) => v.lang.startsWith("en") && v.name.toLowerCase().includes("female")) ??
-            voices.find((v) => v.lang.startsWith("en")) ??
-            null;
-        if (preferred) utterance.voice = preferred;
+        const best = pickBestVoice(voices);
+        if (best) utterance.voice = best;
 
         // Animate the card while speaking, clear when done
         setSpeaking(letter);
@@ -128,7 +175,7 @@ export default function LettersPage() {
                         </Typography>
                     </Box>
                     <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                        <TopBarStats totalXp={0} streak={0} gems={0} />
+                        <TopBarStats totalXp={stats.totalXp} streak={stats.streak} gems={stats.gems} />
                     </Box>
                 </Box>
 

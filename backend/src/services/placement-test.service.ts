@@ -2,6 +2,7 @@ import PlacementQuestion from "../models/placement.model.js";
 import PlacementResult from "../models/placementResult.model.js";
 import User from "../models/User.js";
 import type { IPlacementAnswer, ICategoryResult } from "../models/placementResult.model.js";
+import { recordMistake } from "./mistakes.service.js";
 
 // ── Weight map ──────────────────────────────────────────────────────────────
 const DIFFICULTY_WEIGHT: Record<string, number> = { easy: 1, medium: 2, hard: 3 };
@@ -224,6 +225,27 @@ export async function submitTestAnswers(
     const result = scoreCategoryAnswers(catAnswers);
     newCategoryResults.push(result);
     newEvaluatedCategories.push(result.categoryId);
+  }
+
+  // Record incorrect placement answers as mistakes
+  for (const va of verifiedAnswers) {
+    if (!va.isCorrect) {
+      const q = questionMap.get(va.questionId.toString());
+      if (q) {
+        recordMistake({
+          childId,
+          questionId: q._id.toString(),
+          questionSource: "placement",
+          questionText: q.questionText,
+          questionType: q.type as "mcq" | "fill" | "input" | "boolean",
+          category: q.category,
+          difficulty: q.difficulty as "easy" | "medium" | "hard",
+          options: q.options || [],
+          correctAnswer: q.correctAnswer,
+          childAnswer: va.selectedAnswer || "",
+        }).catch(() => {}); // fire-and-forget
+      }
+    }
   }
 
   // Upsert placement result

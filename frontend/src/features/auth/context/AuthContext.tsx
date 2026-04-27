@@ -21,6 +21,16 @@ interface AuthState {
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
 
+const legacyAvatarMap: Record<string, string> = {
+    default: "🦖", dino: "🦕", rocket: "🚀", star: "⭐",
+    bear: "🐻", cat: "🐱", dog: "🐶", unicorn: "🦄"
+};
+
+function normalizeAvatar(avatar?: string) {
+    if (!avatar) return avatar;
+    return legacyAvatarMap[avatar] || avatar;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUserState] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);
@@ -39,6 +49,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (stored) {
             try {
                 const parsed = JSON.parse(stored) as AuthUser;
+                parsed.avatar = normalizeAvatar(parsed.avatar);
+                parsed.avatarUrl = normalizeAvatar(parsed.avatarUrl);
                 setUserState(parsed);
             } catch {
                 // ignore malformed data
@@ -58,8 +70,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     const merged: AuthUser = {
                         ...prev,
                         ...freshUser,
-                        avatar: freshUser.avatar || freshUser.avatarUrl || prev?.avatar || prev?.avatarUrl,
-                        avatarUrl: freshUser.avatarUrl || freshUser.avatar || prev?.avatarUrl || prev?.avatar,
+                        avatar: normalizeAvatar(freshUser.avatar || freshUser.avatarUrl || prev?.avatar || prev?.avatarUrl),
+                        avatarUrl: normalizeAvatar(freshUser.avatarUrl || freshUser.avatar || prev?.avatarUrl || prev?.avatar),
                     };
                     localStorage.setItem("user", JSON.stringify(merged));
                     return merged;

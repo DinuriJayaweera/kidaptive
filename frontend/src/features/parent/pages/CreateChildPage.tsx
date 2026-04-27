@@ -31,7 +31,7 @@ function genUsername(name: string) {
 export default function CreateChildPage() {
     const navigate = useNavigate();
     const [form, setForm] = useState({
-        name: "", age: "", username: "", avatar: "default",
+        name: "", age: "", username: "", avatar: "🦖",
         emojiPassword: [] as string[],
     });
     const [error, setError] = useState("");
@@ -133,10 +133,10 @@ export default function CreateChildPage() {
                             <Typography variant="subtitle2" sx={{ mt: 3, mb: 1, fontWeight: 700 }}>Pick an Avatar</Typography>
                             <Box sx={{ display: "flex", gap: 1.5, flexWrap: "wrap", mb: 3 }}>
                                 {avatarOptions.map((o) => (
-                                    <Avatar key={o.id} onClick={() => setForm({ ...form, avatar: o.id })} sx={{
+                                    <Avatar key={o.id} onClick={() => setForm({ ...form, avatar: o.emoji })} sx={{
                                         width: 56, height: 56, fontSize: "1.6rem", cursor: "pointer",
-                                        backgroundColor: form.avatar === o.id ? "#25AFF4" : "var(--bg-subtle)",
-                                        border: form.avatar === o.id ? "3px solid #25AFF4" : "3px solid transparent",
+                                        backgroundColor: form.avatar === o.emoji ? "#25AFF4" : "var(--bg-subtle)",
+                                        border: form.avatar === o.emoji ? "3px solid #25AFF4" : "3px solid transparent",
                                         transition: "all 0.2s", "&:hover": { transform: "scale(1.1)" },
                                     }}>{o.emoji}</Avatar>
                                 ))}
