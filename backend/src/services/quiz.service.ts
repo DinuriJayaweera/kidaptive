@@ -223,8 +223,8 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
       child.totalXP = (child.totalXP || 0) + 20;
       xpGained = 20;
 
-      // +2 gems for champion pass
-      gemsEarned = 2;
+      // +20 gems for champion pass
+      gemsEarned = 20;
 
       // Track champion wins
       const oldWins = progress.championWins || 0;
@@ -247,8 +247,8 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
       child.totalXP = (child.totalXP || 0) + 10;
       xpGained = 10;
 
-      // +1 gem for passing
-      gemsEarned += 1;
+      // +10 gems for passing
+      gemsEarned += 10;
 
       // Level Up check: categoryXP reaches 50 (only if not replaying)
       if (!isEffectiveReplay && progress.xp >= 50) {
@@ -268,9 +268,9 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
       }
     }
 
-    // Every 5 quizzes → +2 gems (starter/explorer only)
+    // Every 5 quizzes → +20 gems (starter/explorer only)
     if (!isEffectiveReplay && progress.quizzesCompleted > 0 && progress.quizzesCompleted % 5 === 0) {
-      gemsEarned += 2;
+      gemsEarned += 20;
     }
   }
 

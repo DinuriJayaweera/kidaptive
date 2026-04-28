@@ -139,10 +139,10 @@ export const submitMistakeSession = async (req: Request, res: Response) => {
             });
         }
 
-        // Gem bonus: award 1 gem if child fixed 3+ mistakes in one session
+        // Gem bonus: award 10 gems if child fixed 3+ mistakes in one session
         if (fixedCount >= 3) {
-            gemsEarned = 1;
-            child.gems = (child.gems || 0) + 1;
+            gemsEarned = 10;
+            child.gems = (child.gems || 0) + 10;
         }
 
         await child.save();

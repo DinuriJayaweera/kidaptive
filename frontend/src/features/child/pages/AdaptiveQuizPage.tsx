@@ -351,7 +351,7 @@ export default function AdaptiveQuizPage() {
           {isQuizMilestone && (
             <div className="aq-milestone">
               <img src={gemsImg} alt="Gems" className="aq-img-18" />
-              <span className="aq-milestone-text">{result.quizzesCompleted} Quizzes Completed! +2 Bonus Gems</span>
+              <span className="aq-milestone-text">{result.quizzesCompleted} Quizzes Completed! +20 Bonus Gems</span>
             </div>
           )}
 

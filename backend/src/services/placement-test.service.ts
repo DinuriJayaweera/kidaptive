@@ -292,9 +292,9 @@ export async function submitTestAnswers(
       let earnedGems = 0;
       for (const result of placementResult.categoryResults) {
         totalPlacementXP += getXPForScore(result.score);
-        if (result.level === "starter") earnedGems += 1;
-        else if (result.level === "explorer") earnedGems += 3;
-        else if (result.level === "champion") earnedGems += 5;
+        if (result.level === "starter") earnedGems += 10;
+        else if (result.level === "explorer") earnedGems += 30;
+        else if (result.level === "champion") earnedGems += 50;
       }
       
       // Average XP across all categories

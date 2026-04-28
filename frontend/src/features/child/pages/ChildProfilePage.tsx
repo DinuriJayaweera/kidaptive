@@ -291,8 +291,8 @@ export default function ChildProfilePage() {
         {
             icon: gemsImg,
             title: "Gem Collector",
-            desc: "Collect 100 gems",
-            earned: gems >= 100,
+            desc: "Collect 1,000 gems",
+            earned: gems >= 1000,
         },
     ];
 
