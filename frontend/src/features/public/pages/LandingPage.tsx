@@ -9,7 +9,7 @@ import {
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import kipImg from "../../../assets/kip_a.png";
+import kipImg from "../../../assets/Hi 3.png";
 import butterfliesImg from "../../../assets/butterflies.png";
 import rocketImg from "../../../assets/rocket.png";
 import duckImg from "../../../assets/duck.png";

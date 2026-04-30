@@ -7,6 +7,7 @@ import {
 } from "../controllers/child.controller.js";
 import { getLeaderboard } from "../controllers/leaderboard.controller.js";
 import { getMistakes, startMistakeSession, submitMistakeSession } from "../controllers/mistakes.controller.js";
+import { getAchievements, triggerEvaluation } from "../controllers/achievements.controller.js";
 
 const router = Router();
 
@@ -19,5 +20,8 @@ router.get("/mistakes", authenticate, requireRole("child"), getMistakes);
 router.post("/mistakes/start", authenticate, requireRole("child"), startMistakeSession);
 router.post("/mistakes/submit", authenticate, requireRole("child"), submitMistakeSession);
 
+// Achievements
+router.get("/achievements", authenticate, requireRole("child"), getAchievements);
+router.post("/achievements/evaluate", authenticate, requireRole("child"), triggerEvaluation);
+
 export default router;
-

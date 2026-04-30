@@ -3,6 +3,7 @@ import Mistake from "../models/mistake.model.js";
 import User from "../models/User.js";
 import mongoose from "mongoose";
 import type { TokenPayload } from "../utils/jwt.js";
+import { evaluateAchievements } from "../services/achievements.service.js";
 
 type AuthRequest = Request & { user: TokenPayload };
 
@@ -50,7 +51,7 @@ export const startMistakeSession = async (req: Request, res: Response) => {
         const { userId } = (req as AuthRequest).user;
 
         const childObjectId = new mongoose.Types.ObjectId(userId);
-        
+
         const totalMistakes = await Mistake.countDocuments({ childId: childObjectId, resolved: false });
 
         const mistakes = await Mistake.aggregate([
@@ -147,6 +148,17 @@ export const submitMistakeSession = async (req: Request, res: Response) => {
 
         await child.save();
 
+        // ── Achievement evaluation ──
+        // The Mistake Master achievement counts resolved mistakes; gems
+        // achievements may also unlock if the bonus pushed them past a
+        // threshold. Wrap in try/catch — never block the response.
+        let newlyUnlockedAchievements: string[] = [];
+        try {
+            newlyUnlockedAchievements = await evaluateAchievements(userId);
+        } catch (achErr) {
+            console.error("Achievement evaluation failed (non-fatal):", achErr);
+        }
+
         const remainingMistakes = await Mistake.countDocuments({ childId: userId, resolved: false });
 
         return res.json({
@@ -158,6 +170,7 @@ export const submitMistakeSession = async (req: Request, res: Response) => {
             totalGems: child.gems,
             remainingMistakes,
             results,
+            newlyUnlockedAchievements,
         });
     } catch (error: any) {
         console.error("Error in submitMistakeSession:", error);

@@ -8,6 +8,7 @@ import {
   getPlacementStatus,
   resetPlacement,
 } from "../services/placement-test.service.js";
+import { evaluateAchievements } from "../services/achievements.service.js";
 
 type AuthRequest = Request & { user: TokenPayload };
 
@@ -80,7 +81,19 @@ export const submit = async (req: Request, res: Response): Promise<void> => {
 
     const ageGroup = child.age ? `${child.age}-${child.age + 1}` : "5-6";
     const result = await submitTestAnswers(userId, ageGroup, answers);
-    res.json(result);
+
+    // ── Achievement evaluation ──
+    // Placement-related achievements (First Crown, Starter/Explorer/Champion
+    // Crown) become eligible the moment a placement test result lands.
+    // Don't block the response on this.
+    let newlyUnlockedAchievements: string[] = [];
+    try {
+      newlyUnlockedAchievements = await evaluateAchievements(userId);
+    } catch (achErr) {
+      console.error("Achievement evaluation failed (non-fatal):", achErr);
+    }
+
+    res.json({ ...result, newlyUnlockedAchievements });
   } catch (error) {
     console.error("Submit test error:", error);
     res.status(500).json({ message: "Failed to submit test" });

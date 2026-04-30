@@ -12,12 +12,14 @@ import leaderboardIcon from "../../../assets/leaderboard.png";
 import questsIcon from "../../../assets/quests.png";
 import profileIcon from "../../../assets/profile.png";
 import moreIcon from "../../../assets/more.png";
+import achievementsIcon from "../../../assets/medal.png";
 
 type NavLabel =
   | "LEARN"
   | "LETTERS"
   | "PRACTICE"
   | "LEADERBOARDS"
+  | "ACHIEVEMENTS"
   | "QUESTS"
   | "PROFILE"
   | "MORE";
@@ -33,16 +35,28 @@ const navItems: NavItemObj[] = [
   { label: "LETTERS", iconSrc: lettersIcon, route: "/child/letters" },
   { label: "PRACTICE", iconSrc: practiceIcon, route: "/child/practice" },
   { label: "LEADERBOARDS", iconSrc: leaderboardIcon, route: "/child/leaderboards" },
+  { label: "ACHIEVEMENTS", iconSrc: achievementsIcon, route: "/child/achievements" },
   { label: "QUESTS", iconSrc: questsIcon, route: "/child/quests" },
   { label: "PROFILE", iconSrc: profileIcon, route: "/child/profile" },
   { label: "MORE", iconSrc: moreIcon, route: "/child/more" },
 ];
 
 interface ChildSidebarProps {
-  /** Which nav item should be highlighted. Defaults to "LEARN". */
   activePage?: NavLabel;
 }
 
+/**
+ * Child sidebar — uses position: sticky so it stays fixed while scrolling
+ * but still occupies space in the layout (no need to add marginLeft to
+ * page content; the flex container handles it naturally).
+ *
+ * Width breakpoints:
+ *   xs (mobile)  → 64px, icons only
+ *   sm (tablet)  → 80px, icons only
+ *   md (desktop) → 250px, icons + labels
+ *
+ * Icons are always full color. Active state shows via background + text.
+ */
 export default function ChildSidebar({ activePage = "LEARN" }: ChildSidebarProps) {
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -60,19 +74,30 @@ export default function ChildSidebar({ activePage = "LEARN" }: ChildSidebarProps
   return (
     <Box
       sx={{
-        width: { xs: 64, sm: 80, md: 250 },   // Collapses to icon-only on mobile
-        minWidth: { xs: 64, sm: 80, md: 250 },
-        height: "100vh",
+        // ── Sticky positioning — stays fixed when parent scrolls ──
         position: "sticky",
         top: 0,
-        borderRight: "2px solid #E2E8F0",
-        backgroundColor: "transparent",
+        // alignSelf: flex-start prevents the sidebar from stretching
+        // to match the longest content height, which is what was causing
+        // the "scrolls with page" issue.
+        alignSelf: "flex-start",
+
+        width: { xs: 64, sm: 80, md: 250 },
+        minWidth: { xs: 64, sm: 80, md: 250 },
+        height: "100vh",
+        // Don't shrink even if parent flex tries to compress us
         flexShrink: 0,
+
+        backgroundColor: "#F4F8FB",
+        borderRight: "2px solid #E2E8F0",
         display: "flex",
         flexDirection: "column",
         py: 4,
         px: { xs: 1, md: 3 },
+        // Allow internal scrolling on extremely short screens only
         overflowY: "auto",
+        overflowX: "hidden",
+        zIndex: 10,
       }}
     >
       {/* ── Logo Area ── */}
@@ -83,6 +108,7 @@ export default function ChildSidebar({ activePage = "LEARN" }: ChildSidebarProps
           gap: 0,
           mb: 6,
           pl: 0,
+          justifyContent: { xs: "center", md: "flex-start" },
         }}
       >
         <Box
@@ -96,12 +122,9 @@ export default function ChildSidebar({ activePage = "LEARN" }: ChildSidebarProps
             flexShrink: 0,
             filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.12))",
             transition: "transform 0.3s ease",
-            "&:hover": {
-              transform: "scale(1.05)",
-            },
+            "&:hover": { transform: "scale(1.05)" },
           }}
         />
-        {/* Hide text label on small screens */}
         <Typography
           sx={{
             display: { xs: "none", md: "block" },
@@ -120,7 +143,7 @@ export default function ChildSidebar({ activePage = "LEARN" }: ChildSidebarProps
       </Box>
 
       {/* ── Nav Items ── */}
-      <Stack spacing={1.5}>
+      <Stack spacing={1.5} sx={{ flex: 1 }}>
         {navItems.map((item) => {
           const isActive = item.label === activePage;
           return (
@@ -156,13 +179,12 @@ export default function ChildSidebar({ activePage = "LEARN" }: ChildSidebarProps
                   width: 26,
                   height: 26,
                   objectFit: "contain",
-                  opacity: isActive ? 1 : 0.6,
-                  filter: isActive ? "none" : "grayscale(80%)",
-                  transition: "all 0.2s",
+                  // Always full color, never grayscale
+                  opacity: 1,
+                  filter: "none",
                   flexShrink: 0,
                 }}
               />
-              {/* Hide text labels on small screens */}
               <Typography
                 sx={{
                   display: { xs: "none", md: "block" },
@@ -181,7 +203,7 @@ export default function ChildSidebar({ activePage = "LEARN" }: ChildSidebarProps
       </Stack>
 
       {/* ── Logout Button ── */}
-      <Box sx={{ mt: "auto", pt: 4 }}>
+      <Box sx={{ mt: 2 }}>
         <Button
           fullWidth
           variant="outlined"
@@ -198,7 +220,6 @@ export default function ChildSidebar({ activePage = "LEARN" }: ChildSidebarProps
             textTransform: "none",
             letterSpacing: 0.5,
             transition: "all 0.2s",
-            // On mobile, hide text and show only icon
             "& .MuiButton-startIcon": {
               mr: { xs: 0, md: 1 },
             },

@@ -166,9 +166,7 @@ export default function PracticePage() {
     return (
         <Box sx={{ minHeight: "100vh", backgroundColor: "#F4F8FB", display: "flex", overflow: "hidden" }}>
             {/* Sidebar */}
-            <Box sx={{ display: { xs: "none", md: "block" } }}>
-                <ChildSidebar activePage="PRACTICE" />
-            </Box>
+            <ChildSidebar activePage="PRACTICE" />
 
             {/* Main Content Area */}
             <Box

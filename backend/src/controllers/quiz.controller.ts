@@ -6,25 +6,26 @@ import CategoryProgress from '../models/categoryProgress.model.js';
 import ActivityLog from '../models/activityLog.model.js';
 import type { TokenPayload } from '../utils/jwt.js';
 import { startQuiz, submitQuiz as serviceSubmitQuiz, getCategoryProgress as serviceGetCategoryProgress } from '../services/quiz.service.js';
+import { evaluateAchievements, recordQuizSideEffects } from '../services/achievements.service.js';
 
 type AuthRequest = Request & { user: TokenPayload };
 
 export const start = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { userId } = (req as AuthRequest).user;
-    const { categoryId, targetLevel } = req.query;
+    try {
+        const { userId } = (req as AuthRequest).user;
+        const { categoryId, targetLevel } = req.query;
 
-    if (!categoryId || typeof categoryId !== "string") {
-      res.status(400).json({ message: "categoryId is required" });
-      return;
+        if (!categoryId || typeof categoryId !== "string") {
+            res.status(400).json({ message: "categoryId is required" });
+            return;
+        }
+
+        const data = await startQuiz(userId, categoryId as string, targetLevel as string | undefined);
+        res.json(data);
+    } catch (error) {
+        console.error("Start quiz error:", error);
+        res.status(500).json({ message: "Failed to start quiz" });
     }
-
-    const data = await startQuiz(userId, categoryId as string, targetLevel as string | undefined);
-    res.json(data);
-  } catch (error) {
-    console.error("Start quiz error:", error);
-    res.status(500).json({ message: "Failed to start quiz" });
-  }
 };
 export const submitQuiz = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -85,6 +86,26 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
             child.totalXP = (child.totalXP || 0) + streakXPToAdd;
         }
         await child.save();
+
+        // ── Achievement bookkeeping ──
+        // Track perfect quizzes (100% accuracy = all correct) and the
+        // "have I ever leveled up?" flag. Both are needed by achievements.
+        const isPerfect =
+            result.totalQuestions > 0 &&
+            result.correctCount === result.totalQuestions;
+        await recordQuizSideEffects(userId, {
+            perfect: isPerfect,
+            leveledUp: !!result.levelUp,
+        });
+
+        // Now evaluate achievements with the freshly-updated state.
+        // Wrapped in try/catch so a failure here never breaks quiz submission.
+        let newlyUnlockedAchievements: string[] = [];
+        try {
+            newlyUnlockedAchievements = await evaluateAchievements(userId);
+        } catch (achErr) {
+            console.error("Achievement evaluation failed (non-fatal):", achErr);
+        }
 
         const totalTimeSeconds = answers.reduce((sum: number, a: any) => sum + (a.timeTaken || 0), 0);
         const xpEarned = result.xpGained + streakXPToAdd;
@@ -155,6 +176,8 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
             championWins: result.championWins,
             championBadge: result.championBadge,
             newBadge: result.newBadge,
+            // Achievements
+            newlyUnlockedAchievements,
         });
 
     } catch (error) {
@@ -196,10 +219,10 @@ export const getDashboard = async (req: Request, res: Response): Promise<void> =
         if (child.lastPlayedDate) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-            
+
             const lastPlayed = new Date(child.lastPlayedDate);
             lastPlayed.setHours(0, 0, 0, 0);
-            
+
             const yesterday = new Date(today);
             yesterday.setDate(yesterday.getDate() - 1);
 
@@ -306,9 +329,9 @@ export const getStats = async (_req: Request, res: Response): Promise<void> => {
         ]);
         const stats = { total, easy: 0, medium: 0, hard: 0 };
         for (const entry of diffCounts) {
-            if (entry._id === 'easy')   stats.easy   = entry.count;
+            if (entry._id === 'easy') stats.easy = entry.count;
             if (entry._id === 'medium') stats.medium = entry.count;
-            if (entry._id === 'hard')   stats.hard   = entry.count;
+            if (entry._id === 'hard') stats.hard = entry.count;
         }
         res.json(stats);
     } catch (error) {
@@ -321,7 +344,7 @@ export const getQuestions = async (req: Request, res: Response): Promise<void> =
     try {
         const { ageGroup, category, difficulty, page = '1', limit = '8', search } = req.query;
         const query: any = {};
-        
+
         if (ageGroup && ageGroup !== 'All') query.ageGroup = ageGroup;
         if (category && category !== 'All') query.category = category;
         if (difficulty && difficulty !== 'All') query.difficulty = difficulty;

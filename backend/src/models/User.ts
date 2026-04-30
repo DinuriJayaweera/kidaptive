@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose, { Schema, Types } from "mongoose";
 import bcrypt from "bcryptjs";
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -61,6 +61,11 @@ export interface IUser {
     streak?: number;
     lastPlayedDate?: Date;
     placementCompleted?: boolean;
+
+    // Achievement-supporting counters
+    // (kept on User so we don't have to scan ActivityLog every render)
+    perfectQuizzes?: number;
+    everLeveledUp?: boolean;
 
     createdAt: Date;
     updatedAt: Date;
@@ -132,6 +137,10 @@ const userSchema = new Schema<IUser>(
         streak: { type: Number, default: 0 },
         lastPlayedDate: { type: Date },
         placementCompleted: { type: Boolean, default: false },
+
+        // Achievement-supporting counters
+        perfectQuizzes: { type: Number, default: 0 },
+        everLeveledUp: { type: Boolean, default: false },
     },
     { timestamps: true },
 );

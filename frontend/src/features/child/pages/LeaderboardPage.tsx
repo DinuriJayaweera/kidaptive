@@ -318,7 +318,7 @@ export default function LeaderboardPage() {
     useEffect(() => {
         getDashboardData()
             .then((d) => { if (d?.stats) setStats(d.stats); })
-            .catch(() => {});
+            .catch(() => { });
     }, []);
 
     // Fetch leaderboard whenever scope changes
@@ -343,9 +343,7 @@ export default function LeaderboardPage() {
 
     return (
         <Box sx={{ minHeight: "100vh", backgroundColor: "#F4F8FB", display: "flex", overflow: "hidden" }}>
-            <Box sx={{ display: { xs: "none", md: "block" } }}>
-                <ChildSidebar activePage="LEADERBOARDS" />
-            </Box>
+            <ChildSidebar activePage="LEADERBOARDS" />
 
             <Box sx={{ flex: 1, display: "flex", flexDirection: "column", p: { xs: 2, sm: 3, md: 4 }, overflowY: "auto", maxWidth: "100%" }}>
                 {/* Top Bar */}

@@ -44,6 +44,7 @@ export async function startQuiz(childId: string, categoryId: string, targetLevel
       level: initialLevel,
       xp: 0,
       quizzesCompleted: 0,
+      earnedLevels: [], // levels reached via placement DON'T count as "earned"
     });
     await progress.save();
   }
@@ -77,7 +78,7 @@ export async function startQuiz(childId: string, categoryId: string, targetLevel
           category: categoryId,
           ageGroup: ageGroup,
           difficulty: difficulty,
-          _id: { $nin: existingIds } // avoid duplicates in this set
+          _id: { $nin: existingIds }
         }
       },
       { $sample: { size: diff } }
@@ -101,8 +102,6 @@ export async function startQuiz(childId: string, categoryId: string, targetLevel
     ]);
     questions = [...questions, ...anyDiffQuestions];
   }
-  
-  // What if there are literally < 5 questions in total? We just give what we have.
 
   // 6. Hide correct answers from client payload and build answer map
   const correctAnswers: Record<string, string> = {};
@@ -170,7 +169,6 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
         correctCount++;
         correctTimings.push(a.timeTaken || 0);
       } else {
-        // Record this as a mistake for the Mistakes practice mode
         recordMistake({
           childId,
           questionId: q._id.toString(),
@@ -182,7 +180,7 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
           options: q.options || [],
           correctAnswer: q.correctAnswer,
           childAnswer: a.selectedAnswer || "",
-        }).catch(() => {}); // fire-and-forget, don't block quiz flow
+        }).catch(() => { });
       }
     }
   }
@@ -194,7 +192,7 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
   if (correctCount > 0) {
     timeAverage = correctTimings.reduce((sum, t) => sum + timeScore(t), 0) / correctCount;
   }
-  
+
   const score = Math.round(0.8 * accuracyScore + 0.2 * timeAverage);
   const passed = score >= 75;
 
@@ -206,31 +204,23 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
 
   const activeLevel = targetLevel || progress.level;
   const isChampion = activeLevel === "champion";
-  
-  // A replay is either an explicitly marked replay (already done node) OR a lower level quiz
+
   const isEffectiveReplay = isReplay || (!!targetLevel && targetLevel !== progress.level);
 
-  // Increment quizzes completed only if not replaying a completed node or lower level
   if (!isEffectiveReplay) {
     progress.quizzesCompleted = (progress.quizzesCompleted || 0) + 1;
     progress.globalQuizzesCompleted = (progress.globalQuizzesCompleted || 0) + 1;
   }
 
   if (isChampion) {
-    // ── CHAMPION MODE: different reward logic ──
     if (passed && !isEffectiveReplay) {
-      // +20 XP to totalXP only (NO categoryXP, NO level progression)
       child.totalXP = (child.totalXP || 0) + 20;
       xpGained = 20;
-
-      // +20 gems for champion pass
       gemsEarned = 20;
 
-      // Track champion wins
       const oldWins = progress.championWins || 0;
       progress.championWins = oldWins + 1;
 
-      // Check if they earned a new badge
       const oldBadge = getChampionBadge(oldWins).current;
       const newBadgeInfo = getChampionBadge(progress.championWins);
       if (newBadgeInfo.current !== oldBadge) {
@@ -238,19 +228,12 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
       }
     }
   } else {
-    // ── STARTER / EXPLORER: normal progression ──
     if (passed && !isEffectiveReplay) {
-      // categoryXP: used ONLY for level progression
       progress.xp += 10;
-
-      // totalXP: cumulative, never reset
       child.totalXP = (child.totalXP || 0) + 10;
       xpGained = 10;
-
-      // +10 gems for passing
       gemsEarned += 10;
 
-      // Level Up check: categoryXP reaches 50 (only if not replaying)
       if (!isEffectiveReplay && progress.xp >= 50) {
         if (progress.level === "starter") {
           newLevel = "explorer";
@@ -262,19 +245,28 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
 
         if (levelUp) {
           progress.level = newLevel;
-          progress.xp = 0; // reset categoryXP for next level
+          progress.xp = 0;
           progress.quizzesCompleted = 0;
+
+          // ── Record EARNED level ──
+          // The child progressed INTO this level via quizzes, so it
+          // counts toward the Crown achievements. Levels reached via
+          // placement (the initial assignment) are NOT recorded here.
+          if (
+            (newLevel === "explorer" || newLevel === "champion") &&
+            !progress.earnedLevels.includes(newLevel)
+          ) {
+            progress.earnedLevels.push(newLevel);
+          }
         }
       }
     }
 
-    // Every 5 quizzes → +20 gems (starter/explorer only)
     if (!isEffectiveReplay && progress.quizzesCompleted > 0 && progress.quizzesCompleted % 5 === 0) {
       gemsEarned += 20;
     }
   }
 
-  // Apply gems
   if (gemsEarned > 0) {
     child.gems = (child.gems || 0) + gemsEarned;
   }
@@ -291,14 +283,13 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
     newLevel: progress.level,
     newXP: progress.xp,
     xpToNextLevel: 50,
-    xpGained, // added so the controller can read it
+    xpGained,
     totalXP: child.totalXP,
     gemsEarned,
     totalGems: child.gems,
     quizzesCompleted: progress.quizzesCompleted,
     correctCount,
     totalQuestions: answers.length,
-    // Champion-specific fields
     isChampion,
     championWins: progress.championWins || 0,
     championBadge: badgeInfo,
@@ -309,9 +300,8 @@ export async function submitQuiz(childId: string, categoryId: string, answers: Q
 // ── Get Category Progress ────────────────────────────────────────────────────
 export async function getCategoryProgress(childId: string, categoryId: string) {
   let progress = await CategoryProgress.findOne({ childId, categoryId });
-  
+
   if (!progress) {
-    // Attempt to initialize from PlacementResult
     const placement = await PlacementResult.findOne({ childId });
     let initialLevel = "starter";
     if (placement) {
@@ -328,6 +318,7 @@ export async function getCategoryProgress(childId: string, categoryId: string) {
       quizzesCompleted: 0,
       globalQuizzesCompleted: 0,
       championWins: 0,
+      earnedLevels: [],
     });
     await progress.save();
   }

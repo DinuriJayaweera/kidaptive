@@ -30,6 +30,7 @@ import ChildProfilePage from "../features/child/pages/ChildProfilePage";
 import LeaderboardPage from "../features/child/pages/LeaderboardPage";
 import PracticePage from "../features/child/pages/PracticePage";
 import MistakesPracticePage from "../features/child/pages/MistakesPracticePage";
+import AchievementsPage from "../features/child/pages/AchievementsPage";
 import AdminLoginPage from "../features/auth/pages/AdminLoginPage";
 import { PublicOnlyRoute, ParentRoute, ChildRoute, AdminRoute } from "../app/guards/RouteGuard";
 
@@ -96,6 +97,7 @@ export default function AppRoutes() {
             <Route path="/child/leaderboards" element={<ChildRoute><LeaderboardPage /></ChildRoute>} />
             <Route path="/child/practice" element={<ChildRoute><PracticePage /></ChildRoute>} />
             <Route path="/child/practice/mistakes" element={<ChildRoute><MistakesPracticePage /></ChildRoute>} />
+            <Route path="/child/achievements" element={<ChildRoute><AchievementsPage /></ChildRoute>} />
 
 
             {/* Admin — protected (nested routes under layout) */}

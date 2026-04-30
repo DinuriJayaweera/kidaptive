@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/context/AuthContext";
 import { getDashboardData } from "../services/quizApi";
+import { getAchievements, type Achievement } from "../services/achievementsApi";
 import ChildSidebar from "../components/ChildSidebar";
 import TopBarStats from "../components/TopBarStats";
 import AvatarBuilderStation from "../components/AvatarBuilderStation";
@@ -12,7 +13,6 @@ import gemsImg from "../../../assets/gems.png";
 import xpsImg from "../../../assets/xps.png";
 import starImg from "../../../assets/star.png";
 import crownImg from "../../../assets/crown.png";
-import medalImg from "../../../assets/medal.png";
 
 // ── Stat Pill Component ────────────────────────────────────────────────────
 function StatPill({
@@ -79,66 +79,102 @@ function StatPill({
 }
 
 // ── Achievement Badge ──────────────────────────────────────────────────────
-function AchievementBadge({
-    icon,
-    title,
-    desc,
-    earned,
-}: {
-    icon: string;
-    title: string;
-    desc: string;
-    earned: boolean;
-}) {
+// Now driven by the real Achievement object from the backend. Shows the
+// emoji icon, dims locked items, and overlays a tiny progress bar when
+// the locked achievement is multi-step.
+function AchievementBadge({ a }: { a: Achievement }) {
+    const pct =
+        a.progress.target > 0
+            ? Math.min(100, Math.round((a.progress.current / a.progress.target) * 100))
+            : 0;
+    const showProgress = !a.unlocked && a.progress.target > 1;
+
     return (
         <Box
             sx={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: 0.8,
-                p: 2,
+                gap: 0.6,
+                p: 1.5,
                 borderRadius: "16px",
-                backgroundColor: earned ? "rgba(37,175,244,0.08)" : "rgba(0,0,0,0.03)",
-                border: earned ? "2px solid rgba(37,175,244,0.25)" : "2px solid #E2E8F0",
-                filter: earned ? "none" : "grayscale(80%)",
-                opacity: earned ? 1 : 0.5,
+                backgroundColor: a.unlocked ? "rgba(255,193,7,0.10)" : "rgba(0,0,0,0.03)",
+                border: a.unlocked ? "2px solid #FFD700" : "2px solid #E2E8F0",
+                opacity: a.unlocked ? 1 : 0.6,
                 transition: "all 0.2s ease",
                 cursor: "default",
-                "&:hover": earned
-                    ? { transform: "scale(1.05)", boxShadow: "0 4px 16px rgba(37,175,244,0.15)" }
+                minHeight: 130,
+                "&:hover": a.unlocked
+                    ? { transform: "scale(1.05)", boxShadow: "0 4px 16px rgba(255,193,7,0.25)" }
                     : {},
             }}
         >
             <Box
-                component="img"
-                src={icon}
-                alt={title}
-                sx={{ width: 44, height: 44, objectFit: "contain" }}
-            />
+                sx={{
+                    fontSize: "1.8rem",
+                    filter: a.unlocked ? "none" : "grayscale(100%)",
+                    lineHeight: 1,
+                }}
+            >
+                {a.icon}
+            </Box>
             <Typography
                 sx={{
                     fontFamily: "'Poppins', sans-serif",
                     fontWeight: 700,
                     fontSize: "0.72rem",
-                    color: earned ? "#1A202C" : "#9CA3AF",
+                    color: a.unlocked ? "#1A202C" : "#9CA3AF",
                     textAlign: "center",
                     lineHeight: 1.2,
                 }}
             >
-                {title}
+                {a.title}
             </Typography>
-            <Typography
-                sx={{
-                    fontFamily: "'Poppins', sans-serif",
-                    fontSize: "0.62rem",
-                    color: "#94A3B8",
-                    textAlign: "center",
-                    lineHeight: 1.2,
-                }}
-            >
-                {desc}
-            </Typography>
+            {showProgress ? (
+                <Box sx={{ width: "100%", mt: "auto" }}>
+                    <Box
+                        sx={{
+                            width: "100%",
+                            height: 4,
+                            backgroundColor: "rgba(0,0,0,0.08)",
+                            borderRadius: 4,
+                            overflow: "hidden",
+                        }}
+                    >
+                        <Box
+                            sx={{
+                                width: `${pct}%`,
+                                height: "100%",
+                                background: "linear-gradient(90deg, #25AFF4, #1d96d4)",
+                                transition: "width 0.4s ease",
+                            }}
+                        />
+                    </Box>
+                    <Typography
+                        sx={{
+                            mt: 0.3,
+                            fontFamily: "'Poppins', sans-serif",
+                            fontSize: "0.62rem",
+                            color: "#94A3B8",
+                            textAlign: "center",
+                        }}
+                    >
+                        {a.progress.current} / {a.progress.target}
+                    </Typography>
+                </Box>
+            ) : (
+                <Typography
+                    sx={{
+                        fontFamily: "'Poppins', sans-serif",
+                        fontSize: "0.62rem",
+                        color: "#94A3B8",
+                        textAlign: "center",
+                        lineHeight: 1.2,
+                    }}
+                >
+                    {a.unlocked ? "Earned!" : a.description}
+                </Typography>
+            )}
         </Box>
     );
 }
@@ -205,6 +241,9 @@ export default function ChildProfilePage() {
         stats: { totalXp: number; streak: number; gems: number };
         categories: any[];
     } | null>(null);
+    // Live achievement list (locked + unlocked) — used for the profile preview.
+    // Full list is shown on the dedicated /child/achievements page.
+    const [achievements, setAchievements] = useState<Achievement[]>([]);
     const [loading, setLoading] = useState(true);
     const [avatarBuilderOpen, setAvatarBuilderOpen] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -215,14 +254,15 @@ export default function ChildProfilePage() {
     });
 
     useEffect(() => {
-        getDashboardData()
-            .then((d) => {
-                setDashboardData(d);
-                setLoading(false);
+        // Fetch dashboard + achievements in parallel — both are independent
+        // and the page can render the achievement card as soon as it lands.
+        Promise.all([getDashboardData(), getAchievements()])
+            .then(([dash, ach]) => {
+                setDashboardData(dash);
+                setAchievements(ach.achievements);
             })
-            .catch(() => {
-                setLoading(false);
-            });
+            .catch((err) => console.error("Profile load failed:", err))
+            .finally(() => setLoading(false));
     }, []);
 
     const handleSaveAvatar = useCallback(
@@ -263,38 +303,19 @@ export default function ChildProfilePage() {
 
     const { totalXp, streak, gems } = dashboardData.stats;
     const categoriesCount = dashboardData.categories.length;
-    const championCount = dashboardData.categories.filter((c) => c.level === "Champion").length;
     const displayName = user?.name ?? "Learner";
     const currentAvatar = user?.avatar ?? "🦊";
     const level = Math.floor(totalXp / 500) + 1;
 
-    // Achievements to show
-    const achievements = [
-        {
-            icon: starImg,
-            title: "First Star",
-            desc: "Complete your first quiz",
-            earned: categoriesCount >= 1,
-        },
-        {
-            icon: crownImg,
-            title: "Champion",
-            desc: "Reach Champion level",
-            earned: championCount >= 1,
-        },
-        {
-            icon: medalImg,
-            title: "On Fire",
-            desc: "7-day streak",
-            earned: streak >= 7,
-        },
-        {
-            icon: gemsImg,
-            title: "Gem Collector",
-            desc: "Collect 1,000 gems",
-            earned: gems >= 1000,
-        },
-    ];
+    // Show up to 6 achievements on the profile preview, prioritising unlocked
+    // ones first so the card always feels celebratory. Full list lives on
+    // the /child/achievements page (linked below).
+    const previewAchievements: Achievement[] = [
+        ...achievements.filter((a) => a.unlocked),
+        ...achievements.filter((a) => !a.unlocked),
+    ].slice(0, 6);
+    const unlockedCount = achievements.filter((a) => a.unlocked).length;
+    const totalCount = achievements.length;
 
     return (
         <Box
@@ -306,9 +327,7 @@ export default function ChildProfilePage() {
             }}
         >
             {/* ── Left Sidebar ── */}
-            <Box sx={{ display: { xs: "none", md: "block" } }}>
-                <ChildSidebar activePage="PROFILE" />
-            </Box>
+            <ChildSidebar activePage="PROFILE" />
 
             {/* ── Main Content ── */}
             <Box
@@ -583,17 +602,42 @@ export default function ChildProfilePage() {
                                 p: 3,
                             }}
                         >
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2.5 }}>
-                                <Typography sx={{ fontSize: "1.4rem" }}>🏆</Typography>
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    gap: 1.5,
+                                    mb: 2.5,
+                                }}
+                            >
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                    <Typography sx={{ fontSize: "1.4rem" }}>🏆</Typography>
+                                    <Typography
+                                        sx={{
+                                            fontFamily: "'Baloo 2', sans-serif",
+                                            fontWeight: 800,
+                                            fontSize: "1.1rem",
+                                            color: "#1A202C",
+                                        }}
+                                    >
+                                        My Achievements
+                                    </Typography>
+                                </Box>
+                                {/* Tiny summary pill — gives kids a "X of Y" goal to chase */}
                                 <Typography
                                     sx={{
-                                        fontFamily: "'Baloo 2', sans-serif",
-                                        fontWeight: 800,
-                                        fontSize: "1.1rem",
-                                        color: "#1A202C",
+                                        fontFamily: "'Poppins', sans-serif",
+                                        fontWeight: 700,
+                                        fontSize: "0.75rem",
+                                        color: "#64748B",
+                                        backgroundColor: "rgba(37,175,244,0.1)",
+                                        px: 1.5,
+                                        py: 0.4,
+                                        borderRadius: "12px",
                                     }}
                                 >
-                                    My Achievements
+                                    {unlockedCount}/{totalCount}
                                 </Typography>
                             </Box>
                             <Box
@@ -603,9 +647,36 @@ export default function ChildProfilePage() {
                                     gap: 1.5,
                                 }}
                             >
-                                {achievements.map((a) => (
-                                    <AchievementBadge key={a.title} {...a} />
+                                {previewAchievements.map((a) => (
+                                    <AchievementBadge key={a.key} a={a} />
                                 ))}
+                            </Box>
+                            {/* "View All" link to the dedicated achievements page */}
+                            <Box
+                                onClick={() => navigate("/child/achievements")}
+                                sx={{
+                                    mt: 2,
+                                    py: 1,
+                                    textAlign: "center",
+                                    borderRadius: "12px",
+                                    backgroundColor: "rgba(37,175,244,0.08)",
+                                    cursor: "pointer",
+                                    transition: "background-color 0.15s",
+                                    "&:hover": {
+                                        backgroundColor: "rgba(37,175,244,0.15)",
+                                    },
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        fontFamily: "'Poppins', sans-serif",
+                                        fontWeight: 700,
+                                        fontSize: "0.85rem",
+                                        color: "#25AFF4",
+                                    }}
+                                >
+                                    View All Achievements →
+                                </Typography>
                             </Box>
                         </Box>
                     </Box>
