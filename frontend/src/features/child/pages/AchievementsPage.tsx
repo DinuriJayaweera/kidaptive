@@ -233,7 +233,7 @@ export default function AchievementsPage() {
                 <Box
                     sx={{
                         display: "flex",
-                        justifyContent: { xs: "center", sm: "flex-end" },
+                        justifyContent: "flex-end",
                         mb: 3,
                     }}
                 >

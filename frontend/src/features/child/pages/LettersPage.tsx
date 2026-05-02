@@ -164,19 +164,19 @@ export default function LettersPage() {
             {/* ── Main Content ── */}
             <Box sx={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", p: { xs: 2, sm: 3, md: 4 } }}>
 
+                {/* Stats Bar — always at top */}
+                <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+                    <TopBarStats totalXp={stats.totalXp} streak={stats.streak} gems={stats.gems} />
+                </Box>
+
                 {/* ── Page Header ── */}
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: { xs: 2, md: 4 } }}>
-                    <Box>
-                        <Typography sx={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 800, fontSize: { xs: "1.6rem", sm: "2rem", md: "2.4rem" }, color: "#1A202C", lineHeight: 1.2 }}>
-                            The Alphabet 🔤
-                        </Typography>
-                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: { xs: "0.85rem", sm: "1rem" }, color: "#718096", mt: 0.5 }}>
-                            Tap a letter to hear it! 🔊
-                        </Typography>
-                    </Box>
-                    <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                        <TopBarStats totalXp={stats.totalXp} streak={stats.streak} gems={stats.gems} />
-                    </Box>
+                <Box sx={{ mb: { xs: 2, md: 4 } }}>
+                    <Typography sx={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 800, fontSize: { xs: "1.6rem", sm: "2rem", md: "2.4rem" }, color: "#1A202C", lineHeight: 1.2 }}>
+                        The Alphabet 🔤
+                    </Typography>
+                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: { xs: "0.85rem", sm: "1rem" }, color: "#718096", mt: 0.5 }}>
+                        Tap a letter to hear it! 🔊
+                    </Typography>
                 </Box>
 
                 {/* ── Alphabet Grid ── */}

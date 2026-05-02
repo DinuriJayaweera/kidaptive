@@ -23,21 +23,25 @@ export default function ChildDashboardPage() {
     const [checkingStatus, setCheckingStatus] = useState(true);
 
     useEffect(() => {
+        if (!user) return;
+        let active = true;
         placementTestApi.getStatus()
             .then(({ data }) => {
+                if (!active) return;
                 if (!data.placementCompleted) {
                     navigate("/child/placement", { replace: true });
                 } else {
                     setCheckingStatus(false);
                     getDashboardData()
-                        .then((d) => setDashboardData(d))
-                        .catch((err) => console.error("Failed to load dashboard data:", err));
+                        .then((d) => { if (active) setDashboardData(d); })
+                        .catch((err) => { if (active) console.error("Failed to load dashboard data:", err); });
                 }
             })
             .catch(() => {
-                navigate("/child/placement", { replace: true });
+                if (active) navigate("/child/placement", { replace: true });
             });
-    }, [navigate]);
+        return () => { active = false; };
+    }, [navigate, user]);
 
     const handleCategoryClick = (id: string, _level: string) => {
         navigate(`/child/category-progress/${id}`);
@@ -66,54 +70,57 @@ export default function ChildDashboardPage() {
                 sx={{
                     flex: 1,
                     display: "flex",
-                    flexDirection: { xs: "column", lg: "row" },
-                    gap: 4,
+                    flexDirection: "column",
                     p: { xs: 2, sm: 3, md: 4 },
                     overflowY: "auto",
                 }}
             >
-                {/* Center Column: Grid */}
-                <Box sx={{ flex: 1, pt: 2 }}>
-                    <Box sx={{ mb: 4 }}>
-                        <Typography
-                            sx={{
-                                fontFamily: "'Baloo 2', sans-serif",
-                                fontWeight: 800,
-                                fontSize: { xs: "1.6rem", sm: "2rem", md: "2.4rem" },
-                                color: "#1A202C",
-                                lineHeight: 1.2,
-                            }}
-                        >
-                            Hi {user?.name ?? "Learner"}, ready to learn today? 😊
-                        </Typography>
-                    </Box>
-
-                    <CategoryGrid
-                        categories={dashboardData.categories}
-                        onCategoryClick={handleCategoryClick}
+                {/* Stats Bar — always at top */}
+                <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+                    <TopBarStats
+                        totalXp={dashboardData.stats.totalXp}
+                        streak={dashboardData.stats.streak}
+                        gems={dashboardData.stats.gems}
                     />
                 </Box>
 
-                {/* Right Column: Stats & Widgets */}
-                <Box
-                    sx={{
-                        width: { xs: "100%", lg: 320 },
-                        flexShrink: 0,
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 2,
-                    }}
-                >
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}>
-                        <TopBarStats
-                            totalXp={dashboardData.stats.totalXp}
-                            streak={dashboardData.stats.streak}
-                            gems={dashboardData.stats.gems}
+                {/* Two-column content */}
+                <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: 4 }}>
+                    {/* Center Column: Grid */}
+                    <Box sx={{ flex: 1 }}>
+                        <Box sx={{ mb: 4 }}>
+                            <Typography
+                                sx={{
+                                    fontFamily: "'Baloo 2', sans-serif",
+                                    fontWeight: 800,
+                                    fontSize: { xs: "1.6rem", sm: "2rem", md: "2.4rem" },
+                                    color: "#1A202C",
+                                    lineHeight: 1.2,
+                                }}
+                            >
+                                Hi {user?.name ?? "Learner"}, ready to learn today? 😊
+                            </Typography>
+                        </Box>
+
+                        <CategoryGrid
+                            categories={dashboardData.categories}
+                            onCategoryClick={handleCategoryClick}
                         />
                     </Box>
 
-                    <LeaderboardCard />
-                    <DailyQuestCard />
+                    {/* Right Column: Widgets */}
+                    <Box
+                        sx={{
+                            width: { xs: "100%", lg: 320 },
+                            flexShrink: 0,
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 2,
+                        }}
+                    >
+                        <LeaderboardCard />
+                        <DailyQuestCard />
+                    </Box>
                 </Box>
             </Box>
         </Box>

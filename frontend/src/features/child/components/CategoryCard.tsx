@@ -39,8 +39,8 @@ export default function CategoryCard({ category, onClick }: Props) {
       sx={{
         backgroundColor: bgColor,
         border: `3px solid ${borderColor}`,
-        borderRadius: "24px",
-        p: 4,
+        borderRadius: "20px",
+        p: { xs: 2, sm: 2.5, md: 4 },
         cursor: "pointer",
         position: "relative",
         boxShadow: "0 8px 24px rgba(0,0,0,0.04)",
@@ -50,14 +50,14 @@ export default function CategoryCard({ category, onClick }: Props) {
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        gap: 2,
+        gap: { xs: 1, sm: 1.5, md: 2 },
         "&:hover": {
           transform: "scale(1.03) translateY(-6px)",
           boxShadow: "0 14px 28px rgba(0,0,0,0.08)",
         },
       }}
     >
-      <Typography sx={{ fontSize: "3rem", filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.1))" }}>
+      <Typography sx={{ fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" }, filter: "drop-shadow(0 4px 6px rgba(0,0,0,0.1))" }}>
         {icon || "📚"}
       </Typography>
 
@@ -66,7 +66,7 @@ export default function CategoryCard({ category, onClick }: Props) {
           sx={{
             fontFamily: "'Baloo 2', sans-serif",
             fontWeight: 800,
-            fontSize: "1.6rem",
+            fontSize: { xs: "1rem", sm: "1.3rem", md: "1.6rem" },
             color: "#1A202C",
             lineHeight: 1.2,
             mb: 0.5,

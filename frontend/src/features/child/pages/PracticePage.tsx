@@ -141,19 +141,20 @@ function PracticeCard({ title, subtitle, icon, bgColor, onClick }: PracticeCardP
 
 // ── Main Page ─────────────────────────────────────────────────────────────
 export default function PracticePage() {
-    useAuth();
+    const { user } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({ totalXp: 0, streak: 0, gems: 0 });
 
     useEffect(() => {
+        if (!user) return;
+        let active = true;
         getDashboardData()
-            .then((d) => {
-                if (d?.stats) setStats(d.stats);
-            })
+            .then((d) => { if (active && d?.stats) setStats(d.stats); })
             .catch(() => { })
-            .finally(() => setLoading(false));
-    }, []);
+            .finally(() => { if (active) setLoading(false); });
+        return () => { active = false; };
+    }, [user]);
 
     if (loading) {
         return (
@@ -173,27 +174,41 @@ export default function PracticePage() {
                 sx={{
                     flex: 1,
                     display: "flex",
-                    flexDirection: { xs: "column", lg: "row" },
-                    gap: { xs: 3, lg: 4 },
+                    flexDirection: "column",
                     p: { xs: 2, sm: 3, md: 4 },
                     overflowY: "auto",
                 }}
             >
+                {/* Stats Bar — always at top */}
+                <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+                    <TopBarStats
+                        totalXp={stats.totalXp}
+                        streak={stats.streak}
+                        gems={stats.gems}
+                    />
+                </Box>
+
+                {/* Two-column content */}
+                <Box sx={{ display: "flex", flexDirection: { xs: "column", lg: "row" }, gap: { xs: 3, lg: 4 } }}>
+
                 {/* Center Column: Practice Cards */}
                 <Box sx={{ flex: 1, pt: 1, position: "relative" }}>
-                    <Typography
-                        sx={{
-                            fontFamily: "'Baloo 2', sans-serif",
-                            fontWeight: 800,
-                            fontSize: "1.4rem",
-                            color: "#25AFF4",
-                            textTransform: "uppercase",
-                            letterSpacing: "1px",
-                            mb: 3,
-                        }}
-                    >
-                        PRACTICE
-                    </Typography>
+                    <Box sx={{ mb: 3 }}>
+                        <Typography
+                            sx={{
+                                fontFamily: "'Baloo 2', sans-serif",
+                                fontWeight: 800,
+                                fontSize: { xs: "1.6rem", sm: "2rem", md: "2.4rem" },
+                                color: "#1A202C",
+                                lineHeight: 1.2,
+                            }}
+                        >
+                            Practice 💪
+                        </Typography>
+                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 500, fontSize: { xs: "0.85rem", sm: "1rem" }, color: "#718096", mt: 0.5 }}>
+                            Keep practising and grow stronger every day!
+                        </Typography>
+                    </Box>
 
                     <Box sx={{ display: "flex", flexDirection: "column", gap: 2, position: "relative", zIndex: 1, maxWidth: 800 }}>
                         <PracticeCard
@@ -225,7 +240,7 @@ export default function PracticePage() {
                     <BackgroundDecor />
                 </Box>
 
-                {/* Right Column: Stats & Widgets */}
+                {/* Right Column: Widgets */}
                 <Box
                     sx={{
                         width: { xs: "100%", lg: 320 },
@@ -235,17 +250,10 @@ export default function PracticePage() {
                         gap: 2,
                     }}
                 >
-                    <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}>
-                        <TopBarStats
-                            totalXp={stats.totalXp}
-                            streak={stats.streak}
-                            gems={stats.gems}
-                        />
-                    </Box>
-
                     <LeaderboardCard />
                     <DailyQuestCard />
                 </Box>
+                </Box> {/* end two-column */}
             </Box>
         </Box>
     );

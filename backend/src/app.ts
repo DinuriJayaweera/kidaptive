@@ -37,6 +37,7 @@ import categoryRoutes from "./routes/category.routes.js";
 import quizRoutes from "./routes/quiz.routes.js";
 import parentRoutes from "./routes/parent.routes.js";
 import childRoutes from "./routes/child.routes.js";
+import gameRoutes from "./routes/game.routes.js";
 
 // ── Routes ───────────────────────────────────────────────────────────────────
 app.use("/api", healthRoutes);
@@ -48,6 +49,7 @@ app.get("/api/placement/status", authenticate, requireRole("child"), userPlaceme
 app.use("/api/categories", categoryRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/child", childRoutes);
+app.use("/api/games", gameRoutes);
 
 // ── Centralized Error Handler ────────────────────────────────────────────────
 app.use(errorHandler);

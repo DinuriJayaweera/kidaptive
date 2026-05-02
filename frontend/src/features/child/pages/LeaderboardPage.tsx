@@ -347,7 +347,7 @@ export default function LeaderboardPage() {
 
             <Box sx={{ flex: 1, display: "flex", flexDirection: "column", p: { xs: 2, sm: 3, md: 4 }, overflowY: "auto", maxWidth: "100%" }}>
                 {/* Top Bar */}
-                <Box sx={{ display: "flex", justifyContent: { xs: "center", sm: "flex-end" }, mb: 3 }}>
+                <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
                     <TopBarStats totalXp={stats.totalXp} streak={stats.streak} gems={stats.gems} />
                 </Box>
 
