@@ -1,0 +1,497 @@
+/* ─── Placement Quiz Page ────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Poppins:wght@400;500;600&display=swap');
+
+/* ── Keyframes ────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(37, 175, 244, 0.3); }
+  50% { box-shadow: 0 0 0 8px rgba(37, 175, 244, 0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.05); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ── Page Container ───────────────────────────────── */
+.pq-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #e8ecef;
+  font-family: 'Poppins', sans-serif;
+  animation: fadeIn 0.3s ease;
+}
+
+/* ── Main Card ────────────────────────────────────── */
+.pq-card {
+  flex: 1;
+  margin: 20px 20px 0;
+  background: #e0eaf4;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.4s ease 0.1s both;
+}
+
+/* ── Header (Progress) ────────────────────────────── */
+.pq-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px 0;
+}
+
+.pq-exit {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.pq-exit:hover {
+  color: #64748b;
+}
+
+.pq-progress-track {
+  flex: 1;
+  height: 10px;
+  background: #c4cdd6;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.pq-progress-fill {
+  height: 100%;
+  background: #25AFF4;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+}
+
+.pq-counter {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+/* ── Content ──────────────────────────────────────── */
+.pq-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 32px;
+  gap: 28px;
+}
+
+.pq-type {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+  text-align: center;
+}
+
+.pq-sentence {
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: #334155;
+  text-align: center;
+  line-height: 1.8;
+  margin: 0;
+}
+
+/* ── Fill-blank chip ──────────────────────────────── */
+.pq-blank {
+  display: inline-block;
+  padding: 4px 16px;
+  border: 2px dashed #94a3b8;
+  border-radius: 12px;
+  color: #94a3b8;
+  font-weight: 500;
+  min-width: 80px;
+  text-align: center;
+  transition: all 0.3s ease;
+  vertical-align: middle;
+}
+
+.pq-blank--filled {
+  border-style: solid;
+  border-color: #25AFF4;
+  color: #1e293b;
+  background: #e0f2fe;
+}
+
+.pq-blank--correct {
+  border-color: #8EE870;
+  background: #ecfdf5;
+  color: #166534;
+}
+
+.pq-blank--wrong {
+  border-color: #FF5144;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+/* ── Input Box (Typing) ───────────────────────────── */
+.pq-input {
+  display: inline-block;
+  padding: 4px 16px;
+  border: 2px dashed #94a3b8;
+  border-radius: 12px;
+  color: #1e293b;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 1.05rem;
+  width: 140px;
+  text-align: center;
+  transition: all 0.3s ease;
+  vertical-align: middle;
+  background: transparent;
+  outline: none;
+  margin: 0 4px;
+}
+
+.pq-input:focus {
+  border-style: solid;
+  border-color: #25AFF4;
+  background: #e0f2fe;
+}
+
+.pq-input--correct {
+  border-style: solid;
+  border-color: #8EE870;
+  background: #ecfdf5;
+  color: #166534;
+}
+
+.pq-input--wrong {
+  border-style: solid;
+  border-color: #FF5144;
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.pq-input:disabled {
+  opacity: 1;
+}
+
+/* ── Answer Options ───────────────────────────────── */
+.pq-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pq-option {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #334155;
+  background: #fff;
+  border: 2px solid #d1d5db;
+  border-radius: 999px;
+  padding: 10px 22px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pq-option:hover:not(:disabled) {
+  border-color: #25AFF4;
+  background: #f0f9ff;
+  transform: translateY(-1px);
+}
+
+.pq-option--selected {
+  border-color: #25AFF4;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.pq-option--correct {
+  border-color: #8EE870 !important;
+  background: #ecfdf5 !important;
+  color: #166534 !important;
+  font-weight: 600;
+  animation: popIn 0.3s ease both;
+}
+
+.pq-option--wrong {
+  border-color: #FF5144 !important;
+  background: #fef2f2 !important;
+  color: #991b1b !important;
+  opacity: 0.8;
+}
+
+.pq-option--dimmed {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.pq-option:disabled {
+  cursor: default;
+}
+
+/* ── Footer ───────────────────────────────────────── */
+.pq-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+  margin: 0 20px 20px;
+  border-top: 1.5px solid #d0d7de;
+  animation: fadeIn 0.3s ease 0.3s both;
+}
+
+.pq-skip {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #25AFF4;
+  background: transparent;
+  border: 2px solid #25AFF4;
+  border-radius: 999px;
+  padding: 10px 28px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pq-skip:hover {
+  background: #e0f2fe;
+}
+
+.pq-check {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  background: #c8d0d8;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 32px;
+  cursor: not-allowed;
+  transition: all 0.2s ease;
+}
+
+.pq-check--active {
+  background: #25AFF4;
+  cursor: pointer;
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.pq-check--active:hover {
+  background: #0ea5e9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(37, 175, 244, 0.3);
+}
+
+/* ── Correct Footer ───────────────────────────────── */
+.pq-footer--correct {
+  background: #ecfdf5;
+  border-radius: 0 0 18px 18px;
+  border-top: none;
+  margin: 0 20px 20px;
+  animation: fadeIn 0.3s ease both;
+}
+
+.pq-footer--wrong {
+  background: #fef2f2;
+  border-radius: 0 0 18px 18px;
+  border-top: none;
+  margin: 0 20px 20px;
+  animation: fadeIn 0.3s ease both;
+}
+
+.pq-result-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.pq-footer--correct .pq-result-text {
+  color: #166534;
+}
+
+.pq-footer--wrong .pq-result-text {
+  color: #991b1b;
+}
+
+.pq-result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.pq-result-icon--correct {
+  background: #8EE870;
+}
+
+.pq-result-icon--wrong {
+  background: #FF5144;
+}
+
+.pq-result-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pq-result-detail strong {
+  font-size: 0.95rem;
+}
+
+.pq-correct-answer {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #64748b;
+}
+
+.pq-continue {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 32px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pq-continue--correct {
+  background: #8EE870;
+}
+
+.pq-continue--correct:hover {
+  background: #6dd14e;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(142, 232, 112, 0.3);
+}
+
+.pq-continue--wrong {
+  background: #FF5144;
+}
+
+.pq-continue--wrong:hover {
+  background: #e53935;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 81, 68, 0.3);
+}
+
+/* ── Loading ──────────────────────────────────────── */
+.pq-loading {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: #e8ecef;
+  font-family: 'Poppins', sans-serif;
+  color: #64748b;
+}
+
+.pq-loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #d1d5db;
+  border-top-color: #25AFF4;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ── Error ────────────────────────────────────────── */
+.pq-error {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: #e8ecef;
+  font-family: 'Poppins', sans-serif;
+  color: #FF5144;
+}
+
+.pq-error button {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  background: #25AFF4;
+  border: none;
+  border-radius: 999px;
+  padding: 10px 28px;
+  cursor: pointer;
+}
+
+/* ── Responsive ───────────────────────────────────── */
+@media (max-width: 480px) {
+  .pq-card {
+    margin: 12px 12px 0;
+    border-radius: 14px;
+  }
+
+  .pq-content {
+    padding: 30px 20px;
+    gap: 20px;
+  }
+
+  .pq-type {
+    font-size: 1.1rem;
+  }
+
+  .pq-sentence {
+    font-size: 0.95rem;
+  }
+
+  .pq-option {
+    font-size: 0.82rem;
+    padding: 8px 16px;
+  }
+
+  .pq-footer {
+    margin: 0 12px 12px;
+    padding: 16px 20px;
+  }
+
+  .pq-footer--correct,
+  .pq-footer--wrong {
+    margin: 0 12px 12px;
+  }
+
+  .pq-skip,
+  .pq-check,
+  .pq-continue {
+    padding: 10px 22px;
+    font-size: 0.8rem;
+  }
+}

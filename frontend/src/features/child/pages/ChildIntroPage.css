@@ -1,0 +1,495 @@
+/* ─── Child Intro Screens ────────────────────────────────────────────────── */
+
+/* ── Keyframes ─────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes kipBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes bubblePop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) translateY(8px);
+  }
+  60% {
+    transform: scale(1.04) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Page Container ────────────────────────────────── */
+.intro-page {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #e8ecef;
+  font-family: 'Baloo 2', cursive;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.intro-page--visible {
+  opacity: 1;
+}
+
+/* ── Main Card ─────────────────────────────────────── */
+.intro-card {
+  flex: 1;
+  margin: 24px;
+  margin-bottom: 0;
+  background: #dce3ea;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: fadeIn 0.5s ease 0.2s both;
+}
+
+.intro-card--achievements {
+  justify-content: flex-start;
+  padding: 24px 32px;
+}
+
+/* ── Speech Bubble (centered — screen 1) ───────────── */
+.intro-bubble {
+  background: #fff;
+  border: 1.5px solid #cdd5dc;
+  border-radius: 20px;
+  padding: 10px 22px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #2d3748;
+  position: relative;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  animation: bubblePop 0.5s ease-out 0.5s both;
+}
+
+/* Triangle pointer (down — for centered bubble) */
+.intro-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid #fff;
+  filter: drop-shadow(0 1px 0 #cdd5dc);
+}
+
+/* Bubble variant — left aligned (screen 2) */
+.intro-bubble--left {
+  margin-bottom: 0;
+}
+
+.intro-bubble--left::after {
+  bottom: auto;
+  top: 50%;
+  left: -8px;
+  right: auto;
+  transform: translateY(-50%);
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid #fff;
+  border-left: none;
+  filter: drop-shadow(-1px 0 0 #cdd5dc);
+}
+
+/* ── Kip Mascot ────────────────────────────────────── */
+.intro-kip {
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.1));
+  animation: kipBounce 2.5s ease-in-out infinite, fadeIn 0.6s ease 0.6s both;
+}
+
+.intro-kip img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* BIG — Screen 1 */
+.intro-kip--big {
+  width: 280px;
+  height: 280px;
+}
+
+/* Small — Screen 2 */
+.intro-kip--small {
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+}
+
+/* ── Progress Bar (Screen 2) ──────────────────────── */
+.intro-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 28px;
+  animation: fadeIn 0.4s ease 0.2s both;
+}
+
+.intro-back {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.intro-back:hover {
+  color: #64748b;
+}
+
+.intro-progress-track {
+  flex: 1;
+  height: 8px;
+  background: #c8d0d8;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.intro-progress-fill {
+  height: 100%;
+  background: #25AFF4;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.w-50 { width: 50%; }
+.w-75 { width: 75%; }
+.w-90 { width: 90%; }
+
+/* ── Achieve Header (Kip + Bubble Row) ────────────── */
+.intro-achieve-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+  animation: fadeIn 0.5s ease 0.3s both;
+}
+
+/* ── Achievement List ─────────────────────────────── */
+.intro-achieve-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 480px;
+  align-self: center;
+}
+
+.intro-achieve-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e8edf2;
+  animation: slideUp 0.5s ease both;
+}
+
+.delay-0 { animation-delay: 0.3s; }
+.delay-1 { animation-delay: 0.45s; }
+.delay-2 { animation-delay: 0.6s; }
+
+.intro-achieve-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f0f4f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.intro-achieve-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.intro-achieve-text strong {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.intro-achieve-text span {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* ── Footer Bar ────────────────────────────────────── */
+.intro-footer {
+  padding: 20px 32px;
+  margin: 0 24px 24px 24px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  border-top: 1.5px solid #d0d7de;
+  animation: fadeIn 0.5s ease 1s both;
+}
+
+/* ── Continue Button ───────────────────────────────── */
+.intro-continue {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #fff;
+  background: #5bb8e8;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 32px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(91, 184, 232, 0.3);
+  transition: all 0.2s ease;
+}
+
+.intro-continue:hover {
+  background: #4aabe0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(91, 184, 232, 0.4);
+}
+
+.intro-continue:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(91, 184, 232, 0.3);
+}
+
+/* ── Medium Kip (Placement Screen) ────────────────── */
+.intro-kip--medium {
+  width: 150px;
+  height: 150px;
+  flex-shrink: 0;
+}
+
+/* ── Placement Content Layout ─────────────────────── */
+.intro-card--placement {
+  justify-content: flex-start;
+  padding: 24px 32px;
+  background: #e8f0f8;
+}
+
+.intro-placement-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-top: 16px;
+  animation: fadeIn 0.5s ease 0.3s both;
+}
+
+/* Bubble variant — right side (placement screen) */
+.intro-bubble--right {
+  margin-bottom: 0;
+  max-width: 380px;
+  padding: 16px 22px;
+  line-height: 1.5;
+}
+
+.intro-bubble--right::after {
+  bottom: auto;
+  top: 30%;
+  left: -8px;
+  right: auto;
+  transform: translateY(-50%);
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid #fff;
+  border-left: none;
+  filter: drop-shadow(-1px 0 0 #cdd5dc);
+}
+
+/* ── Find My Level Card (centered) ────────────────── */
+.intro-level-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.intro-level-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 28px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e8edf2;
+  max-width: 420px;
+  width: 100%;
+  animation: slideUp 0.5s ease 0.4s both;
+}
+
+.intro-level-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #f0f4f8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+/* ── Loading Screen ───────────────────────────────── */
+@keyframes kipWalk {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-12px) rotate(-3deg);
+  }
+  75% {
+    transform: translateY(-12px) rotate(3deg);
+  }
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.intro-loading {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef2f5;
+  animation: fadeIn 0.4s ease both;
+}
+
+.intro-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.intro-loading-kip {
+  width: 140px;
+  height: 140px;
+  animation: kipWalk 1.2s ease-in-out infinite;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.08));
+}
+
+.intro-loading-kip img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.intro-loading-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #94a3b8;
+  margin: 0;
+  animation: loadingPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 480px) {
+  .intro-card {
+    margin: 16px;
+    margin-bottom: 0;
+    border-radius: 16px;
+  }
+
+  .intro-card--achievements,
+  .intro-card--placement {
+    padding: 20px 20px;
+  }
+
+  .intro-kip--big {
+    width: 200px;
+    height: 200px;
+  }
+
+  .intro-kip--small {
+    width: 60px;
+    height: 60px;
+  }
+
+  .intro-kip--medium {
+    width: 100px;
+    height: 100px;
+  }
+
+  .intro-bubble {
+    font-size: 0.85rem;
+    padding: 8px 18px;
+  }
+
+  .intro-bubble--right {
+    max-width: 240px;
+    font-size: 0.82rem;
+  }
+
+  .intro-placement-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .intro-achieve-item {
+    padding: 12px 16px;
+  }
+
+  .intro-footer {
+    margin: 0 16px 16px 16px;
+    padding: 16px 24px;
+  }
+
+  .intro-continue {
+    padding: 10px 26px;
+    font-size: 0.8rem;
+  }
+
+  .intro-loading-kip {
+    width: 110px;
+    height: 110px;
+  }
+}
+

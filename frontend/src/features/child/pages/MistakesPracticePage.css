@@ -1,0 +1,223 @@
+.mp-loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.mp-loading-content {
+    text-align: center;
+}
+
+.mp-loading-text {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.2rem;
+    color: #64748B;
+    margin-top: 16px;
+}
+
+.mp-empty-container, .mp-result-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    padding: 40px;
+    text-align: center;
+}
+
+.mp-kip-img {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    margin-bottom: 24px;
+}
+
+.mp-kip-img-sm {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    margin-bottom: 20px;
+}
+
+.mp-title {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 1.8rem;
+    color: #1A202C;
+    margin-bottom: 8px;
+}
+
+.mp-subtitle {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    color: #64748B;
+    max-width: 360px;
+    line-height: 1.6;
+}
+
+.mp-subtitle-mb24 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    color: #64748B;
+    margin-bottom: 24px;
+}
+
+.mp-btn-primary {
+    margin-top: 32px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 14px 40px;
+    border-radius: 30px;
+    border: none;
+    background-color: #25AFF4;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.mp-btn-primary:hover {
+    background-color: #1A9DE0;
+    transform: translateY(-2px);
+}
+
+.mp-btn-primary-no-mt {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 14px 40px;
+    border-radius: 30px;
+    border: none;
+    background-color: #25AFF4;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.mp-btn-primary-no-mt:hover {
+    background-color: #1A9DE0;
+    transform: translateY(-2px);
+}
+
+.mp-btn-secondary {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 12px 40px;
+    border-radius: 30px;
+    border: 2px solid #E2E8F0;
+    background-color: transparent;
+    color: #64748B;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.mp-btn-secondary:hover {
+    background-color: #F1F5F9;
+    color: #475569;
+}
+
+.mp-text-success {
+    color: #22C55E;
+}
+
+.mp-rewards-container {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.mp-reward-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.mp-reward-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.mp-reward-value-xp {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #D4A000;
+}
+
+.mp-reward-value-gems {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #25AFF4;
+}
+
+.mp-reward-value-total {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1A202C;
+}
+
+.mp-reward-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.72rem;
+    color: #94A3B8;
+}
+
+.mp-actions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.mp-badge-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.mp-badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 12px;
+}
+
+.mp-badge-hard {
+    background-color: #FEE2E2;
+    color: #EF4444;
+}
+
+.mp-badge-medium {
+    background-color: #FEF3C7;
+    color: #D97706;
+}
+
+.mp-badge-easy {
+    background-color: #DCFCE7;
+    color: #22C55E;
+}
+
+.mp-badge-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.72rem;
+    color: #94A3B8;
+}
+
+.mp-text-danger {
+    color: #FF5144;
+    font-size: 1.2rem;
+}
+
+.mp-remaining-text {
+    display: block;
+    margin-top: 8px;
+}
+

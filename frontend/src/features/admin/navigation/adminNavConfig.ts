@@ -1,0 +1,36 @@
+import {
+    Dashboard as DashboardIcon,
+    Group as AgeGroupIcon,
+    Assignment as PlacementIcon,
+    Quiz as QuizIcon,
+    Category as CategoryIcon,
+    People as UserMgmtIcon,
+    TrendingUp as PerformanceIcon,
+    Settings as SettingsIcon,
+} from "@mui/icons-material";
+
+export interface NavItem {
+    label: string;
+    path: string;
+    icon: typeof DashboardIcon;
+}
+
+export interface NavSection {
+    title?: string;
+    items: NavItem[];
+}
+
+export const adminNavSections: NavSection[] = [
+    {
+        items: [
+            { label: "Dashboard", path: "/admin/dashboard", icon: DashboardIcon },
+            { label: "Age Groups", path: "/admin/age-groups", icon: AgeGroupIcon },
+            { label: "Placement Tests", path: "/admin/placement-tests", icon: PlacementIcon },
+            { label: "Quizzes", path: "/admin/quizzes", icon: QuizIcon },
+            { label: "Categories/Levels", path: "/admin/categories", icon: CategoryIcon },
+            { label: "User Management", path: "/admin/users", icon: UserMgmtIcon },
+            { label: "Performance", path: "/admin/performance", icon: PerformanceIcon },
+            { label: "Settings", path: "/admin/settings", icon: SettingsIcon },
+        ],
+    },
+];

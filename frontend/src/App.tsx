@@ -1,35 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useLocation } from "react-router-dom";
+import Navbar from "./shared/components/Navbar";
+import Footer from "./shared/components/Footer";
+import AppRoutes from "./routes/AppRoutes";
+import { Box } from "@mui/material";
+import { AchievementProvider } from "./features/child/hooks/useAchievementToasts";
+
+const hideShellPaths = ["/auth/", "/parent/", "/child/", "/admin"];
 
 function App() {
-  const [count, setCount] = useState(0)
+  const location = useLocation();
+  const hideShell = hideShellPaths.some((p) => location.pathname.startsWith(p));
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    // AchievementProvider sits at the top so any child page can fire toasts
+    // by calling `useAchievementToasts().showAchievements(keys)`. When no
+    // achievement is being shown, the provider renders nothing visible.
+    <AchievementProvider>
+      <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        {!hideShell && <Navbar />}
+        <Box sx={{ flex: 1 }}>
+          <AppRoutes />
+        </Box>
+        {!hideShell && <Footer />}
+      </Box>
+    </AchievementProvider>
+  );
 }
 
-export default App
+export default App;
