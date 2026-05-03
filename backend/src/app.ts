@@ -39,6 +39,7 @@ import parentRoutes from "./routes/parent.routes.js";
 import childRoutes from "./routes/child.routes.js";
 import gameRoutes from "./routes/game.routes.js";
 import adminUsersRoutes from "./routes/adminUsers.routes.js";
+import adminPerformanceRoutes from "./routes/adminPerformance.routes.js";
 
 // ── Routes ───────────────────────────────────────────────────────────────────
 app.use("/api", healthRoutes);
@@ -52,6 +53,7 @@ app.use("/api/quiz", quizRoutes);
 app.use("/api/child", childRoutes);
 app.use("/api/games", gameRoutes);
 app.use("/api/admin/users", adminUsersRoutes);
+app.use("/api/admin/performance", adminPerformanceRoutes);
 
 // ── Centralized Error Handler ────────────────────────────────────────────────
 app.use(errorHandler);

@@ -35,31 +35,30 @@ export default function AdminLayout() {
             .slice(0, 2) ?? "A";
 
     return (
-        <Box className="admin-layout" sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f7f8fc", width: "100%", overflowX: "hidden" }}>
+        <Box className="admin-layout" sx={{ display: "flex", height: "100vh", overflow: "hidden", bgcolor: "#f7f8fc", width: "100%" }}>
             <AdminSidebar 
                 onLogout={handleLogout} 
                 mobileOpen={mobileOpen} 
                 onDrawerToggle={handleDrawerToggle} 
             />
 
-            <Box 
-                className="admin-main-wrapper" 
-                sx={{ 
-                    flexGrow: 1, 
-                    display: "flex", 
-                    flexDirection: "column", 
-                    width: { xs: "100%", md: `calc(100% - 240px)` },
-                    marginLeft: "0px !important", 
-                    minHeight: "100vh",
-                    overflowX: "hidden"
+            <Box
+                className="admin-main-wrapper"
+                sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100vh",
+                    overflowY: "auto",
+                    overflowX: "hidden",
                 }}
             >
-                <AdminHeader 
-                    userInitials={initials} 
-                    onDrawerToggle={handleDrawerToggle} 
+                <AdminHeader
+                    userInitials={initials}
+                    onDrawerToggle={handleDrawerToggle}
                 />
 
-                <Box component="main" className="admin-content" sx={{ flexGrow: 1, p: { xs: 2, md: 3 }, overflowY: "auto" }}>
+                <Box component="main" className="admin-content" sx={{ flexGrow: 1, p: { xs: 2, md: 3 } }}>
                     <Outlet />
                 </Box>
             </Box>

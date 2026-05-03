@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Logout as LogoutIcon } from "@mui/icons-material";
 import { adminNavSections } from "../navigation/adminNavConfig";
 import { Drawer, Box } from "@mui/material";
@@ -12,10 +12,16 @@ interface AdminSidebarProps {
 }
 
 export default function AdminSidebar({ onLogout, mobileOpen, onDrawerToggle }: AdminSidebarProps) {
+    const navigate = useNavigate();
+
     const drawerContent = (
         <aside className="admin-sidebar admin-sidebar--drawer">
             {/* Brand */}
-            <div className="admin-sidebar__brand admin-sidebar__brand--drawer">
+            <div
+                className="admin-sidebar__brand admin-sidebar__brand--drawer"
+                onClick={() => navigate("/")}
+                style={{ cursor: "pointer" }}
+            >
                 <Box
                     component="img"
                     src={logoImg}
@@ -27,9 +33,7 @@ export default function AdminSidebar({ onLogout, mobileOpen, onDrawerToggle }: A
                         flexShrink: 0,
                         filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.12))",
                         transition: "transform 0.3s ease",
-                        "&:hover": {
-                            transform: "scale(1.05)",
-                        },
+                        "&:hover": { transform: "scale(1.05)" },
                     }}
                 />
                 <Box
@@ -43,7 +47,7 @@ export default function AdminSidebar({ onLogout, mobileOpen, onDrawerToggle }: A
                         lineHeight: 1,
                         userSelect: "none",
                         display: "flex",
-                        alignItems: "center"
+                        alignItems: "center",
                     }}
                 >
                     KIDAPTIVE
