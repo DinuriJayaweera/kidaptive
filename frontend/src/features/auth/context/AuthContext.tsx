@@ -37,14 +37,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Restore session on mount
     useEffect(() => {
+        let active = true;
+
         const token = localStorage.getItem("accessToken");
         if (!token) {
             setLoading(false);
-            return;
+            return () => { active = false; };
         }
 
-        // 1. Immediately restore from localStorage so avatar/name show instantly
-        //    (no flicker, no waiting for the network)
+        // Immediately restore from localStorage so avatar/name show instantly
         const stored = localStorage.getItem("user");
         if (stored) {
             try {
@@ -57,16 +58,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
         }
 
-        // 2. Verify the token is still valid and merge fresh data from the server.
-        //    getMe() returns the AuthUser shape from /auth/me.
-        //    We merge — not replace — so locally saved fields (like avatar) survive
-        //    even if the server response doesn't include them.
+        // Verify the token is still valid and merge fresh data from the server
         getMe()
             .then((freshUser) => {
+                if (!active) return;
                 setUserState((prev) => {
-                    // Merge: server data wins for most fields, but avatar/avatarUrl
-                    // from localStorage win if the server omits them (the /auth/me
-                    // endpoint now returns avatarUrl, but guard it anyway).
                     const merged: AuthUser = {
                         ...prev,
                         ...freshUser,
@@ -78,12 +74,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 });
             })
             .catch(() => {
+                if (!active) return;
                 // Token is invalid — clear everything
                 localStorage.removeItem("accessToken");
                 localStorage.removeItem("user");
                 setUserState(null);
             })
-            .finally(() => setLoading(false));
+            .finally(() => { if (active) setLoading(false); });
+
+        return () => { active = false; };
     }, []);
 
     const login = useCallback((user: AuthUser, accessToken: string) => {

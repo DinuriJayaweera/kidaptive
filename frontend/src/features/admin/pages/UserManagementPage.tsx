@@ -395,10 +395,12 @@ export default function UserManagementPage() {
                 {/* Toolbar */}
                 <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, p: 2, borderBottom: "1px solid #f1f5f9", alignItems: "center" }}>
                     <TextField
+                        id="user-search"
                         size="small"
                         placeholder="Search by name, email or username..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
+                        inputProps={{ name: "user-search", "aria-label": "Search users" }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -409,8 +411,10 @@ export default function UserManagementPage() {
                         sx={{ flex: 1, minWidth: 220, "& .MuiOutlinedInput-root": { borderRadius: "999px", fontSize: 13, fontFamily: "'Poppins', sans-serif" } }}
                     />
                     <TextField
+                        id="role-filter"
                         select size="small" value={roleFilter}
                         onChange={(e) => { setRoleFilter(e.target.value); setActiveCard(null); setPage(1); }}
+                        SelectProps={{ inputProps: { id: "role-filter", name: "role-filter" } }}
                         sx={{ minWidth: 130, "& .MuiOutlinedInput-root": { borderRadius: "999px", fontSize: 13, fontFamily: "'Poppins', sans-serif" } }}
                     >
                         <MenuItem value="all">All Roles</MenuItem>
@@ -419,8 +423,10 @@ export default function UserManagementPage() {
                         <MenuItem value="admin">Admins</MenuItem>
                     </TextField>
                     <TextField
+                        id="status-filter"
                         select size="small" value={statusFilter}
                         onChange={(e) => { setStatusFilter(e.target.value); setActiveCard(null); setPage(1); }}
+                        SelectProps={{ inputProps: { id: "status-filter", name: "status-filter" } }}
                         sx={{ minWidth: 140, "& .MuiOutlinedInput-root": { borderRadius: "999px", fontSize: 13, fontFamily: "'Poppins', sans-serif" } }}
                     >
                         <MenuItem value="all">All Statuses</MenuItem>

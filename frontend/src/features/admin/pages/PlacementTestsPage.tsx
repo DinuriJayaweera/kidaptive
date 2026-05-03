@@ -362,10 +362,12 @@ export default function PlacementTestsPage() {
             >
                 {/* Search pill */}
                 <TextField
+                    id="placement-search"
                     size="small"
                     placeholder="Search questions…"
                     value={searchTerm}
                     onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                    inputProps={{ name: "placement-search", "aria-label": "Search placement questions" }}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -386,9 +388,11 @@ export default function PlacementTestsPage() {
                 {/* Age Group */}
                 <FormControl size="small" sx={{ width: { xs: "100%", sm: "140px" } }}>
                     <Select
+                        id="placement-age-group"
                         value={ageGroupFilter}
                         displayEmpty
                         onChange={(e) => handleAgeFilterChange(e.target.value)}
+                        inputProps={{ id: "placement-age-group", name: "placement-age-group" }}
                         sx={pillSelectSx}
                         renderValue={(v) => v === "All" ? "All Ages" : `Age ${v}`}
                     >
@@ -400,9 +404,11 @@ export default function PlacementTestsPage() {
                 {/* Category */}
                 <FormControl size="small" sx={{ width: { xs: "100%", sm: "160px" } }}>
                     <Select
+                        id="placement-category"
                         value={categoryFilter}
                         displayEmpty
                         onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
+                        inputProps={{ id: "placement-category", name: "placement-category" }}
                         sx={pillSelectSx}
                         renderValue={(v) => v === "All" ? "All Categories" : v as string}
                     >

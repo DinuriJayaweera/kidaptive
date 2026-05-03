@@ -216,7 +216,9 @@ function CategoryModal({ open, onClose, onSaved, editing, readOnly = false }: Ca
           </Alert>
         )}
         <TextField
+          id="category-name"
           label="Category Name"
+          name="category-name"
           value={name}
           onChange={(e) => { setName(e.target.value); setError(""); }}
           fullWidth
@@ -300,12 +302,15 @@ function CategoryModal({ open, onClose, onSaved, editing, readOnly = false }: Ca
         </Box>
 
         <TextField
+          id="category-status"
           select
           label="Status"
+          name="category-status"
           value={status}
           onChange={(e) => setStatus(e.target.value as "active" | "pending")}
           fullWidth
           disabled={readOnly}
+          SelectProps={{ inputProps: { id: "category-status", name: "category-status" } }}
           sx={{ "& .MuiOutlinedInput-root": { borderRadius: "999px" } }}
         >
           <MenuItem value="active">Active</MenuItem>

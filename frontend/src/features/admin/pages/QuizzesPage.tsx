@@ -362,10 +362,12 @@ export default function QuizzesPage() {
             >
                 {/* Search pill */}
                 <TextField
+                    id="quiz-search"
                     size="small"
                     placeholder="Search questions…"
                     value={searchTerm}
                     onChange={(e) => { setSearchTerm(e.target.value); setPage(1); }}
+                    inputProps={{ name: "quiz-search", "aria-label": "Search questions" }}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -386,9 +388,11 @@ export default function QuizzesPage() {
                 {/* Age Group */}
                 <FormControl size="small" sx={{ width: { xs: "100%", sm: "140px" } }}>
                     <Select
+                        id="quiz-age-group"
                         value={ageGroupFilter}
                         displayEmpty
                         onChange={(e) => handleAgeFilterChange(e.target.value)}
+                        inputProps={{ id: "quiz-age-group", name: "quiz-age-group" }}
                         sx={pillSelectSx}
                         renderValue={(v) => v === "All" ? "All Ages" : `Age ${v}`}
                     >
@@ -400,9 +404,11 @@ export default function QuizzesPage() {
                 {/* Category */}
                 <FormControl size="small" sx={{ width: { xs: "100%", sm: "160px" } }}>
                     <Select
+                        id="quiz-category"
                         value={categoryFilter}
                         displayEmpty
                         onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
+                        inputProps={{ id: "quiz-category", name: "quiz-category" }}
                         sx={pillSelectSx}
                         renderValue={(v) => v === "All" ? "All Categories" : v as string}
                     >
