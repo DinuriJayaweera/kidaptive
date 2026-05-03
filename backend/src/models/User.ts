@@ -67,6 +67,8 @@ export interface IUser {
     perfectQuizzes?: number;
     everLeveledUp?: boolean;
 
+    isActive: boolean;
+
     createdAt: Date;
     updatedAt: Date;
 
@@ -141,6 +143,8 @@ const userSchema = new Schema<IUser>(
         // Achievement-supporting counters
         perfectQuizzes: { type: Number, default: 0 },
         everLeveledUp: { type: Boolean, default: false },
+
+        isActive: { type: Boolean, default: true },
     },
     { timestamps: true },
 );
