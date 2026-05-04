@@ -16,11 +16,9 @@ export default function AdminSidebar({ onLogout, mobileOpen, onDrawerToggle }: A
 
     const drawerContent = (
         <aside className="admin-sidebar admin-sidebar--drawer">
-            {/* Brand */}
             <div
-                className="admin-sidebar__brand admin-sidebar__brand--drawer"
+                className="admin-sidebar__brand admin-sidebar__brand--drawer admin-sidebar__brand--clickable"
                 onClick={() => navigate("/")}
-                style={{ cursor: "pointer" }}
             >
                 <Box
                     component="img"
@@ -54,14 +52,11 @@ export default function AdminSidebar({ onLogout, mobileOpen, onDrawerToggle }: A
                 </Box>
             </div>
 
-            {/* Navigation */}
             <nav className="admin-sidebar__nav">
                 {adminNavSections.map((section, sIdx) => (
                     <div key={sIdx}>
                         {section.title && (
-                            <div className="admin-sidebar__nav-section-title">
-                                {section.title}
-                            </div>
+                            <div className="admin-sidebar__nav-section-title">{section.title}</div>
                         )}
                         {section.items.map((item) => (
                             <NavLink
@@ -81,7 +76,6 @@ export default function AdminSidebar({ onLogout, mobileOpen, onDrawerToggle }: A
                 ))}
             </nav>
 
-            {/* Footer — Logout */}
             <div className="admin-sidebar__footer">
                 <button className="admin-sidebar__logout-btn" onClick={onLogout}>
                     <LogoutIcon className="admin-sidebar__nav-icon" />
@@ -97,7 +91,7 @@ export default function AdminSidebar({ onLogout, mobileOpen, onDrawerToggle }: A
                 variant="temporary"
                 open={mobileOpen}
                 onClose={onDrawerToggle}
-                ModalProps={{ keepMounted: true }} 
+                ModalProps={{ keepMounted: true }}
                 sx={{
                     display: { xs: "block", md: "none" },
                     "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 },
@@ -109,7 +103,7 @@ export default function AdminSidebar({ onLogout, mobileOpen, onDrawerToggle }: A
                 variant="permanent"
                 sx={{
                     display: { xs: "none", md: "block" },
-                    "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240, borderRight: "1px solid #e8ecf1", overflow: "hidden" },
+                    "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240, borderRight: "1px solid var(--border-color, #e8ecf1)", overflow: "hidden" },
                 }}
                 open
             >

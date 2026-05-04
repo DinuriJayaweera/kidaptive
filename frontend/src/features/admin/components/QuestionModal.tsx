@@ -58,7 +58,12 @@ function getInitialFormData(data?: PlacementQuestion | null): Partial<PlacementQ
   };
 }
 
+import { useAdminTheme } from "../context/AdminThemeContext";
+
 export default function QuestionModal({ open, onClose, onSave, initialData, readOnly = false }: Props) {
+  const { mode } = useAdminTheme();
+  const isDark = mode === "dark";
+
   const [formData, setFormData] = useState<Partial<PlacementQuestion>>(getInitialFormData());
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -265,11 +270,11 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
         "& .MuiOutlinedInput-root": {
           fontFamily: "'Poppins', sans-serif",
           borderRadius: "999px !important",
-          background: "#fff",
+          background: "var(--card-bg)",
           transition: "all 0.2s ease",
-          "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e5e7eb", borderRadius: "999px" },
-          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#cbd5f5" },
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#25AFF4", borderWidth: "1px", boxShadow: "0 0 0 3px rgba(59,130,246,0.1)" },
+          "& .MuiOutlinedInput-notchedOutline": { borderColor: "var(--border-light)", borderRadius: "999px" },
+          "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "var(--border-color)" },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#25AFF4", borderWidth: "1px", boxShadow: "0 0 0 3px rgba(37,175,244,0.1)" },
           "&.MuiInputBase-multiline": { borderRadius: "20px", padding: "8px" }
         },
         "& .MuiInputLabel-root": {
@@ -283,13 +288,13 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
           "&.Mui-error": { color: "#ef4444" }
         },
         "& .MuiFilledInput-root": {
-          backgroundColor: "#f9fafb", border: "1px solid #f1f5f9", borderRadius: "999px !important",
+          backgroundColor: "var(--bg-subtle)", border: "1px solid var(--border-light)", borderRadius: "999px !important",
           boxShadow: "inset 0 1px 2px rgba(0,0,0,0.03)", padding: "4px 0", fontFamily: "'Poppins', sans-serif",
           cursor: "default",
           "&:before, &:after": { display: "none" },
-          "&.MuiInputBase-multiline": { backgroundColor: "#f3f4f6", borderRadius: "20px", padding: "8px" },
-          "&:hover": { backgroundColor: "#f9fafb" },
-          "&.MuiInputBase-multiline:hover": { backgroundColor: "#f3f4f6" }
+          "&.MuiInputBase-multiline": { backgroundColor: "var(--bg-subtle)", borderRadius: "20px", padding: "8px" },
+          "&:hover": { backgroundColor: "var(--bg-hover)" },
+          "&.MuiInputBase-multiline:hover": { backgroundColor: "var(--bg-hover)" }
         },
         "& .MuiSelect-select.MuiFilledInput-input": { cursor: "default", "&:focus": { backgroundColor: "transparent" } },
         "& .MuiSelect-icon": { display: readOnly ? "none" : "block" }
@@ -297,9 +302,9 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
     >
       <DialogTitle sx={{
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        fontFamily: "'Baloo 2', cursive", fontWeight: 600, fontSize: "20px", color: "#111827",
-        position: "sticky", top: 0, background: "#fff", zIndex: 10,
-        paddingBottom: "10px", marginBottom: "16px", borderBottom: "1px solid #f0f0f0"
+        fontFamily: "'Baloo 2', cursive", fontWeight: 600, fontSize: "20px", color: "var(--text-primary)",
+        position: "sticky", top: 0, background: "var(--card-bg)", zIndex: 10,
+        paddingBottom: "10px", marginBottom: "16px", borderBottom: "1px solid var(--border-light)"
       }}>
         {readOnly ? "View Question" : initialData ? "Edit Question" : "Add New Question"}
         <IconButton onClick={onClose} size="small" sx={{
@@ -321,19 +326,20 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
             onChange={handleChange}
             fullWidth required multiline rows={3} autoFocus
             InputProps={{ readOnly }}
-            variant={readOnly ? "filled" : "outlined"}
+            variant="outlined"
             error={!!errors.questionText}
             helperText={errors.questionText || (activeType === "fill" && !readOnly ? 'Tip: Use "____" to mark the blank position' : "")}
-            sx={{ borderBottom: "1px solid #f1f5f9", paddingBottom: "16px" }}
+            sx={{ borderBottom: "1px solid var(--border-light)", paddingBottom: "16px", pointerEvents: readOnly ? "none" : "auto", "& .MuiInputBase-input": { color: "var(--text-primary)" } }}
           />
 
           {/* ── Age Group + Category row ── */}
-          <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" }, borderBottom: "1px solid #f1f5f9", paddingBottom: "16px" }}>
+          <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" }, borderBottom: "1px solid var(--border-light)", paddingBottom: "16px" }}>
             <TextField
               select label="Age Group" name="ageGroup"
               value={formData.ageGroup || ""} onChange={handleChange} fullWidth
-              InputProps={{ readOnly }} variant={readOnly ? "filled" : "outlined"}
+              InputProps={{ readOnly }} variant="outlined"
               error={!!errors.ageGroup} helperText={errors.ageGroup}
+              sx={{ pointerEvents: readOnly ? "none" : "auto", "& .MuiInputBase-input": { color: "var(--text-primary) !important" } }}
             >
               {AGE_GROUPS.map((a) => <MenuItem key={a} value={a}>{a}</MenuItem>)}
             </TextField>
@@ -341,20 +347,22 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
             <TextField
               select label="Category" name="category"
               value={formData.category || ""} onChange={handleChange} fullWidth
-              InputProps={{ readOnly }} variant={readOnly ? "filled" : "outlined"}
+              InputProps={{ readOnly }} variant="outlined"
               error={!!errors.category} helperText={errors.category}
+              sx={{ pointerEvents: readOnly ? "none" : "auto", "& .MuiInputBase-input": { color: "var(--text-primary) !important" } }}
             >
               {(currentCategories || []).map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
             </TextField>
           </Box>
 
           {/* ── Question Type selector ── */}
-          <Box sx={{ borderBottom: "1px solid #f1f5f9", paddingBottom: "16px" }}>
+          <Box sx={{ borderBottom: "1px solid var(--border-light)", paddingBottom: "16px" }}>
             <TextField
               select label="Question Type" name="type"
               value={formData.type || ""} onChange={handleChange} fullWidth
-              InputProps={{ readOnly }} variant={readOnly ? "filled" : "outlined"}
+              InputProps={{ readOnly }} variant="outlined"
               error={!!errors.type} helperText={errors.type}
+              sx={{ pointerEvents: readOnly ? "none" : "auto", "& .MuiInputBase-input": { color: "var(--text-primary) !important" } }}
             >
               {QUESTION_TYPES.map((qt) => (
                 <MenuItem key={qt.value} value={qt.value}>
@@ -373,8 +381,8 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
                 icon={false}
                 sx={{
                   mt: 1.5, borderRadius: "12px", py: 0.75, px: 2,
-                  background: "#f0f9ff", border: "1px solid #e0f2fe",
-                  "& .MuiAlert-message": { fontFamily: "'Poppins', sans-serif", fontSize: "0.8rem", color: "#0284c7" }
+                  background: isDark ? "rgba(37,175,244,0.1)" : "#f0f9ff", border: isDark ? "1px solid rgba(37,175,244,0.2)" : "1px solid #e0f2fe",
+                  "& .MuiAlert-message": { fontFamily: "'Poppins', sans-serif", fontSize: "0.8rem", color: isDark ? "#4da3ff" : "#0284c7" }
                 }}
               >
                 {typeConfig?.icon} {TYPE_HELPER[activeType]}
@@ -383,7 +391,7 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
           </Box>
 
           {/* ── Difficulty Selector ── */}
-          <Box sx={{ borderBottom: "1px solid #f1f5f9", paddingBottom: "16px" }}>
+          <Box sx={{ borderBottom: "1px solid var(--border-light)", paddingBottom: "16px" }}>
             <Typography sx={{
               fontFamily: "'Poppins', sans-serif",
               color: errors.difficulty ? "#FF5144" : "#6b7280",
@@ -400,9 +408,9 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
                     onClick={() => handleDifficultyChange(d.value)}
                     sx={{
                       px: 2.5, py: 0.75, borderRadius: "999px",
-                      border: `1px solid ${isActive ? d.color : (readOnly ? "#e2e8f0" : d.border)}`,
-                      background: isActive ? "#eef6ff" : "transparent",
-                      color: isActive ? d.color : (readOnly ? "#94a3b8" : d.color),
+                      border: `1px solid ${isActive ? d.color : (readOnly ? "var(--border-light)" : "var(--border-color)")}`,
+                      background: isActive ? (isDark ? "rgba(37,175,244,0.15)" : "#eef6ff") : "transparent",
+                      color: isActive ? d.color : (readOnly ? "var(--text-secondary)" : d.color),
                       fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: "0.875rem",
                       cursor: readOnly ? "default" : "pointer", userSelect: "none",
                       transition: "all 0.2s ease",
@@ -428,11 +436,11 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
 
           {/* ── MCQ / Fill options ── */}
           {showOptions && (
-            <Box sx={{ p: 2, borderRadius: "16px", border: "1px solid #eee", background: "#fafafa" }}>
-              <Typography sx={{ mb: errors.options ? 0.5 : 1.5, color: "#111827", fontFamily: "'Baloo 2', cursive", fontSize: "1.15rem", fontWeight: 600 }}>
+            <Box sx={{ p: 2, borderRadius: "16px", border: "1px solid var(--border-light)", background: "var(--bg-subtle)" }}>
+              <Typography sx={{ mb: errors.options ? 0.5 : 1.5, color: "var(--text-primary)", fontFamily: "'Baloo 2', cursive", fontSize: "1.15rem", fontWeight: 600 }}>
                 {activeType === "mcq" ? "🔘 Answer Options" : "✏️ Blank Options"}
               </Typography>
-              <Typography sx={{ mb: 2, color: "#6b7280", fontFamily: "'Poppins', sans-serif", fontSize: "0.78rem" }}>
+              <Typography sx={{ mb: 2, color: "var(--text-secondary)", fontFamily: "'Poppins', sans-serif", fontSize: "0.78rem" }}>
                 {activeType === "mcq"
                   ? "Add the possible answers. Select the correct one below."
                   : "Add options that will appear for the child to choose from."}
@@ -469,14 +477,15 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
                         fullWidth size="small" placeholder={`Option ${String.fromCharCode(65 + idx)}`}
                         InputProps={{ readOnly }}
                         sx={{
-                          background: readOnly ? "transparent" : "#fff",
+                          background: readOnly ? "transparent" : "var(--card-bg)",
+                          pointerEvents: readOnly ? "none" : "auto",
                           "& .MuiOutlinedInput-root": {
                             borderRadius: "999px !important",
                             ...(formData.correctAnswer === opt && opt.trim() ? {
                               "& .MuiOutlinedInput-notchedOutline": { borderColor: "#8EE870", borderWidth: "2px" }
                             } : {})
                           },
-                          "& .MuiInputBase-input": { padding: "10px 16px" }
+                          "& .MuiInputBase-input": { padding: "10px 16px", color: "var(--text-primary) !important" }
                         }}
                       />
                       {!readOnly && (formData.options || []).length > 3 && (
@@ -501,8 +510,8 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
 
               {/* Show selected correct answer label */}
               {formData.correctAnswer && (
-                <Box sx={{ mt: 2, px: 2, py: 1, borderRadius: "12px", background: "#ecfdf5", border: "1px solid #d1fae5" }}>
-                  <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.8rem", color: "#059669", fontWeight: 500 }}>
+                <Box sx={{ mt: 2, px: 2, py: 1, borderRadius: "12px", background: isDark ? "rgba(34,197,94,0.15)" : "#ecfdf5", border: isDark ? "1px solid rgba(34,197,94,0.3)" : "1px solid #d1fae5" }}>
+                  <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.8rem", color: isDark ? "#4ade80" : "#059669", fontWeight: 500 }}>
                     ✓ Correct answer: <strong>{formData.correctAnswer}</strong>
                   </Typography>
                 </Box>
@@ -512,8 +521,8 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
 
           {/* ── Boolean selector ── */}
           {showBooleanSelector && (
-            <Box sx={{ p: 2, borderRadius: "16px", border: "1px solid #eee", background: "#fafafa" }}>
-              <Typography sx={{ mb: 1.5, color: "#111827", fontFamily: "'Baloo 2', cursive", fontSize: "1.15rem", fontWeight: 600 }}>
+            <Box sx={{ p: 2, borderRadius: "16px", border: "1px solid var(--border-light)", background: "var(--bg-subtle)" }}>
+              <Typography sx={{ mb: 1.5, color: "var(--text-primary)", fontFamily: "'Baloo 2', cursive", fontSize: "1.15rem", fontWeight: 600 }}>
                 ✅ Select Correct Answer
               </Typography>
               <Box sx={{ display: "flex", gap: 2 }}>
@@ -525,10 +534,10 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
                       onClick={() => handleCorrectAnswerSelect(val)}
                       sx={{
                         flex: 1, py: 2, borderRadius: "16px", textAlign: "center",
-                        border: `2px solid ${isSelected ? (val === "True" ? "#8EE870" : "#FF5144") : "#e5e7eb"}`,
+                        border: `2px solid ${isSelected ? (val === "True" ? "#8EE870" : "#FF5144") : "var(--border-color)"}`,
                         background: isSelected
-                          ? (val === "True" ? "#ecfdf5" : "#fef2f2")
-                          : "#fff",
+                          ? (val === "True" ? (isDark ? "rgba(34,197,94,0.15)" : "#ecfdf5") : (isDark ? "rgba(239,68,68,0.15)" : "#fef2f2"))
+                          : "var(--card-bg)",
                         cursor: readOnly ? "default" : "pointer",
                         transition: "all 0.2s ease",
                         "&:hover": readOnly ? {} : {
@@ -541,8 +550,8 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
                       <Typography sx={{
                         fontFamily: "'Baloo 2', cursive", fontSize: "1.3rem", fontWeight: 700,
                         color: isSelected
-                          ? (val === "True" ? "#16a34a" : "#dc2626")
-                          : "#6b7280"
+                          ? (val === "True" ? (isDark ? "#4ade80" : "#16a34a") : (isDark ? "#f87171" : "#dc2626"))
+                          : "var(--text-secondary)"
                       }}>
                         {val === "True" ? "✓" : "✗"} {val}
                       </Typography>
@@ -558,11 +567,11 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
 
           {/* ── Input type: only correct answer ── */}
           {showInputOnly && (
-            <Box sx={{ p: 2, borderRadius: "16px", border: "1px solid #eee", background: "#fafafa" }}>
-              <Typography sx={{ mb: 1.5, color: "#111827", fontFamily: "'Baloo 2', cursive", fontSize: "1.15rem", fontWeight: 600 }}>
+            <Box sx={{ p: 2, borderRadius: "16px", border: "1px solid var(--border-light)", background: "var(--bg-subtle)" }}>
+              <Typography sx={{ mb: 1.5, color: "var(--text-primary)", fontFamily: "'Baloo 2', cursive", fontSize: "1.15rem", fontWeight: 600 }}>
                 ⌨️ Expected Answer
               </Typography>
-              <Typography sx={{ mb: 2, color: "#6b7280", fontFamily: "'Poppins', sans-serif", fontSize: "0.78rem" }}>
+              <Typography sx={{ mb: 2, color: "var(--text-secondary)", fontFamily: "'Poppins', sans-serif", fontSize: "0.78rem" }}>
                 The child's input will be compared case-insensitively with this answer.
               </Typography>
               <TextField
@@ -573,17 +582,14 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
                 fullWidth required
                 placeholder="Type the exact correct answer"
                 InputProps={{ readOnly }}
-                variant={readOnly ? "filled" : "outlined"}
+                variant="outlined"
                 error={!!errors.correctAnswer}
                 helperText={errors.correctAnswer}
                 sx={{
+                  pointerEvents: readOnly ? "none" : "auto",
                   "& .MuiOutlinedInput-root": { borderRadius: "999px !important" },
                   ...(readOnly && {
-                    "& .MuiFilledInput-root": {
-                      background: "#eef6ff", border: "1px solid #dbeafe", cursor: "default",
-                      "&:hover": { background: "#eef6ff" }
-                    },
-                    "& .MuiInputBase-input": { fontWeight: 500, color: "#25AFF4", cursor: "default" }
+                    "& .MuiInputBase-input": { fontWeight: 500, color: "var(--text-primary) !important", cursor: "default" }
                   })
                 }}
               />
@@ -606,14 +612,14 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
               sx={{
                 "& .MuiOutlinedInput-root": { borderRadius: "999px !important" },
                 "& .MuiFilledInput-root": {
-                  background: formData.correctAnswer ? "#eef6ff" : "#f9fafb",
-                  border: `1px solid ${formData.correctAnswer ? "#dbeafe" : "#f1f5f9"}`,
+                  background: formData.correctAnswer ? (isDark ? "rgba(37,175,244,0.15)" : "#eef6ff") : "var(--bg-subtle)",
+                  border: `1px solid ${formData.correctAnswer ? (isDark ? "rgba(37,175,244,0.3)" : "#dbeafe") : "var(--border-light)"}`,
                   cursor: "default",
-                  "&:hover": { background: formData.correctAnswer ? "#eef6ff" : "#f9fafb" }
+                  "&:hover": { background: formData.correctAnswer ? (isDark ? "rgba(37,175,244,0.15)" : "#eef6ff") : "var(--bg-subtle)" }
                 },
                 "& .MuiInputBase-input": {
                   fontWeight: formData.correctAnswer ? 500 : 400,
-                  color: formData.correctAnswer ? "#25AFF4" : "#6b7280",
+                  color: formData.correctAnswer ? "#25AFF4" : "var(--text-secondary)",
                   cursor: "default"
                 }
               }}
@@ -622,8 +628,8 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
 
           {/* ── No type selected yet ── */}
           {!activeType && (
-            <Box sx={{ p: 3, borderRadius: "16px", border: "1px dashed #d1d5db", background: "#fafafa", textAlign: "center" }}>
-              <Typography sx={{ color: "#9ca3af", fontFamily: "'Poppins', sans-serif", fontSize: "0.85rem" }}>
+            <Box sx={{ p: 3, borderRadius: "16px", border: "1px dashed var(--border-color)", background: "var(--bg-subtle)", textAlign: "center" }}>
+              <Typography sx={{ color: "var(--text-secondary)", fontFamily: "'Poppins', sans-serif", fontSize: "0.85rem" }}>
                 Select a question type above to see additional fields
               </Typography>
             </Box>
@@ -632,13 +638,13 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
       </DialogContent>
 
       <DialogActions sx={{
-        p: 2, px: 3, position: "sticky", bottom: 0, background: "#fff",
-        borderTop: "1px solid #eee", display: "flex", justifyContent: "flex-end", gap: "12px"
+        p: 2, px: 3, position: "sticky", bottom: 0, background: "var(--card-bg)",
+        borderTop: "1px solid var(--border-light)", display: "flex", justifyContent: "flex-end", gap: "12px"
       }}>
         <Button onClick={onClose} sx={{
-          color: "#9ca3af", fontFamily: "'Poppins', sans-serif", fontWeight: 500,
+          color: "var(--text-secondary)", fontFamily: "'Poppins', sans-serif", fontWeight: 500,
           background: "transparent", textTransform: "none", px: 2,
-          "&:hover": { background: "#f3f4f6", color: "#6b7280" }
+          "&:hover": { background: "var(--bg-hover)", color: "var(--text-primary)" }
         }}>
           {readOnly ? "Close" : "Cancel"}
         </Button>

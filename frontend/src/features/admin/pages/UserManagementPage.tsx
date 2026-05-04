@@ -62,8 +62,8 @@ function StatusBadge({ active }: { active: boolean }) {
                 px: 1.2,
                 py: 0.3,
                 borderRadius: "999px",
-                backgroundColor: active ? "#f0fdf4" : "#fef2f2",
-                border: `1px solid ${active ? "#bbf7d0" : "#fecaca"}`,
+                backgroundColor: active ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)",
+                border: `1px solid ${active ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)"}`,
             }}
         >
             <Box sx={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: active ? "#22c55e" : "#ef4444" }} />
@@ -95,8 +95,8 @@ function StatCard({ icon, label, value, bg, onClick, active }: StatCardProps) {
             sx={{
                 borderRadius: "16px",
                 p: 3,
-                background: "#fff",
-                border: active ? "2px solid #25AFF4" : "1px solid #e8ecf1",
+                background: "var(--card-bg)",
+                border: active ? "2px solid #25AFF4" : "1px solid var(--border-color)",
                 display: "flex",
                 alignItems: "center",
                 gap: 2,
@@ -112,10 +112,10 @@ function StatCard({ icon, label, value, bg, onClick, active }: StatCardProps) {
                 {icon}
             </Box>
             <Box>
-                <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontSize: 12, fontWeight: 600, mb: 0.3, textTransform: "uppercase" }}>
+                <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontSize: 12, fontWeight: 600, mb: 0.3, textTransform: "uppercase" }}>
                     {label}
                 </Typography>
-                <Typography sx={{ fontFamily: "'Baloo 2', cursive", color: "#111827", fontWeight: 700, fontSize: 28, lineHeight: 1 }}>
+                <Typography sx={{ fontFamily: "'Baloo 2', cursive", color: "var(--text-primary)", fontWeight: 700, fontSize: 28, lineHeight: 1 }}>
                     {value.toLocaleString()}
                 </Typography>
             </Box>
@@ -136,11 +136,11 @@ function UserDetailModal({ userId, open, onClose }: { userId: string | null; ope
 
     const field = (label: string, value: React.ReactNode) => (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 0.4, mb: 2 }}>
-            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, fontWeight: 600, color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 {label}
             </Typography>
-            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14, color: "#111827", fontWeight: 500 }}>
-                {value || <span style={{ color: "#cbd5e1" }}>—</span>}
+            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14, color: "var(--text-primary)", fontWeight: 500 }}>
+                {value || <span className="um-empty-value">—</span>}
             </Typography>
         </Box>
     );
@@ -148,22 +148,22 @@ function UserDetailModal({ userId, open, onClose }: { userId: string | null; ope
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth TransitionComponent={Zoom}
             PaperProps={{ sx: { borderRadius: "16px", boxShadow: "0 12px 40px rgba(0,0,0,0.1)" } }}>
-            <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 17, color: "#111827", display: "flex", justifyContent: "space-between", alignItems: "center", pb: 1, borderBottom: "1px solid #f1f5f9" }}>
+            <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 17, color: "var(--text-primary)", display: "flex", justifyContent: "space-between", alignItems: "center", pb: 1, borderBottom: "1px solid var(--border-light)" }}>
                 User Details
-                <IconButton onClick={onClose} size="small" sx={{ color: "#94a3b8" }}><CloseIcon fontSize="small" /></IconButton>
+                <IconButton onClick={onClose} size="small" sx={{ color: "var(--text-tertiary)" }}><CloseIcon fontSize="small" /></IconButton>
             </DialogTitle>
             <DialogContent sx={{ pt: "20px !important" }}>
                 {loading && <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}><CircularProgress size={32} sx={{ color: "#25AFF4" }} /></Box>}
                 {!loading && user && (
                     <>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3, p: 2, borderRadius: "12px", background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3, p: 2, borderRadius: "12px", background: "var(--bg-subtle)", border: "1px solid var(--border-color)" }}>
                             <Box sx={{ width: 52, height: 52, borderRadius: "50%", background: "linear-gradient(135deg, #25AFF4, #0ea5e9)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                                 <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 18, color: "#fff" }}>
                                     {user.name?.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2)}
                                 </Typography>
                             </Box>
                             <Box>
-                                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 16, color: "#111827" }}>{user.name}</Typography>
+                                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 16, color: "var(--text-primary)" }}>{user.name}</Typography>
                                 <Box sx={{ display: "flex", gap: 1, mt: 0.5 }}>
                                     <RoleBadge role={user.role} />
                                     <StatusBadge active={user.isActive !== false} />
@@ -178,8 +178,8 @@ function UserDetailModal({ userId, open, onClose }: { userId: string | null; ope
 
                         {user.role === "parent" && (
                             <>
-                                <Divider sx={{ my: 2, borderColor: "#f1f5f9" }} />
-                                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", mb: 1.5 }}>Parent Info</Typography>
+                                <Divider sx={{ my: 2, borderColor: "var(--border-light)" }} />
+                                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 12, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px", mb: 1.5 }}>Parent Info</Typography>
                                 {field("Phone", user.phone)}
                                 {field("Children", user.childCount !== undefined ? `${user.childCount} child${user.childCount !== 1 ? "ren" : ""}` : "—")}
                             </>
@@ -187,14 +187,14 @@ function UserDetailModal({ userId, open, onClose }: { userId: string | null; ope
 
                         {user.role === "child" && (
                             <>
-                                <Divider sx={{ my: 2, borderColor: "#f1f5f9" }} />
-                                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", mb: 1.5 }}>Child Info</Typography>
+                                <Divider sx={{ my: 2, borderColor: "var(--border-light)" }} />
+                                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 12, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px", mb: 1.5 }}>Child Info</Typography>
                                 {field("Username", user.username ? `@${user.username}` : undefined)}
                                 {field("Age", user.age ? `${user.age} years old` : undefined)}
                                 {field("Parent", user.parentName)}
                                 {field("Placement Completed", user.placementCompleted ? "Yes" : "No")}
-                                <Divider sx={{ my: 2, borderColor: "#f1f5f9" }} />
-                                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 12, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px", mb: 1.5 }}>Game Stats</Typography>
+                                <Divider sx={{ my: 2, borderColor: "var(--border-light)" }} />
+                                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 12, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px", mb: 1.5 }}>Game Stats</Typography>
                                 <Box sx={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 1.5 }}>
                                     {[
                                         { label: "XP", value: (user.totalXP ?? 0).toLocaleString(), color: "#d4a000", bg: "rgba(253,199,0,0.1)" },
@@ -203,7 +203,7 @@ function UserDetailModal({ userId, open, onClose }: { userId: string | null; ope
                                     ].map(s => (
                                         <Box key={s.label} sx={{ p: 1.5, borderRadius: "10px", background: s.bg, textAlign: "center" }}>
                                             <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 18, color: s.color }}>{s.value}</Typography>
-                                            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, color: "#94a3b8", fontWeight: 500 }}>{s.label}</Typography>
+                                            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, color: "var(--text-tertiary)", fontWeight: 500 }}>{s.label}</Typography>
                                         </Box>
                                     ))}
                                 </Box>
@@ -213,7 +213,7 @@ function UserDetailModal({ userId, open, onClose }: { userId: string | null; ope
                 )}
             </DialogContent>
             <DialogActions sx={{ px: 3, pb: 2.5 }}>
-                <Button onClick={onClose} sx={{ borderRadius: "999px", fontFamily: "'Poppins', sans-serif", fontWeight: 600, textTransform: "none", color: "#64748b" }}>Close</Button>
+                <Button onClick={onClose} sx={{ borderRadius: "999px", fontFamily: "'Poppins', sans-serif", fontWeight: 600, textTransform: "none", color: "var(--text-secondary)" }}>Close</Button>
             </DialogActions>
         </Dialog>
     );
@@ -320,11 +320,11 @@ export default function UserManagementPage() {
 
     const headCellSx = {
         fontFamily: "'Poppins', sans-serif",
-        color: "#6b7280",
+        color: "var(--text-secondary)",
         fontWeight: 600,
         fontSize: 11,
         letterSpacing: "0.5px",
-        borderBottom: "1px solid #f3f4f6",
+        borderBottom: "1px solid var(--border-light)",
         padding: "12px 16px",
         verticalAlign: "middle",
     };
@@ -332,8 +332,8 @@ export default function UserManagementPage() {
     const cellSx = {
         fontFamily: "'Poppins', sans-serif",
         fontSize: 13,
-        color: "#374151",
-        borderBottom: "1px solid #f3f4f6",
+        color: "var(--text-primary)",
+        borderBottom: "1px solid var(--border-light)",
         padding: "12px 16px",
         verticalAlign: "middle",
         height: 60,
@@ -344,10 +344,10 @@ export default function UserManagementPage() {
             {/* Page Header */}
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", mb: { xs: 2.5, md: 3 }, flexWrap: "wrap", gap: 2 }}>
                 <Box>
-                    <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#111827", letterSpacing: "-0.02em", fontSize: { xs: "1.5rem", md: "1.85rem" }, mb: 0.5 }}>
+                    <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em", fontSize: { xs: "1.5rem", md: "1.85rem" }, mb: 0.5 }}>
                         User Management
                     </Typography>
-                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontSize: { xs: "0.875rem", md: "0.95rem" } }}>
+                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontSize: { xs: "0.875rem", md: "0.95rem" } }}>
                         View, manage, and moderate all platform users
                     </Typography>
                 </Box>
@@ -358,7 +358,7 @@ export default function UserManagementPage() {
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <StatCard
                         icon={<PeopleIcon sx={{ fontSize: 32, color: "#25AFF4" }} />}
-                        label="Total Users" value={stats?.total ?? 0} bg="#e0f2fe"
+                        label="Total Users" value={stats?.total ?? 0} bg="rgba(37,175,244,0.12)"
                         active={activeCard === "all"}
                         onClick={() => handleCardFilter("all")}
                     />
@@ -366,7 +366,7 @@ export default function UserManagementPage() {
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <StatCard
                         icon={<ParentIcon sx={{ fontSize: 32, color: "#7c3aed" }} />}
-                        label="Parents" value={stats?.roles.parent ?? 0} bg="#f5f3ff"
+                        label="Parents" value={stats?.roles.parent ?? 0} bg="rgba(124,58,237,0.12)"
                         active={activeCard === "parent"}
                         onClick={() => handleCardFilter("parent")}
                     />
@@ -374,7 +374,7 @@ export default function UserManagementPage() {
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <StatCard
                         icon={<ChildIcon sx={{ fontSize: 32, color: "#0369a1" }} />}
-                        label="Children" value={stats?.roles.child ?? 0} bg="#f0f9ff"
+                        label="Children" value={stats?.roles.child ?? 0} bg="rgba(3,105,161,0.12)"
                         active={activeCard === "child"}
                         onClick={() => handleCardFilter("child")}
                     />
@@ -382,7 +382,7 @@ export default function UserManagementPage() {
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <StatCard
                         icon={<SuspendedIcon sx={{ fontSize: 32, color: "#dc2626" }} />}
-                        label="Suspended" value={stats?.suspended ?? 0} bg="#fef2f2"
+                        label="Suspended" value={stats?.suspended ?? 0} bg="rgba(220,38,38,0.12)"
                         active={activeCard === "suspended"}
                         onClick={() => handleCardFilter("all", activeCard === "suspended" ? "all" : "suspended")}
                     />
@@ -390,10 +390,10 @@ export default function UserManagementPage() {
             </Grid>
 
             {/* Table Card */}
-            <Paper elevation={0} sx={{ borderRadius: "16px", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.05)", background: "#fff", mb: 3 }}>
+            <Paper elevation={0} sx={{ borderRadius: "16px", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.05)", background: "var(--card-bg)", mb: 3 }}>
 
                 {/* Toolbar */}
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, p: 2, borderBottom: "1px solid #f1f5f9", alignItems: "center" }}>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, p: 2, borderBottom: "1px solid var(--border-light)", alignItems: "center" }}>
                     <TextField
                         id="user-search"
                         size="small"
@@ -404,7 +404,7 @@ export default function UserManagementPage() {
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <SearchIcon sx={{ fontSize: 18, color: "#94a3b8" }} />
+                                    <SearchIcon sx={{ fontSize: 18, color: "var(--text-tertiary)" }} />
                                 </InputAdornment>
                             ),
                         }}
@@ -439,7 +439,7 @@ export default function UserManagementPage() {
                 <TableContainer sx={{ overflowX: { xs: "auto", md: "hidden" } }}>
                     <Table sx={{ minWidth: { xs: 560, md: "100%" } }}>
                         <TableHead>
-                            <TableRow sx={{ background: "#f9fafb", height: 60 }}>
+                            <TableRow sx={{ background: "var(--bg-subtle)", height: 60 }}>
                                 <TableCell sx={{ ...headCellSx }}>USER</TableCell>
                                 <TableCell sx={{ ...headCellSx, width: 110 }}>ROLE</TableCell>
                                 <TableCell sx={{ ...headCellSx, width: 120 }}>STATUS</TableCell>
@@ -458,7 +458,7 @@ export default function UserManagementPage() {
                             ) : users.length === 0 ? (
                                 <TableRow>
                                     <TableCell colSpan={6} sx={{ textAlign: "center", py: 6, border: "none" }}>
-                                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#94a3b8", fontSize: 14 }}>
+                                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-tertiary)", fontSize: 14 }}>
                                             No users found.
                                         </Typography>
                                     </TableCell>
@@ -473,7 +473,7 @@ export default function UserManagementPage() {
                                             height: 60,
                                             "&:last-child td": { border: 0 },
                                             transition: "all 0.2s ease",
-                                            "&:hover": { backgroundColor: "#f9fafb", transform: "scale(1.005)" },
+                                            "&:hover": { backgroundColor: "var(--bg-subtle)", transform: "scale(1.005)" },
                                         }}
                                     >
                                         <TableCell sx={cellSx}>
@@ -492,10 +492,10 @@ export default function UserManagementPage() {
                                                     </Typography>
                                                 </Box>
                                                 <Box>
-                                                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 13, color: "#111827" }}>
+                                                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 13, color: "var(--text-primary)" }}>
                                                         {user.name}
                                                     </Typography>
-                                                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, color: "#94a3b8" }}>
+                                                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, color: "var(--text-tertiary)" }}>
                                                         {user.email}
                                                     </Typography>
                                                 </Box>
@@ -506,13 +506,13 @@ export default function UserManagementPage() {
 
                                         <TableCell sx={cellSx}><StatusBadge active={isActive} /></TableCell>
 
-                                        <TableCell sx={{ ...cellSx, color: "#6b7280" }}>
+                                        <TableCell sx={{ ...cellSx, color: "var(--text-secondary)" }}>
                                             {user.role === "child"
                                                 ? (user.username ? `@${user.username}` : "—")
                                                 : user.authProvider === "google" ? "Google" : "Local"}
                                         </TableCell>
 
-                                        <TableCell sx={{ ...cellSx, color: "#6b7280" }}>
+                                        <TableCell sx={{ ...cellSx, color: "var(--text-secondary)" }}>
                                             {formatDate(user.createdAt)}
                                         </TableCell>
 
@@ -522,7 +522,7 @@ export default function UserManagementPage() {
                                                     <IconButton
                                                         size="small"
                                                         onClick={() => setViewUserId(user._id)}
-                                                        sx={{ color: "#d1d5db", transition: "all 0.2s ease", "&:hover": { color: "#25AFF4", background: "#e8f7fe", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(37,175,244,0.15)" }, p: 0.75 }}
+                                                        sx={{ color: "var(--text-tertiary)", transition: "all 0.2s ease", "&:hover": { color: "#25AFF4", background: "rgba(37,175,244,0.1)", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(37,175,244,0.15)" }, p: 0.75 }}
                                                     >
                                                         <VisibilityIcon sx={{ fontSize: 16 }} />
                                                     </IconButton>
@@ -532,7 +532,7 @@ export default function UserManagementPage() {
                                                         <IconButton
                                                             size="small"
                                                             onClick={() => setStatusTarget(user)}
-                                                            sx={{ color: "#d1d5db", transition: "all 0.2s ease", "&:hover": { color: isActive ? "#f59e0b" : "#22c55e", background: isActive ? "#fffbeb" : "#f0fdf4", transform: "scale(1.05)", boxShadow: isActive ? "0 2px 8px rgba(245,158,11,0.15)" : "0 2px 8px rgba(34,197,94,0.15)" }, p: 0.75 }}
+                                                            sx={{ color: "var(--text-tertiary)", transition: "all 0.2s ease", "&:hover": { color: isActive ? "#f59e0b" : "#22c55e", background: isActive ? "rgba(245,158,11,0.1)" : "rgba(34,197,94,0.1)", transform: "scale(1.05)", boxShadow: isActive ? "0 2px 8px rgba(245,158,11,0.15)" : "0 2px 8px rgba(34,197,94,0.15)" }, p: 0.75 }}
                                                         >
                                                             {isActive ? <SuspendIcon sx={{ fontSize: 16 }} /> : <ActivateIcon sx={{ fontSize: 16 }} />}
                                                         </IconButton>
@@ -543,7 +543,7 @@ export default function UserManagementPage() {
                                                         <IconButton
                                                             size="small"
                                                             onClick={() => setDeleteTarget(user)}
-                                                            sx={{ color: "#d1d5db", transition: "all 0.2s ease", "&:hover": { color: "#FF5144", background: "#fef2f2", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(255,81,68,0.15)" }, p: 0.75 }}
+                                                            sx={{ color: "var(--text-tertiary)", transition: "all 0.2s ease", "&:hover": { color: "#FF5144", background: "rgba(255,81,68,0.1)", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(255,81,68,0.15)" }, p: 0.75 }}
                                                         >
                                                             <DeleteIcon sx={{ fontSize: 16 }} />
                                                         </IconButton>
@@ -559,12 +559,12 @@ export default function UserManagementPage() {
                 </TableContainer>
 
                 {total > 0 && (
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 3, py: 1.75, borderTop: "1px solid #f3f4f6", flexWrap: "wrap", gap: 1 }}>
-                        <Typography sx={{ color: "#9ca3af", fontSize: 13, fontFamily: "'Poppins', sans-serif" }}>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 3, py: 1.75, borderTop: "1px solid var(--border-light)", flexWrap: "wrap", gap: 1 }}>
+                        <Typography sx={{ color: "var(--text-tertiary)", fontSize: 13, fontFamily: "'Poppins', sans-serif" }}>
                             Showing{" "}
-                            <Box component="span" sx={{ fontWeight: 700, color: "#374151" }}>{users.length}</Box>
+                            <Box component="span" sx={{ fontWeight: 700, color: "var(--text-primary)" }}>{users.length}</Box>
                             {" "}of{" "}
-                            <Box component="span" sx={{ fontWeight: 700, color: "#374151" }}>{total}</Box>
+                            <Box component="span" sx={{ fontWeight: 700, color: "var(--text-primary)" }}>{total}</Box>
                             {" "}users
                         </Typography>
                         <Pagination
@@ -574,7 +574,7 @@ export default function UserManagementPage() {
                             shape="circular"
                             size="small"
                             sx={{
-                                "& .MuiPaginationItem-root": { fontSize: 13, transition: "all 0.2s ease", fontFamily: "'Poppins', sans-serif", "&:hover": { background: "#f3f4f6" } },
+                                "& .MuiPaginationItem-root": { fontSize: 13, transition: "all 0.2s ease", fontFamily: "'Poppins', sans-serif", "&:hover": { background: "var(--bg-hover)" } },
                                 "& .MuiPaginationItem-root.Mui-selected": { background: "#3b82f6", color: "white", borderRadius: "50%", "&:hover": { background: "#2563eb" } },
                             }}
                         />
@@ -588,19 +588,19 @@ export default function UserManagementPage() {
             {/* Suspend / Activate Confirmation */}
             <Dialog open={!!statusTarget} onClose={() => setStatusTarget(null)} maxWidth="xs" fullWidth TransitionComponent={Zoom}
                 PaperProps={{ sx: { borderRadius: "16px", boxShadow: "0 12px 40px rgba(0,0,0,0.1)" } }}>
-                <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 17, color: "#111827", pb: 1, borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 17, color: "var(--text-primary)", pb: 1, borderBottom: "1px solid var(--border-light)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     {(statusTarget?.isActive !== false) ? "Suspend User" : "Activate User"}
-                    <IconButton onClick={() => setStatusTarget(null)} size="small" sx={{ color: "#94a3b8" }}><CloseIcon fontSize="small" /></IconButton>
+                    <IconButton onClick={() => setStatusTarget(null)} size="small" sx={{ color: "var(--text-tertiary)" }}><CloseIcon fontSize="small" /></IconButton>
                 </DialogTitle>
                 <DialogContent sx={{ pt: "20px !important" }}>
-                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14, color: "#6b7280" }}>
+                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14, color: "var(--text-secondary)" }}>
                         {(statusTarget?.isActive !== false)
                             ? `Are you sure you want to suspend "${statusTarget?.name}"? They will be unable to log in.`
                             : `Reactivate "${statusTarget?.name}"? They will regain full access.`}
                     </Typography>
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
-                    <Button onClick={() => setStatusTarget(null)} sx={{ borderRadius: "999px", fontFamily: "'Poppins', sans-serif", fontWeight: 600, textTransform: "none", color: "#64748b" }}>
+                    <Button onClick={() => setStatusTarget(null)} sx={{ borderRadius: "999px", fontFamily: "'Poppins', sans-serif", fontWeight: 600, textTransform: "none", color: "var(--text-secondary)" }}>
                         Cancel
                     </Button>
                     <Button variant="contained" onClick={handleToggleStatus} disabled={togglingStatus}
@@ -614,19 +614,19 @@ export default function UserManagementPage() {
             {/* Delete Confirmation */}
             <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} maxWidth="xs" fullWidth TransitionComponent={Zoom}
                 PaperProps={{ sx: { borderRadius: "16px", boxShadow: "0 12px 40px rgba(0,0,0,0.1)" } }}>
-                <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 17, color: "#111827", pb: 1, borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 17, color: "var(--text-primary)", pb: 1, borderBottom: "1px solid var(--border-light)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     Delete User
-                    <IconButton onClick={() => setDeleteTarget(null)} size="small" sx={{ color: "#94a3b8" }}><CloseIcon fontSize="small" /></IconButton>
+                    <IconButton onClick={() => setDeleteTarget(null)} size="small" sx={{ color: "var(--text-tertiary)" }}><CloseIcon fontSize="small" /></IconButton>
                 </DialogTitle>
                 <DialogContent sx={{ pt: "20px !important" }}>
-                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14, color: "#6b7280" }}>
-                        Are you sure you want to permanently delete <Box component="strong" sx={{ color: "#111827" }}>"{deleteTarget?.name}"</Box>?
+                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14, color: "var(--text-secondary)" }}>
+                        Are you sure you want to permanently delete <Box component="strong" sx={{ color: "var(--text-primary)" }}>"{deleteTarget?.name}"</Box>?
                         {deleteTarget?.role === "parent" && " This will also delete all their children and associated data."}
                         {" "}This action cannot be undone.
                     </Typography>
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
-                    <Button onClick={() => setDeleteTarget(null)} sx={{ borderRadius: "999px", fontFamily: "'Poppins', sans-serif", fontWeight: 600, textTransform: "none", color: "#64748b" }}>
+                    <Button onClick={() => setDeleteTarget(null)} sx={{ borderRadius: "999px", fontFamily: "'Poppins', sans-serif", fontWeight: 600, textTransform: "none", color: "var(--text-secondary)" }}>
                         Cancel
                     </Button>
                     <Button variant="contained" onClick={handleDelete} disabled={deleting}

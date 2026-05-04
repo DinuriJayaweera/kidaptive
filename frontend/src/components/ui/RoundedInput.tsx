@@ -4,7 +4,7 @@ import type { TextFieldProps } from "@mui/material";
 const StyledTextField = styled(TextField)(({ error }) => ({
     "& .MuiOutlinedInput-root": {
         borderRadius: "9999px",
-        backgroundColor: "#f8fafc",
+        backgroundColor: "var(--bg-subtle, #f8fafc)",
         transition: "all 0.25s ease-in-out",
         boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
 
@@ -15,7 +15,7 @@ const StyledTextField = styled(TextField)(({ error }) => ({
         },
 
         "&:hover": {
-            backgroundColor: "#f0f6ff",
+            backgroundColor: "var(--bg-hover, #f0f6ff)",
             transform: "translateY(-1px)",
             boxShadow: "0 3px 12px rgba(58,181,230,0.08)",
             "& fieldset": {
@@ -24,7 +24,7 @@ const StyledTextField = styled(TextField)(({ error }) => ({
         },
 
         "&.Mui-focused": {
-            backgroundColor: "#fff",
+            backgroundColor: "var(--card-bg, #fff)",
             transform: "translateY(-1px)",
             boxShadow: error
                 ? "0 0 0 3px rgba(231,76,60,0.15), 0 4px 16px rgba(231,76,60,0.08)"
@@ -36,7 +36,7 @@ const StyledTextField = styled(TextField)(({ error }) => ({
         },
 
         "&.Mui-disabled": {
-            backgroundColor: "#f0f0f0",
+            backgroundColor: "var(--border-color, #f0f0f0)",
             opacity: 0.7,
             "& fieldset": { borderColor: "rgba(0,0,0,0.06)" },
         },

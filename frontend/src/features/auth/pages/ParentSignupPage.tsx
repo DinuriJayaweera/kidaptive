@@ -119,7 +119,7 @@ export default function ParentSignupPage() {
     });
 
     return (
-        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: { xs: "flex-start", md: "center" }, position: "relative", py: { xs: 10, md: 0 } }}>
+        <Box sx={{ minHeight: "100vh", background: "var(--landing-hero-bg, linear-gradient(135deg,#e8f4fd,#f0f6ff))", display: "flex", alignItems: { xs: "flex-start", md: "center" }, position: "relative", py: { xs: 10, md: 0 } }}>
             <AuthHeader />
 
             <Container maxWidth="lg" sx={{ pt: { xs: 8, md: 0 } }}>
@@ -127,10 +127,10 @@ export default function ParentSignupPage() {
                     {/* Left — illustration */}
                     <Grid size={{ xs: 12, md: 6 }} sx={{ textAlign: "center", display: { xs: "none", md: "block" } }}>
                         <AnimatedPage delay={100}>
-                            <Typography variant="h4" sx={{ fontWeight: 800, color: "#1a1a2e", mb: 2 }}>
+                            <Typography variant="h4" sx={{ fontWeight: 800, color: "var(--landing-text-main, #1a1a2e)", mb: 2 }}>
                                 Empower Your Child's English Journey
                             </Typography>
-                            <Typography variant="body1" sx={{ color: "#666", mb: 4, maxWidth: 380, mx: "auto", lineHeight: 1.8 }}>
+                            <Typography variant="body1" sx={{ color: "var(--landing-text-muted, #666)", mb: 4, maxWidth: 380, mx: "auto", lineHeight: 1.8 }}>
                                 Monitor progress and celebrate every milestone. It's safe, parent-controlled, and smart.
                             </Typography>
                             <Box component="img" src={kipImg} alt="Kip mascot" sx={{ width: 260, mx: "auto" }} />
@@ -140,13 +140,13 @@ export default function ParentSignupPage() {
                     {/* Right — form */}
                     <Grid size={{ xs: 12, md: 6 }}>
                         <AnimatedPage shake={shakeForm}>
-                            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 5 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", maxWidth: 460, mx: "auto" }}>
+                            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ backgroundColor: "var(--card-bg, #fff)", borderRadius: 5, p: { xs: 3, md: 5 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", maxWidth: 460, mx: "auto" }}>
                                 <AnimatedItem index={0}>
                                     <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
                                         <HowToRegIcon sx={{ color: "#3ab5e6", fontSize: 28 }} />
                                         <Typography variant="h5" sx={{ fontWeight: 800 }}>Create Parent Account</Typography>
                                     </Box>
-                                    <Typography variant="body2" sx={{ color: "#888", mb: 3 }}>Join the Kidaptive family today!</Typography>
+                                    <Typography variant="body2" sx={{ color: "var(--text-secondary, #888)", mb: 3 }}>Join the Kidaptive family today!</Typography>
                                 </AnimatedItem>
 
                                 {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>{error}</Alert>}
@@ -211,7 +211,7 @@ export default function ParentSignupPage() {
                                 </AnimatedItem>
 
                                 <AnimatedItem index={9}>
-                                    <Typography variant="body2" sx={{ textAlign: "center", mt: 2.5, color: "#888" }}>
+                                    <Typography variant="body2" sx={{ textAlign: "center", mt: 2.5, color: "var(--text-secondary, #888)" }}>
                                         Already have an account?{" "}
                                         <Box component={Link} to="/auth/login" sx={{ color: "#e74c3c", fontWeight: 600, textDecoration: "none", transition: "all 0.2s", "&:hover": { textDecoration: "underline" } }}>
                                             <LoginIcon sx={{ fontSize: 14, verticalAlign: "middle", mr: 0.3 }} />Log in

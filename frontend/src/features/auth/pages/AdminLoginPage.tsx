@@ -55,7 +55,7 @@ export default function AdminLoginPage() {
     };
 
     return (
-        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: { xs: "flex-start", md: "center" }, position: "relative", py: { xs: 10, md: 0 } }}>
+        <Box sx={{ minHeight: "100vh", background: "var(--landing-hero-bg, linear-gradient(135deg,#e8f4fd,#f0f6ff))", display: "flex", alignItems: { xs: "flex-start", md: "center" }, position: "relative", py: { xs: 10, md: 0 } }}>
             <AuthHeader />
 
             <Container maxWidth="lg" sx={{ pt: { xs: 8, md: 0 } }}>
@@ -64,10 +64,10 @@ export default function AdminLoginPage() {
                     <Grid size={{ xs: 12, md: 6 }} sx={{ textAlign: "center", display: { xs: "none", md: "block" } }}>
                         <AnimatedPage delay={100}>
                             <Box component="img" src={kipImg} alt="Kip mascot" sx={{ width: 280, mx: "auto", mb: 3 }} />
-                            <Typography variant="h4" sx={{ fontWeight: 800, color: "#1a1a2e", mb: 1 }}>
+                            <Typography variant="h4" sx={{ fontWeight: 800, color: "var(--landing-text-main, #1a1a2e)", mb: 1 }}>
                                 System Administration
                             </Typography>
-                            <Typography variant="body1" sx={{ color: "#666", maxWidth: 380, mx: "auto", lineHeight: 1.8 }}>
+                            <Typography variant="body1" sx={{ color: "var(--landing-text-muted, #666)", maxWidth: 380, mx: "auto", lineHeight: 1.8 }}>
                                 Secure access to Kidaptive's backend management console.
                             </Typography>
                         </AnimatedPage>
@@ -76,13 +76,13 @@ export default function AdminLoginPage() {
                     {/* Right — form */}
                     <Grid size={{ xs: 12, md: 6 }}>
                         <AnimatedPage shake={shakeForm}>
-                            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 5 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", maxWidth: 440, mx: "auto" }}>
+                            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ backgroundColor: "var(--card-bg, #fff)", borderRadius: 5, p: { xs: 3, md: 5 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", maxWidth: 440, mx: "auto" }}>
                                 <AnimatedItem index={0}>
                                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, mb: 0.5 }}>
                                         <LoginIcon sx={{ color: "#3ab5e6", fontSize: 28 }} />
                                         <Typography variant="h5" sx={{ fontWeight: 800 }}>Admin Login</Typography>
                                     </Box>
-                                    <Typography variant="body2" sx={{ color: "#888", textAlign: "center", mb: 3 }}>
+                                    <Typography variant="body2" sx={{ color: "var(--text-secondary, #888)", textAlign: "center", mb: 3 }}>
                                         Authenticate to proceed
                                     </Typography>
                                 </AnimatedItem>

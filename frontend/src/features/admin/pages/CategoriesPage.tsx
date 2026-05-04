@@ -71,7 +71,7 @@ function LinkedItemsCell({ cat }: { cat: Category }) {
           fontFamily: "'Poppins', sans-serif",
           fontWeight: 600,
           fontSize: 15,
-          color: "#1a1a2e",
+          color: "var(--text-primary)",
           cursor: "default",
           borderBottom: "1px dashed #cbd5e1",
           pb: "1px",
@@ -93,23 +93,23 @@ function LinkedItemsCell({ cat }: { cat: Category }) {
             py: 1.5,
             borderRadius: "12px",
             zIndex: 100,
-            background: "#fff",
+            background: "var(--card-bg)",
             boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
             pointerEvents: "none",
           }}
         >
-          <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, color: "#64748b", mb: 0.5 }}>
+          <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, color: "var(--text-secondary)", mb: 0.5 }}>
             Breakdown
           </Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
             <Box sx={{ width: 8, height: 8, borderRadius: "50%", background: "#25AFF4", flexShrink: 0 }} />
-            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "#1a1a2e", fontWeight: 500 }}>
+            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "var(--text-primary)", fontWeight: 500 }}>
               {cat.placementCount} Placement Questions
             </Typography>
           </Box>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Box sx={{ width: 8, height: 8, borderRadius: "50%", background: "#8b5cf6", flexShrink: 0 }} />
-            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "#1a1a2e", fontWeight: 500 }}>
+            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "var(--text-primary)", fontWeight: 500 }}>
               {cat.quizCount} Quizzes
             </Typography>
           </Box>
@@ -132,7 +132,11 @@ interface CategoryModalProps {
   readOnly?: boolean;
 }
 
+import { useAdminTheme } from "../context/AdminThemeContext";
+
 function CategoryModal({ open, onClose, onSaved, editing, readOnly = false }: CategoryModalProps) {
+  const { mode } = useAdminTheme();
+  const isDark = mode === "dark";
   const [name, setName] = useState("");
   const [status, setStatus] = useState<"active" | "pending">("pending");
   const [ageGroups, setAgeGroups] = useState<string[]>([]);
@@ -195,16 +199,16 @@ function CategoryModal({ open, onClose, onSaved, editing, readOnly = false }: Ca
           fontFamily: "'Poppins', sans-serif",
           fontWeight: 700,
           fontSize: 17,
-          color: "#1a1a2e",
+          color: "var(--text-primary)",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
           pb: 1,
-          borderBottom: "1px solid #f1f5f9",
+          borderBottom: "1px solid var(--border-light)",
         }}
       >
         {readOnly ? "Category Details" : (editing ? "Edit Category" : "+ Add Category")}
-        <IconButton onClick={onClose} size="small" sx={{ color: "#94a3b8" }}>
+        <IconButton onClick={onClose} size="small" sx={{ color: "var(--text-tertiary)" }}>
           <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
@@ -236,7 +240,7 @@ function CategoryModal({ open, onClose, onSaved, editing, readOnly = false }: Ca
               fontFamily: "'Poppins', sans-serif",
               fontSize: 12,
               fontWeight: 600,
-              color: "#64748b",
+              color: "var(--text-secondary)",
               letterSpacing: "0.3px",
               mb: 1,
               display: "block",
@@ -255,9 +259,9 @@ function CategoryModal({ open, onClose, onSaved, editing, readOnly = false }: Ca
               let selectedColor = '#fff';
 
               if (selected) {
-                if (is5to6) { selectedBg = '#fee2e2'; selectedColor = '#dc2626'; }
-                else if (is7to8) { selectedBg = '#fef9c3'; selectedColor = '#a16207'; }
-                else if (is9to10) { selectedBg = '#dcfce3'; selectedColor = '#15803d'; }
+                if (is5to6) { selectedBg = isDark ? 'rgba(239,68,68,0.15)' : '#fee2e2'; selectedColor = '#dc2626'; }
+                else if (is7to8) { selectedBg = isDark ? 'rgba(245,158,11,0.15)' : '#fef9c3'; selectedColor = '#a16207'; }
+                else if (is9to10) { selectedBg = isDark ? 'rgba(34,197,94,0.15)' : '#dcfce3'; selectedColor = '#15803d'; }
               }
 
               if (readOnly && selected) {
@@ -284,12 +288,12 @@ function CategoryModal({ open, onClose, onSaved, editing, readOnly = false }: Ca
                     alignItems: "center",
                     justifyContent: "center",
                     border: "1px solid",
-                    backgroundColor: selected ? selectedBg : "#f8fafc",
-                    color: selected ? selectedColor : "#64748b",
-                    borderColor: selected ? selectedBg : "#e2e8f0",
+                    backgroundColor: selected ? selectedBg : (isDark ? "var(--bg-subtle)" : "#f8fafc"),
+                    color: selected ? selectedColor : "var(--text-secondary)",
+                    borderColor: selected ? selectedBg : "var(--border-color)",
                     boxShadow: selected ? "0 4px 12px rgba(0,0,0,0.05)" : "none",
                     "&:hover": {
-                      backgroundColor: selected ? selectedBg : "#f1f5f9",
+                      backgroundColor: selected ? selectedBg : (isDark ? "var(--bg-hover)" : "#f1f5f9"),
                       transform: readOnly ? "none" : "translateY(-1px)",
                     }
                   }}
@@ -325,7 +329,7 @@ function CategoryModal({ open, onClose, onSaved, editing, readOnly = false }: Ca
             display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2
           }}>
             <Box>
-              <Typography sx={{ fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <Typography sx={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Placement Qs
               </Typography>
               <Typography sx={{ fontSize: 18, fontWeight: 700, color: "#25AFF4" }}>
@@ -333,7 +337,7 @@ function CategoryModal({ open, onClose, onSaved, editing, readOnly = false }: Ca
               </Typography>
             </Box>
             <Box>
-              <Typography sx={{ fontSize: 11, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              <Typography sx={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Quizzes
               </Typography>
               <Typography sx={{ fontSize: 18, fontWeight: 700, color: "#8b5cf6" }}>
@@ -349,7 +353,7 @@ function CategoryModal({ open, onClose, onSaved, editing, readOnly = false }: Ca
           onClick={onClose}
           sx={{
             fontFamily: "'Poppins', sans-serif",
-            color: "#94a3b8",
+            color: "var(--text-tertiary)",
             textTransform: "none",
             borderRadius: "999px",
           }}
@@ -398,17 +402,17 @@ function DeleteDialog({ open, categoryName, onClose, onConfirm, loading }: Delet
       TransitionComponent={Zoom}
       PaperProps={{ sx: { borderRadius: "16px" } }}
     >
-      <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, color: "#1a1a2e", pb: 1 }}>
+      <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, color: "var(--text-primary)", pb: 1 }}>
         Delete Category?
       </DialogTitle>
       <DialogContent>
-        <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#64748b", fontSize: 14 }}>
-          Are you sure you want to delete <Box component="strong" sx={{ color: "#1a1a2e" }}>"{categoryName}"</Box>?
+        <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontSize: 14 }}>
+          Are you sure you want to delete <Box component="strong" sx={{ color: "var(--text-primary)" }}>"{categoryName}"</Box>?
           {" "}This action cannot be undone.
         </Typography>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
-        <Button onClick={onClose} sx={{ fontFamily: "'Poppins', sans-serif", textTransform: "none", borderRadius: "10px", color: "#64748b" }}>
+        <Button onClick={onClose} sx={{ fontFamily: "'Poppins', sans-serif", textTransform: "none", borderRadius: "10px", color: "var(--text-secondary)" }}>
           Cancel
         </Button>
         <Button
@@ -489,7 +493,7 @@ export default function CategoriesPage() {
             sx={{
               fontFamily: "'Baloo 2', cursive",
               fontWeight: 700,
-              color: "#111827",
+              color: "var(--text-primary)",
               letterSpacing: "-0.02em",
               fontSize: { xs: "1.5rem", md: "1.85rem" },
               mb: 0.5,
@@ -497,7 +501,7 @@ export default function CategoriesPage() {
           >
             Categories Management
           </Typography>
-          <Typography sx={{ color: "#6b7280", fontSize: { xs: "0.875rem", md: "0.95rem" }, fontFamily: "'Poppins', sans-serif" }}>
+          <Typography sx={{ color: "var(--text-secondary)", fontSize: { xs: "0.875rem", md: "0.95rem" }, fontFamily: "'Poppins', sans-serif" }}>
             Skill Groups and Learning Tracks
           </Typography>
         </Box>
@@ -532,7 +536,7 @@ export default function CategoriesPage() {
           borderRadius: "16px",
           overflow: "hidden",
           boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
-          background: "#fff",
+          background: "var(--card-bg)",
           mb: 3,
         }}
       >
@@ -543,7 +547,7 @@ export default function CategoriesPage() {
         ) : categories.length === 0 ? (
           <Box sx={{ p: 6, textAlign: "center" }}>
             <CategoryIcon sx={{ fontSize: 40, color: "#e2e8f0", mb: 1 }} />
-            <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#94a3b8", fontWeight: 500 }}>
+            <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-tertiary)", fontWeight: 500 }}>
               No categories yet. Add one to get started.
             </Typography>
           </Box>
@@ -551,17 +555,17 @@ export default function CategoriesPage() {
           <TableContainer sx={{ overflowX: { xs: "auto", md: "hidden" } }}>
             <Table sx={{ minWidth: { xs: 320, md: "100%" }, tableLayout: "fixed" }}>
               <TableHead>
-                <TableRow sx={{ background: "#f9fafb", height: 60 }}>
-                  <TableCell sx={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px", borderBottom: "1px solid #f3f4f6", padding: "12px 16px", verticalAlign: "middle", width: "100%" }}>
+                <TableRow sx={{ background: "var(--bg-subtle)", height: 60 }}>
+                  <TableCell sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px", borderBottom: "1px solid var(--border-light)", padding: "12px 16px", verticalAlign: "middle", width: "100%" }}>
                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-start", height: "100%" }}>CATEGORY NAME</Box>
                   </TableCell>
-                  <TableCell sx={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px", borderBottom: "1px solid #f3f4f6", padding: "12px 16px", verticalAlign: "middle", width: 140, textAlign: "center" }}>
+                  <TableCell sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px", borderBottom: "1px solid var(--border-light)", padding: "12px 16px", verticalAlign: "middle", width: 140, textAlign: "center" }}>
                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>LINKED ITEMS</Box>
                   </TableCell>
-                  <TableCell sx={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px", borderBottom: "1px solid #f3f4f6", padding: "12px 16px", verticalAlign: "middle", width: 160, textAlign: "center" }}>
+                  <TableCell sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px", borderBottom: "1px solid var(--border-light)", padding: "12px 16px", verticalAlign: "middle", width: 160, textAlign: "center" }}>
                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>STATUS</Box>
                   </TableCell>
-                  <TableCell sx={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px", borderBottom: "1px solid #f3f4f6", padding: "12px 16px", verticalAlign: "middle", width: 120, textAlign: "center" }}>
+                  <TableCell sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px", borderBottom: "1px solid var(--border-light)", padding: "12px 16px", verticalAlign: "middle", width: 120, textAlign: "center" }}>
                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>ACTIONS</Box>
                   </TableCell>
                 </TableRow>
@@ -576,29 +580,29 @@ export default function CategoriesPage() {
                       "&:last-child td": { border: 0 },
                       transition: "all 0.2s ease",
                       "&:hover": {
-                        backgroundColor: "#f9fafb",
+                        backgroundColor: "var(--bg-subtle)",
                         transform: "scale(1.005)",
                       },
                     }}
                   >
-                    <TableCell sx={{ padding: "12px 16px", borderBottom: "1px solid #f3f4f6", verticalAlign: "middle" }}>
+                    <TableCell sx={{ padding: "12px 16px", borderBottom: "1px solid var(--border-light)", verticalAlign: "middle" }}>
                       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "flex-start", height: "100%" }}>
-                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: { xs: 13, md: 14 }, color: "#374151", fontWeight: 500 }}>
+                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: { xs: 13, md: 14 }, color: "var(--text-primary)", fontWeight: 500 }}>
                           {cat.name}
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell align="center" sx={{ padding: "12px 16px", borderBottom: "1px solid #f3f4f6", verticalAlign: "middle" }}>
+                    <TableCell align="center" sx={{ padding: "12px 16px", borderBottom: "1px solid var(--border-light)", verticalAlign: "middle" }}>
                       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
                         <LinkedItemsCell cat={cat} />
                       </Box>
                     </TableCell>
-                    <TableCell align="center" sx={{ padding: "12px 16px", borderBottom: "1px solid #f3f4f6", verticalAlign: "middle" }}>
+                    <TableCell align="center" sx={{ padding: "12px 16px", borderBottom: "1px solid var(--border-light)", verticalAlign: "middle" }}>
                       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
                         <Badge type="status" label={cat.status} />
                       </Box>
                     </TableCell>
-                    <TableCell align="center" sx={{ padding: "12px 16px", borderBottom: "1px solid #f3f4f6", verticalAlign: "middle" }}>
+                    <TableCell align="center" sx={{ padding: "12px 16px", borderBottom: "1px solid var(--border-light)", verticalAlign: "middle" }}>
                       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 0.5, height: "100%" }}>
                         <Tooltip title="View" placement="top" arrow>
                           <IconButton
@@ -660,8 +664,8 @@ export default function CategoriesPage() {
             elevation={0}
             sx={{
               borderRadius: "16px",
-              border: "1px solid #e8ecf1",
-              background: "#fff",
+              border: "1px solid var(--border-color)",
+              background: "var(--card-bg)",
               p: 3,
               height: "100%",
             }}
@@ -672,10 +676,10 @@ export default function CategoriesPage() {
                 <LayersIcon sx={{ fontSize: 20, color: "#3b82f6" }} />
               </Box>
               <Box>
-                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 15, color: "#1a1a2e", lineHeight: 1.2 }}>
+                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 15, color: "var(--text-primary)", lineHeight: 1.2 }}>
                   Levels
                 </Typography>
-                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, color: "#94a3b8" }}>
+                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, color: "var(--text-tertiary)" }}>
                   Main difficulty stages
                 </Typography>
               </Box>
@@ -696,7 +700,7 @@ export default function CategoriesPage() {
                   <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, fontWeight: 600, color: "#cbd5e1", minWidth: 24 }}>
                     {level.num}
                   </Typography>
-                  <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14, fontWeight: 600, color: "#1a1a2e" }}>
+                  <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>
                     {level.label}
                   </Typography>
                 </Box>
@@ -711,8 +715,8 @@ export default function CategoriesPage() {
             elevation={0}
             sx={{
               borderRadius: "16px",
-              border: "1px solid #e8ecf1",
-              background: "#fff",
+              border: "1px solid var(--border-color)",
+              background: "var(--card-bg)",
               p: 3,
               height: "100%",
             }}
@@ -723,10 +727,10 @@ export default function CategoriesPage() {
                 <DifficultyIcon sx={{ fontSize: 20, color: "#f97316" }} />
               </Box>
               <Box>
-                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 15, color: "#1a1a2e", lineHeight: 1.2 }}>
+                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 15, color: "var(--text-primary)", lineHeight: 1.2 }}>
                   Difficulty
                 </Typography>
-                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, color: "#94a3b8" }}>
+                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, color: "var(--text-tertiary)" }}>
                   Granular complexity levels
                 </Typography>
               </Box>

@@ -137,7 +137,7 @@
 }
 
 [data-theme="dark"] .MuiTypography-root {
-    color: var(--text-primary);
+    color: var(--text-primary) !important;
 }
 
 [data-theme="dark"] .MuiAlert-root {
@@ -188,4 +188,177 @@
 
 [data-theme="dark"] .stat-icon-wrap {
     box-shadow: inset 0 2px 4px rgba(255,255,255,0.05);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN PAGES – COMPREHENSIVE DARK MODE OVERRIDES
+   MUI sx props inject inline styles; we need !important to win.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Generic MUI component overrides ────────────────────────── */
+[data-theme="dark"] .MuiTableCell-root {
+    color: var(--text-primary) !important;
+    border-bottom-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .MuiTableCell-head {
+    color: var(--text-secondary) !important;
+    background: var(--bg-subtle) !important;
+}
+
+[data-theme="dark"] .MuiTableRow-root:hover {
+    background-color: var(--bg-subtle) !important;
+}
+
+[data-theme="dark"] .MuiChip-root {
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .MuiChip-outlined {
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .MuiPaginationItem-root {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .MuiPaginationItem-root:hover {
+    background: var(--bg-hover) !important;
+}
+
+[data-theme="dark"] .MuiPaginationItem-root.Mui-selected {
+    background: #3b82f6 !important;
+    color: #fff !important;
+}
+
+[data-theme="dark"] .MuiDialog-paper {
+    background-color: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .MuiDialogTitle-root {
+    color: var(--text-primary) !important;
+    border-bottom-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .MuiDialogContent-root {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .MuiFormLabel-root {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .MuiTooltip-tooltip {
+    background: var(--card-bg) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .MuiTooltip-arrow::before {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color);
+}
+
+/* MUI Select / Menu dark */
+[data-theme="dark"] .MuiMenu-paper {
+    background-color: var(--card-bg) !important;
+}
+
+[data-theme="dark"] .MuiMenuItem-root {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .MuiMenuItem-root:hover {
+    background-color: var(--bg-hover) !important;
+}
+
+/* ── Admin content area ─────────────────────────────────────── */
+[data-theme="dark"] .admin-content {
+    background: var(--bg-main) !important;
+}
+
+/* ── Admin header dark ──────────────────────────────────────── */
+[data-theme="dark"] .admin-header {
+    background: var(--header-bg) !important;
+    border-bottom-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .admin-header__avatar {
+    box-shadow: 0 0 0 2px var(--border-color);
+}
+
+/* ── MUI TextField / search inputs inside admin pages ─────── */
+[data-theme="dark"] .MuiOutlinedInput-root {
+    background-color: var(--bg-subtle) !important;
+}
+
+[data-theme="dark"] .MuiOutlinedInput-root input::placeholder {
+    color: var(--text-tertiary) !important;
+    opacity: 1 !important;
+}
+
+/* ── Stat cards (used across Performance, User Mgmt, Dashboard, etc.) ── */
+[data-theme="dark"] .MuiPaper-root[class] {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* ── Admin settings page specific ───────────────────────────── */
+[data-theme="dark"] .aps-container,
+[data-theme="dark"] .ap-container {
+    color: var(--text-primary);
+}
+
+/* ── Dark borders for admin layout ──────────────────────────── */
+[data-theme="dark"] .MuiDivider-root {
+    border-color: var(--border-color) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ADMIN CONTENT – MUI inline sx background/color overrides
+   Because sx={{background:"#fff"}} creates inline styles, we
+   need the admin-content wrapper + !important to override them.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Force all MuiBox-root inside admin-content with inline #fff → dark */
+[data-theme="dark"] .admin-content .MuiBox-root {
+    --_box-bg-override: 1; /* marker only */
+}
+
+/* Custom tooltip popover (recharts or manual hover) in admin */
+[data-theme="dark"] .admin-content .MuiBox-root[class] {
+    border-color: var(--border-color);
+}
+
+/* ── Sidebar title dark ─────────────────────────────────────── */
+[data-theme="dark"] .admin-sidebar__title {
+    color: var(--text-primary) !important;
+}
+
+/* ── Chip with filled bg (category chip etc.) ─────────────── */
+[data-theme="dark"] .MuiChip-filled {
+    background-color: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+}
+
+/* ── Select dropdown value ────────────────────────────────── */
+[data-theme="dark"] .MuiSelect-select {
+    color: var(--text-primary) !important;
+}
+
+/* ── MUI Button text ──────────────────────────────────────── */
+[data-theme="dark"] .MuiButton-text {
+    color: var(--text-secondary) !important;
+}
+
+/* ── Alert root in dark (keep alert-specific colors) ──────── */
+[data-theme="dark"] .MuiAlert-root .MuiTypography-root {
+    color: inherit !important;
+}
+
+/* ── MUI Switch track dark ────────────────────────────────── */
+[data-theme="dark"] .MuiSwitch-track {
+    background-color: var(--bg-hover) !important;
 }

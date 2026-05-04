@@ -289,7 +289,7 @@ export default function Navbar() {
                   py: 1.5,
                   transition: "all 0.2s ease",
                   "&:hover": {
-                    backgroundColor: "#E8F6FE",
+                    backgroundColor: "var(--bg-hover, #E8F6FE)",
                     pl: 3,
                   },
                 }}

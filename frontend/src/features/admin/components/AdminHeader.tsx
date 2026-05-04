@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { NotificationsNoneOutlined as BellIcon, Menu as MenuIcon } from "@mui/icons-material";
 import { adminNavSections } from "../navigation/adminNavConfig";
 import { AppBar, Toolbar, IconButton, Box } from "@mui/material";
@@ -11,21 +11,23 @@ interface AdminHeaderProps {
 
 export default function AdminHeader({ userInitials, onDrawerToggle }: AdminHeaderProps) {
     const { pathname } = useLocation();
+    const navigate = useNavigate();
 
-    // Derive breadcrumb from current path
     const currentNav = adminNavSections
         .flatMap((s) => s.items)
         .find((item) => pathname.startsWith(item.path));
-    const pageLabel = currentNav?.label === "Dashboard" ? "Overview" : (currentNav?.label ?? "Overview");
+
+    let pageLabel = currentNav?.label === "Dashboard" ? "Overview" : (currentNav?.label ?? "Overview");
+    if (pathname === "/admin/profile") pageLabel = "Profile";
 
     return (
-        <AppBar 
-            position="sticky" 
+        <AppBar
+            position="sticky"
             elevation={0}
             sx={{
-                background: "#ffffff",
-                borderBottom: "1px solid #e8ecf1",
-                color: "#1a1a2e",
+                background: "var(--header-bg, #ffffff)",
+                borderBottom: "1px solid var(--border-color, #e8ecf1)",
+                color: "var(--text-primary, #1a1a2e)",
                 zIndex: (theme) => theme.zIndex.drawer - 1,
             }}
         >
@@ -36,7 +38,7 @@ export default function AdminHeader({ userInitials, onDrawerToggle }: AdminHeade
                         aria-label="open drawer"
                         edge="start"
                         onClick={onDrawerToggle}
-                        sx={{ mr: 1, display: { md: "none" }, color: "#5a607f" }}
+                        sx={{ mr: 1, display: { md: "none" } }}
                     >
                         <MenuIcon />
                     </IconButton>
@@ -54,7 +56,16 @@ export default function AdminHeader({ userInitials, onDrawerToggle }: AdminHeade
                         <BellIcon style={{ fontSize: 22 }} />
                         <span className="admin-header__notification-dot" />
                     </button>
-                    <div className="admin-header__avatar">{userInitials}</div>
+                    <div
+                        className="admin-header__avatar"
+                        onClick={() => navigate("/admin/profile")}
+                        title="My Profile"
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => e.key === "Enter" && navigate("/admin/profile")}
+                    >
+                        {userInitials}
+                    </div>
                 </div>
             </Toolbar>
         </AppBar>

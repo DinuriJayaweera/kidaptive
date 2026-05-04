@@ -279,4 +279,24 @@ body, html {
     /* content itself shouldn't restrict overflow since wrapper scrolls it now */
 }
 
+/* ─── Clickable brand ────────────────────────────────────── */
+.admin-sidebar__brand--clickable {
+    cursor: pointer;
+}
+
+/* ─── Performance circular SVG ───────────────────────────── */
+.perf-circular-svg {
+    transform: rotate(-90deg);
+}
+
+/* ─── User management empty value placeholder ────────────── */
+.um-empty-value {
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .um-empty-value {
+    color: #475569;
+}
+
+
 

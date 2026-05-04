@@ -17,15 +17,15 @@ function StatCard({ icon, label, value, bg, suffix = "" }: {
     icon: React.ReactNode; label: string; value: number; bg: string; suffix?: string;
 }) {
     return (
-        <Paper elevation={0} sx={{ borderRadius: "16px", p: 2.5, background: "#fff", border: "1px solid #e8ecf1", display: "flex", alignItems: "center", gap: 2, transition: "box-shadow 0.2s, transform 0.2s", "&:hover": { boxShadow: "0 4px 20px rgba(0,0,0,0.06)", transform: "translateY(-2px)" } }}>
+        <Paper elevation={0} sx={{ borderRadius: "16px", p: 2.5, background: "var(--card-bg)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", gap: 2, transition: "box-shadow 0.2s, transform 0.2s", "&:hover": { boxShadow: "0 4px 20px rgba(0,0,0,0.06)", transform: "translateY(-2px)" } }}>
             <Box sx={{ width: 48, height: 48, borderRadius: "50%", background: bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 {icon}
             </Box>
             <Box>
-                <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontSize: 11, fontWeight: 600, mb: 0.4, textTransform: "uppercase", letterSpacing: "0.4px" }}>
+                <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontSize: 11, fontWeight: 600, mb: 0.4, textTransform: "uppercase", letterSpacing: "0.4px" }}>
                     {label}
                 </Typography>
-                <Typography sx={{ fontFamily: "'Baloo 2', cursive", color: "#111827", fontWeight: 800, fontSize: 26, lineHeight: 1 }}>
+                <Typography sx={{ fontFamily: "'Baloo 2', cursive", color: "var(--text-primary)", fontWeight: 800, fontSize: 26, lineHeight: 1 }}>
                     {value.toLocaleString()}{suffix}
                 </Typography>
             </Box>
@@ -37,8 +37,8 @@ function StatCard({ icon, label, value, bg, suffix = "" }: {
 function CustomTooltip({ active, payload, label }: any) {
     if (!active || !payload?.length) return null;
     return (
-        <Box sx={{ background: "#fff", border: "1px solid #e8ecf1", borderRadius: "10px", p: 1.5, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
-            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, fontWeight: 600, color: "#6b7280", mb: 0.5 }}>
+        <Box sx={{ background: "var(--card-bg)", border: "1px solid var(--border-color)", borderRadius: "10px", p: 1.5, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }}>
+            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", mb: 0.5 }}>
                 Age {label}
             </Typography>
             <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14, fontWeight: 700, color: "#25AFF4" }}>
@@ -53,10 +53,9 @@ const BAR_COLORS = ["#25AFF4", "#5bc8f7", "#96dffb"];
 // ── Pass Rate Badge ────────────────────────────────────────────────────────────
 function PassRateBadge({ rate }: { rate: number }) {
     const color = rate >= 75 ? "#15803d" : rate >= 50 ? "#a16207" : "#dc2626";
-    const border = rate >= 75 ? "#bbf7d0" : rate >= 50 ? "#fde68a" : "#fecaca";
-    const bg = rate >= 75 ? "#f0fdf4" : rate >= 50 ? "#fefce8" : "#fef2f2";
+    const bg = rate >= 75 ? "rgba(34,197,94,0.12)" : rate >= 50 ? "rgba(234,179,8,0.12)" : "rgba(239,68,68,0.12)";
     return (
-        <Box sx={{ px: 1, py: 0.4, borderRadius: "6px", background: bg, border: `1px solid ${border}`, display: "inline-flex", alignItems: "center", whiteSpace: "nowrap" }}>
+        <Box sx={{ px: 1, py: 0.4, borderRadius: "6px", background: bg, border: "1px solid var(--border-color)", display: "inline-flex", alignItems: "center", whiteSpace: "nowrap" }}>
             <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 10, fontWeight: 700, color, textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Pass Rate {rate}%
             </Typography>
@@ -71,7 +70,7 @@ function CircularScore({ score }: { score: number }) {
     const dash = (score / 100) * circ;
     return (
         <Box sx={{ position: "relative", width: 140, height: 140, mx: "auto" }}>
-            <svg width="140" height="140" style={{ transform: "rotate(-90deg)" }}>
+            <svg width="140" height="140" className="perf-circular-svg">
                 <circle cx="70" cy="70" r={r} fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="10" />
                 <circle cx="70" cy="70" r={r} fill="none" stroke="#fff" strokeWidth="10"
                     strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" />
@@ -92,19 +91,19 @@ function CircularScore({ score }: { score: number }) {
 function WeakCard({ name, score }: { name: string; score: number }) {
     const barColor = score < 45 ? "#ef4444" : score < 55 ? "#f97316" : "#eab308";
     return (
-        <Box sx={{ p: 2, borderRadius: "12px", border: "1px solid #f3f4f6", background: "#fafafa" }}>
+        <Box sx={{ p: 2, borderRadius: "12px", border: "1px solid var(--border-light)", background: "var(--bg-subtle)" }}>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
-                <Box sx={{ width: 28, height: 28, borderRadius: "8px", background: "#fff3f3", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Box sx={{ width: 28, height: 28, borderRadius: "8px", background: "rgba(239,68,68,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Box sx={{ width: 10, height: 10, borderRadius: "2px", background: barColor }} />
                 </Box>
-                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 13, color: "#111827" }}>
+                <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 13, color: "var(--text-primary)" }}>
                     {name}
                 </Typography>
             </Box>
-            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, color: "#6b7280", mb: 1 }}>
+            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, color: "var(--text-secondary)", mb: 1 }}>
                 Average Score: {score}%
             </Typography>
-            <Box sx={{ height: 6, borderRadius: "3px", background: "#f3f4f6", overflow: "hidden" }}>
+            <Box sx={{ height: 6, borderRadius: "3px", background: "var(--border-light)", overflow: "hidden" }}>
                 <Box sx={{ height: "100%", width: `${score}%`, borderRadius: "3px", background: barColor, transition: "width 0.8s ease" }} />
             </Box>
         </Box>
@@ -142,10 +141,10 @@ export default function PerformancePage() {
         <Box sx={{ fontFamily: "'Poppins', sans-serif" }}>
             {/* Header */}
             <Box sx={{ mb: { xs: 2.5, md: 3 } }}>
-                <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#111827", letterSpacing: "-0.02em", fontSize: { xs: "1.5rem", md: "1.85rem" }, mb: 0.5 }}>
+                <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em", fontSize: { xs: "1.5rem", md: "1.85rem" }, mb: 0.5 }}>
                     Performance
                 </Typography>
-                <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontSize: { xs: "0.875rem", md: "0.95rem" } }}>
+                <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontSize: { xs: "0.875rem", md: "0.95rem" } }}>
                     Real-time performance data across all learning modules
                 </Typography>
             </Box>
@@ -153,16 +152,16 @@ export default function PerformancePage() {
             {/* Overview Stats */}
             <Grid container spacing={3} sx={{ mb: 4 }}>
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <StatCard icon={<PeopleIcon sx={{ fontSize: 24, color: "#25AFF4" }} />} label="Total Active Users" value={stats?.totalActiveUsers ?? 0} bg="#e0f2fe" />
+                    <StatCard icon={<PeopleIcon sx={{ fontSize: 24, color: "#25AFF4" }} />} label="Total Active Users" value={stats?.totalActiveUsers ?? 0} bg="rgba(37,175,244,0.12)" />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <StatCard icon={<ScoreIcon sx={{ fontSize: 24, color: "#8b5cf6" }} />} label="Avg. Placement Score" value={stats?.avgPlacementScore ?? 0} bg="#f5f3ff" suffix="%" />
+                    <StatCard icon={<ScoreIcon sx={{ fontSize: 24, color: "#8b5cf6" }} />} label="Avg. Placement Score" value={stats?.avgPlacementScore ?? 0} bg="rgba(139,92,246,0.12)" suffix="%" />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <StatCard icon={<CompletionIcon sx={{ fontSize: 24, color: "#16a34a" }} />} label="Completion Rate" value={stats?.completionRate ?? 0} bg="#f0fdf4" suffix="%" />
+                    <StatCard icon={<CompletionIcon sx={{ fontSize: 24, color: "#16a34a" }} />} label="Completion Rate" value={stats?.completionRate ?? 0} bg="rgba(22,163,106,0.12)" suffix="%" />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <StatCard icon={<QuizIcon sx={{ fontSize: 24, color: "#f59e0b" }} />} label="Weekly Quizzes Taken" value={stats?.weeklyQuizzesTaken ?? 0} bg="#fffbeb" />
+                    <StatCard icon={<QuizIcon sx={{ fontSize: 24, color: "#f59e0b" }} />} label="Weekly Quizzes Taken" value={stats?.weeklyQuizzesTaken ?? 0} bg="rgba(245,158,11,0.12)" />
                 </Grid>
             </Grid>
 
@@ -170,15 +169,15 @@ export default function PerformancePage() {
             <Grid container spacing={3} sx={{ mb: 3 }}>
                 {/* Bar Chart */}
                 <Grid size={{ xs: 12, md: 7 }}>
-                    <Paper elevation={0} sx={{ borderRadius: "16px", border: "1px solid #e8ecf1", background: "#fff", p: 3, height: "100%" }}>
-                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 15, color: "#111827", mb: 0.4 }}>
+                    <Paper elevation={0} sx={{ borderRadius: "16px", border: "1px solid var(--border-color)", background: "var(--card-bg)", p: 3, height: "100%" }}>
+                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 15, color: "var(--text-primary)", mb: 0.4 }}>
                             Performance by Age Group
                         </Typography>
-                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, color: "#6b7280", mb: 3 }}>
+                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, color: "var(--text-secondary)", mb: 3 }}>
                             Comparing average placement scores per age group
                         </Typography>
                         {chartData.every((d) => d.avgScore === 0) ? (
-                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: 220, color: "#94a3b8" }}>
+                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: 220, color: "var(--text-tertiary)" }}>
                                 <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14 }}>No placement data yet</Typography>
                             </Box>
                         ) : (
@@ -200,7 +199,7 @@ export default function PerformancePage() {
                             {chartData.map((d, i) => (
                                 <Box key={d.ageGroup} sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                                     <Box sx={{ width: 10, height: 10, borderRadius: "50%", background: BAR_COLORS[i % BAR_COLORS.length] }} />
-                                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, color: "#6b7280" }}>Ages {d.ageGroup}</Typography>
+                                    <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, color: "var(--text-secondary)" }}>Ages {d.ageGroup}</Typography>
                                 </Box>
                             ))}
                         </Box>
@@ -209,30 +208,30 @@ export default function PerformancePage() {
 
                 {/* Most Attempted */}
                 <Grid size={{ xs: 12, md: 5 }}>
-                    <Paper elevation={0} sx={{ borderRadius: "16px", border: "1px solid #e8ecf1", background: "#fff", p: 3, height: "100%" }}>
+                    <Paper elevation={0} sx={{ borderRadius: "16px", border: "1px solid var(--border-color)", background: "var(--card-bg)", p: 3, height: "100%" }}>
                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2.5 }}>
-                            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 15, color: "#111827" }}>
+                            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 15, color: "var(--text-primary)" }}>
                                 Most Attempted Categories
                             </Typography>
                         </Box>
                         {mostAttempted.length === 0 ? (
-                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: 200, color: "#94a3b8" }}>
+                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: 200, color: "var(--text-tertiary)" }}>
                                 <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14 }}>No quiz data yet</Typography>
                             </Box>
                         ) : (
                             <Box sx={{ display: "flex", flexDirection: "column", gap: 0 }}>
                                 {mostAttempted.map((item, idx) => (
-                                    <Box key={item.categoryName} sx={{ display: "flex", alignItems: "center", gap: 2, py: 1.75, borderBottom: idx < mostAttempted.length - 1 ? "1px solid #f3f4f6" : "none" }}>
-                                        <Box sx={{ width: 28, height: 28, borderRadius: "50%", background: "#e0f7fe", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                                    <Box key={item.categoryName} sx={{ display: "flex", alignItems: "center", gap: 2, py: 1.75, borderBottom: idx < mostAttempted.length - 1 ? "1px solid var(--border-light)" : "none" }}>
+                                        <Box sx={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(37,175,244,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                                             <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, fontWeight: 700, color: "#25AFF4" }}>
                                                 {String(idx + 1).padStart(2, "0")}
                                             </Typography>
                                         </Box>
                                         <Box sx={{ flex: 1, minWidth: 0 }}>
-                                            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 13, color: "#111827", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, fontSize: 13, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                                                 {item.categoryName}
                                             </Typography>
-                                            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, color: "#94a3b8" }}>
+                                            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 11, color: "var(--text-tertiary)" }}>
                                                 {item.totalAttempts.toLocaleString()} attempts
                                             </Typography>
                                         </Box>
@@ -249,16 +248,16 @@ export default function PerformancePage() {
             <Grid container spacing={3}>
                 {/* Weak Categories */}
                 <Grid size={{ xs: 12, md: 7 }}>
-                    <Paper elevation={0} sx={{ borderRadius: "16px", border: "1px solid #e8ecf1", background: "#fff", p: 3 }}>
-                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 15, color: "#111827", mb: 0.4 }}>
+                    <Paper elevation={0} sx={{ borderRadius: "16px", border: "1px solid var(--border-color)", background: "var(--card-bg)", p: 3 }}>
+                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 15, color: "var(--text-primary)", mb: 0.4 }}>
                             Weak Categories
                         </Typography>
-                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, color: "#6b7280", mb: 2.5 }}>
+                        <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, color: "var(--text-secondary)", mb: 2.5 }}>
                             Categories requiring instructional focus (avg score &lt; 65%)
                         </Typography>
                         {weakCategories.length === 0 ? (
                             <Box sx={{ py: 4, textAlign: "center" }}>
-                                <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#94a3b8", fontSize: 14 }}>
+                                <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-tertiary)", fontSize: 14 }}>
                                     No weak categories — great performance!
                                 </Typography>
                             </Box>

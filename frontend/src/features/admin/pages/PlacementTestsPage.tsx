@@ -69,8 +69,8 @@ const StatCard = ({
         sx={{
             flex: "1 1 0",
             minWidth: { xs: "calc(50% - 6px)", sm: 140 },
-            background: isActive ? "#eef6ff" : "#fff",
-            border: isActive ? "1px solid #4da3ff" : "1px solid #eee",
+            background: isActive ? "rgba(37,175,244,0.1)" : "var(--card-bg)",
+            border: isActive ? "1px solid #4da3ff" : "1px solid var(--border-color)",
             borderRadius: "16px",
             px: { xs: 2, md: 2.5 },
             py: { xs: 1.75, md: 2 },
@@ -102,10 +102,10 @@ const StatCard = ({
             {icon}
         </Box>
         <Box>
-            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontSize: { xs: "1.35rem", md: "1.6rem" }, fontWeight: 700, color: "#111827", lineHeight: 1 }}>
+            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontSize: { xs: "1.35rem", md: "1.6rem" }, fontWeight: 700, color: "var(--text-primary)", lineHeight: 1 }}>
                 {value}
             </Typography>
-            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.72rem", color: "#9ca3af", fontWeight: 500, mt: 0.3, textTransform: "uppercase", letterSpacing: "0.04em" }}>
+            <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: "0.72rem", color: "var(--text-tertiary)", fontWeight: 500, mt: 0.3, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                 {label}
             </Typography>
         </Box>
@@ -116,8 +116,8 @@ const StatCard = ({
 
 const pillSelectSx = {
     borderRadius: "999px",
-    bgcolor: "#fafafa",
-    "& .MuiOutlinedInput-notchedOutline": { borderColor: "#eee", transition: "all 0.2s ease" },
+    bgcolor: "var(--bg-subtle)",
+    "& .MuiOutlinedInput-notchedOutline": { borderColor: "var(--border-color)", transition: "all 0.2s ease" },
     "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#d1d5db" },
     "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: "#25AFF4", borderWidth: 1, boxShadow: "0 0 0 3px rgba(37,175,244,0.1)" },
     "& .MuiSelect-select": { py: "8px", px: "16px", fontSize: "0.875rem" },
@@ -143,16 +143,16 @@ function DeleteDialog({ open, onClose, onConfirm, loading }: DeleteDialogProps) 
             TransitionComponent={Zoom as any}
             PaperProps={{ sx: { borderRadius: "16px" } }}
         >
-            <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, color: "#1a1a2e", pb: 1 }}>
+            <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, color: "var(--text-primary)", pb: 1 }}>
                 Delete Question?
             </DialogTitle>
             <DialogContent>
-                <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "#64748b", fontSize: 14 }}>
+                <Typography sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontSize: 14 }}>
                     Are you sure you want to delete this question? This action cannot be undone.
                 </Typography>
             </DialogContent>
             <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
-                <Button onClick={onClose} sx={{ fontFamily: "'Poppins', sans-serif", textTransform: "none", borderRadius: "10px", color: "#64748b" }}>
+                <Button onClick={onClose} sx={{ fontFamily: "'Poppins', sans-serif", textTransform: "none", borderRadius: "10px", color: "var(--text-secondary)" }}>
                     Cancel
                 </Button>
                 <Button
@@ -275,7 +275,7 @@ export default function PlacementTestsPage() {
                         sx={{
                             fontFamily: "'Baloo 2', cursive",
                             fontWeight: 700,
-                            color: "#111827",
+                            color: "var(--text-primary)",
                             letterSpacing: "-0.02em",
                             fontSize: { xs: "1.5rem", md: "1.85rem" },
                             mb: 0.5,
@@ -283,7 +283,7 @@ export default function PlacementTestsPage() {
                     >
                         Placement Tests
                     </Typography>
-                    <Typography sx={{ color: "#6b7280", fontSize: { xs: "0.875rem", md: "0.95rem" }, fontFamily: "'Poppins', sans-serif" }}>
+                    <Typography sx={{ color: "var(--text-secondary)", fontSize: { xs: "0.875rem", md: "0.95rem" }, fontFamily: "'Poppins', sans-serif" }}>
                         Manage the adaptive question pool perfectly.
                     </Typography>
                 </Box>
@@ -371,13 +371,13 @@ export default function PlacementTestsPage() {
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <SearchIcon sx={{ color: "#9ca3af", fontSize: 17 }} />
+                                <SearchIcon sx={{ color: "var(--text-tertiary)", fontSize: 17 }} />
                             </InputAdornment>
                         ),
                         sx: {
                             borderRadius: "999px",
-                            bgcolor: "#fff",
-                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "#e8ecf1" },
+                            bgcolor: "var(--card-bg)",
+                            "& .MuiOutlinedInput-notchedOutline": { borderColor: "var(--border-color)" },
                             "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#c6d0dc" },
                             "& input": { py: "8px", px: "4px", fontSize: "0.875rem" },
                         },
@@ -425,7 +425,7 @@ export default function PlacementTestsPage() {
                     borderRadius: "16px",
                     overflow: "hidden",
                     boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
-                    background: "#fff",
+                    background: "var(--card-bg)",
                 }}
             >
                 {isLoading ? (
@@ -441,11 +441,11 @@ export default function PlacementTestsPage() {
                         <TableContainer sx={{ overflowX: { xs: "auto", md: "hidden" } }}>
                             <Table sx={{ minWidth: { xs: 320, md: "100%" }, tableLayout: "fixed" }}>
                                 <TableHead>
-                                    <TableRow sx={{ background: "#f9fafb", height: 60 }}>
+                                    <TableRow sx={{ background: "var(--bg-subtle)", height: 60 }}>
                                         <TableCell
                                             sx={{
-                                                fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
-                                                borderBottom: "1px solid #f3f4f6", padding: "12px 16px",
+                                                fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
+                                                borderBottom: "1px solid var(--border-light)", padding: "12px 16px",
                                                 verticalAlign: "middle", maxWidth: 220, width: "100%"
                                             }}
                                         >
@@ -455,8 +455,8 @@ export default function PlacementTestsPage() {
                                         </TableCell>
                                         <TableCell
                                             sx={{
-                                                fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
-                                                borderBottom: "1px solid #f3f4f6", padding: "12px 16px",
+                                                fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
+                                                borderBottom: "1px solid var(--border-light)", padding: "12px 16px",
                                                 verticalAlign: "middle", width: 100, textAlign: "center",
                                             }}
                                         >
@@ -467,8 +467,8 @@ export default function PlacementTestsPage() {
                                         <TableCell
                                             sx={{
                                                 display: { xs: "none", md: "table-cell" },
-                                                fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
-                                                borderBottom: "1px solid #f3f4f6", padding: "12px 16px",
+                                                fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
+                                                borderBottom: "1px solid var(--border-light)", padding: "12px 16px",
                                                 verticalAlign: "middle", width: 140, textAlign: "center",
                                             }}
                                         >
@@ -478,8 +478,8 @@ export default function PlacementTestsPage() {
                                         </TableCell>
                                         <TableCell
                                             sx={{
-                                                fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
-                                                borderBottom: "1px solid #f3f4f6", padding: "12px 16px",
+                                                fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
+                                                borderBottom: "1px solid var(--border-light)", padding: "12px 16px",
                                                 verticalAlign: "middle", width: 120, textAlign: "center",
                                             }}
                                         >
@@ -489,8 +489,8 @@ export default function PlacementTestsPage() {
                                         </TableCell>
                                         <TableCell
                                             sx={{
-                                                fontFamily: "'Poppins', sans-serif", color: "#6b7280", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
-                                                borderBottom: "1px solid #f3f4f6", padding: "12px 16px",
+                                                fontFamily: "'Poppins', sans-serif", color: "var(--text-secondary)", fontWeight: 600, fontSize: 11, letterSpacing: "0.5px",
+                                                borderBottom: "1px solid var(--border-light)", padding: "12px 16px",
                                                 verticalAlign: "middle", width: 120, textAlign: "center",
                                             }}
                                         >
@@ -514,7 +514,7 @@ export default function PlacementTestsPage() {
                                                     "&:last-child td": { border: 0 },
                                                     transition: "all 0.2s ease",
                                                     "&:hover": {
-                                                        backgroundColor: "#f9fafb",
+                                                        backgroundColor: "var(--bg-subtle)",
                                                         transform: "scale(1.005)",
                                                     },
                                                 }}
@@ -524,7 +524,7 @@ export default function PlacementTestsPage() {
                                                 <TableCell
                                                     sx={{
                                                         padding: "12px 16px",
-                                                        borderBottom: "1px solid #f3f4f6",
+                                                        borderBottom: "1px solid var(--border-light)",
                                                         maxWidth: 200,
                                                         verticalAlign: "middle",
                                                     }}
@@ -540,7 +540,7 @@ export default function PlacementTestsPage() {
                                                                 sx={{
                                                                     fontFamily: "'Poppins', sans-serif",
                                                                     fontSize: { xs: 13, md: 14 },
-                                                                    color: "#374151",
+                                                                    color: "var(--text-primary)",
                                                                     fontWeight: 500,
                                                                     lineHeight: 1.45,
                                                                     width: "100%",
@@ -564,7 +564,7 @@ export default function PlacementTestsPage() {
                                                 <TableCell
                                                     sx={{
                                                         padding: "12px 16px",
-                                                        borderBottom: "1px solid #f3f4f6",
+                                                        borderBottom: "1px solid var(--border-light)",
                                                         verticalAlign: "middle",
                                                         width: 100,
                                                     }}
@@ -579,13 +579,13 @@ export default function PlacementTestsPage() {
                                                     sx={{
                                                         display: { xs: "none", md: "table-cell" },
                                                         padding: "12px 16px",
-                                                        borderBottom: "1px solid #f3f4f6",
+                                                        borderBottom: "1px solid var(--border-light)",
                                                         verticalAlign: "middle",
                                                         width: 140,
                                                     }}
                                                 >
                                                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
-                                                        <Chip label={q.category} size="small" sx={{ fontFamily: "'Poppins', sans-serif", background: "#f1f5f9", minWidth: 80, fontWeight: 500 }} />
+                                                        <Chip label={q.category} size="small" sx={{ fontFamily: "'Poppins', sans-serif", background: "var(--bg-hover)", minWidth: 80, fontWeight: 500 }} />
                                                     </Box>
                                                 </TableCell>
 
@@ -593,7 +593,7 @@ export default function PlacementTestsPage() {
                                                 <TableCell
                                                     sx={{
                                                         padding: "12px 16px",
-                                                        borderBottom: "1px solid #f3f4f6",
+                                                        borderBottom: "1px solid var(--border-light)",
                                                         verticalAlign: "middle",
                                                         width: 120,
                                                     }}
@@ -608,7 +608,7 @@ export default function PlacementTestsPage() {
                                                 <TableCell
                                                     sx={{
                                                         padding: "12px 16px",
-                                                        borderBottom: "1px solid #f3f4f6",
+                                                        borderBottom: "1px solid var(--border-light)",
                                                         verticalAlign: "middle",
                                                         width: 120,
                                                     }}
@@ -628,9 +628,9 @@ export default function PlacementTestsPage() {
                                                                     size="small"
                                                                     onClick={() => handleOpenView(q)}
                                                                     sx={{
-                                                                        color: "#d1d5db",
+                                                                        color: "var(--text-tertiary)",
                                                                         transition: "all 0.2s ease",
-                                                                        "&:hover": { color: "#25AFF4", background: "#e8f7fe", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(37,175,244,0.15)" },
+                                                                        "&:hover": { color: "#25AFF4", background: "rgba(37,175,244,0.1)", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(37,175,244,0.15)" },
                                                                         p: 0.75,
                                                                     }}
                                                                 >
@@ -642,9 +642,9 @@ export default function PlacementTestsPage() {
                                                                     size="small"
                                                                     onClick={() => handleOpenEdit(q)}
                                                                     sx={{
-                                                                        color: "#d1d5db",
+                                                                        color: "var(--text-tertiary)",
                                                                         transition: "all 0.2s ease",
-                                                                        "&:hover": { color: "#8EE870", background: "#f0fdf4", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(142,232,112,0.15)" },
+                                                                        "&:hover": { color: "#8EE870", background: "rgba(142,232,112,0.1)", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(142,232,112,0.15)" },
                                                                         p: 0.75,
                                                                     }}
                                                                 >
@@ -656,9 +656,9 @@ export default function PlacementTestsPage() {
                                                                     size="small"
                                                                     onClick={() => handleDelete(q._id)}
                                                                     sx={{
-                                                                        color: "#d1d5db",
+                                                                        color: "var(--text-tertiary)",
                                                                         transition: "all 0.2s ease",
-                                                                        "&:hover": { color: "#FF5144", background: "#fef2f2", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(255,81,68,0.15)" },
+                                                                        "&:hover": { color: "#FF5144", background: "rgba(255,81,68,0.1)", transform: "scale(1.05)", boxShadow: "0 2px 8px rgba(255,81,68,0.15)" },
                                                                         p: 0.75,
                                                                     }}
                                                                 >
@@ -675,11 +675,11 @@ export default function PlacementTestsPage() {
                                     {(!data?.questions || data.questions.length === 0) && (
                                         <TableRow>
                                             <TableCell colSpan={5} align="center" sx={{ py: 10, border: 0 }}>
-                                                <QuizIcon sx={{ fontSize: 38, color: "#e5e7eb", mb: 1, display: "block", mx: "auto" }} />
-                                                <Typography sx={{ color: "#6b7280", fontWeight: 600, mb: 0.5, fontSize: "0.95rem" }}>
+                                                <QuizIcon sx={{ fontSize: 38, color: "var(--border-color)", mb: 1, display: "block", mx: "auto" }} />
+                                                <Typography sx={{ color: "var(--text-secondary)", fontWeight: 600, mb: 0.5, fontSize: "0.95rem" }}>
                                                     No questions yet
                                                 </Typography>
-                                                <Typography sx={{ color: "#9ca3af", fontSize: "0.85rem" }}>
+                                                <Typography sx={{ color: "var(--text-tertiary)", fontSize: "0.85rem" }}>
                                                     Click "Add New Question" to get started.
                                                 </Typography>
                                             </TableCell>
@@ -698,18 +698,18 @@ export default function PlacementTestsPage() {
                                     alignItems: "center",
                                     px: 3,
                                     py: 1.75,
-                                    borderTop: "1px solid #f3f4f6",
+                                    borderTop: "1px solid var(--border-light)",
                                     flexWrap: "wrap",
                                     gap: 1,
                                 }}
                             >
-                                <Typography sx={{ color: "#9ca3af", fontSize: 13 }}>
+                                <Typography sx={{ color: "var(--text-tertiary)", fontSize: 13 }}>
                                     Showing{" "}
-                                    <Box component="span" sx={{ fontWeight: 700, color: "#374151" }}>
+                                    <Box component="span" sx={{ fontWeight: 700, color: "var(--text-primary)" }}>
                                         {data.questions.length}
                                     </Box>{" "}
                                     of{" "}
-                                    <Box component="span" sx={{ fontWeight: 700, color: "#374151" }}>
+                                    <Box component="span" sx={{ fontWeight: 700, color: "var(--text-primary)" }}>
                                         {data.total}
                                     </Box>{" "}
                                     questions

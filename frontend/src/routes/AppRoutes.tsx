@@ -48,6 +48,7 @@ import CategoriesPage from "../features/admin/pages/CategoriesPage";
 import UserManagementPage from "../features/admin/pages/UserManagementPage";
 import PerformancePage from "../features/admin/pages/PerformancePage";
 import SettingsPage from "../features/admin/pages/SettingsPage";
+import AdminProfilePage from "../features/admin/pages/AdminProfilePage";
 
 export default function AppRoutes() {
     return (
@@ -118,6 +119,7 @@ export default function AppRoutes() {
                 <Route path="/admin/users" element={<UserManagementPage />} />
                 <Route path="/admin/performance" element={<PerformancePage />} />
                 <Route path="/admin/settings" element={<SettingsPage />} />
+                <Route path="/admin/profile" element={<AdminProfilePage />} />
             </Route>
 
             {/* Catch-all */}

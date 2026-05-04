@@ -97,7 +97,7 @@ export default function ParentLoginPage() {
 });
 
     return (
-        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#e8f4fd,#f0f6ff)", display: "flex", alignItems: { xs: "flex-start", md: "center" }, position: "relative", py: { xs: 10, md: 0 } }}>
+        <Box sx={{ minHeight: "100vh", background: "var(--landing-hero-bg, linear-gradient(135deg,#e8f4fd,#f0f6ff))", display: "flex", alignItems: { xs: "flex-start", md: "center" }, position: "relative", py: { xs: 10, md: 0 } }}>
             <AuthHeader />
 
             <Container maxWidth="lg" sx={{ pt: { xs: 8, md: 0 } }}>
@@ -106,10 +106,10 @@ export default function ParentLoginPage() {
                     <Grid size={{ xs: 12, md: 6 }} sx={{ textAlign: "center", display: { xs: "none", md: "block" } }}>
                         <AnimatedPage delay={100}>
                             <Box component="img" src={kipImg} alt="Kip mascot" sx={{ width: 280, mx: "auto", mb: 3 }} />
-                            <Typography variant="h4" sx={{ fontWeight: 800, color: "#1a1a2e", mb: 1 }}>
+                            <Typography variant="h4" sx={{ fontWeight: 800, color: "var(--landing-text-main, #1a1a2e)", mb: 1 }}>
                                 Learning made fun for your little genius.
                             </Typography>
-                            <Typography variant="body1" sx={{ color: "#666", maxWidth: 380, mx: "auto", lineHeight: 1.8 }}>
+                            <Typography variant="body1" sx={{ color: "var(--landing-text-muted, #666)", maxWidth: 380, mx: "auto", lineHeight: 1.8 }}>
                                 Join thousands of parents and kids discovering the joy of adaptive English learning.
                             </Typography>
                         </AnimatedPage>
@@ -118,13 +118,13 @@ export default function ParentLoginPage() {
                     {/* Right — form */}
                     <Grid size={{ xs: 12, md: 6 }}>
                         <AnimatedPage shake={shakeForm}>
-                            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 5 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", maxWidth: 440, mx: "auto" }}>
+                            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ backgroundColor: "var(--card-bg, #fff)", borderRadius: 5, p: { xs: 3, md: 5 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", maxWidth: 440, mx: "auto" }}>
                                 <AnimatedItem index={0}>
                                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, mb: 0.5 }}>
                                         <LoginIcon sx={{ color: "#3ab5e6", fontSize: 28 }} />
                                         <Typography variant="h5" sx={{ fontWeight: 800 }}>Welcome Back!</Typography>
                                     </Box>
-                                    <Typography variant="body2" sx={{ color: "#888", textAlign: "center", mb: 3 }}>
+                                    <Typography variant="body2" sx={{ color: "var(--text-secondary, #888)", textAlign: "center", mb: 3 }}>
                                         Let's continue the learning adventure.
                                     </Typography>
                                 </AnimatedItem>
@@ -176,7 +176,7 @@ export default function ParentLoginPage() {
 
                                 <AnimatedItem index={5}>
                                     <Box sx={{ textAlign: "right", mb: 3 }}>
-                                        <Box component={Link} to="/auth/forgot-password" sx={{ display: "inline-flex", alignItems: "center", gap: 0.3, fontSize: "0.8rem", color: "#888", textDecoration: "none", transition: "all 0.2s", "&:hover": { color: "#3ab5e6" } }}>
+                                        <Box component={Link} to="/auth/forgot-password" sx={{ display: "inline-flex", alignItems: "center", gap: 0.3, fontSize: "0.8rem", color: "var(--text-secondary, #888)", textDecoration: "none", transition: "all 0.2s", "&:hover": { color: "#3ab5e6" } }}>
                                             <LockResetIcon sx={{ fontSize: 14 }} /> Forgot password?
                                         </Box>
                                     </Box>
@@ -189,7 +189,7 @@ export default function ParentLoginPage() {
                                 </AnimatedItem>
 
                                 <AnimatedItem index={7}>
-                                    <Typography variant="body2" sx={{ textAlign: "center", mt: 3, color: "#888" }}>
+                                    <Typography variant="body2" sx={{ textAlign: "center", mt: 3, color: "var(--text-secondary, #888)" }}>
                                         Don't have an account?{" "}
                                         <Box component={Link} to="/auth/signup" sx={{ color: "#e74c3c", fontWeight: 600, textDecoration: "none", transition: "all 0.2s", "&:hover": { textDecoration: "underline" } }}>
                                             <PersonAddIcon sx={{ fontSize: 14, verticalAlign: "middle", mr: 0.3 }} />Create account

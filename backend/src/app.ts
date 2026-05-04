@@ -4,6 +4,17 @@ import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import placementRoutes from "./routes/placement.routes.js";
+import placementTestRoutes from "./routes/placement-test.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
+import quizRoutes from "./routes/quiz.routes.js";
+import parentRoutes from "./routes/parent.routes.js";
+import childRoutes from "./routes/child.routes.js";
+import gameRoutes from "./routes/game.routes.js";
+import adminUsersRoutes from "./routes/adminUsers.routes.js";
+import adminPerformanceRoutes from "./routes/adminPerformance.routes.js";
+import adminAgeGroupsRoutes from "./routes/adminAgeGroups.routes.js";
+import adminProfileRoutes from "./routes/adminProfile.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { authenticate, requireRole } from "./middleware/auth.middleware.js";
 import { userPlacementStatus } from "./controllers/placement-test.controller.js";
@@ -19,7 +30,6 @@ const allowedOrigins = (process.env.CLIENT_ORIGIN ?? "http://localhost:5173")
 
 app.use(cors({
     origin: (origin, callback) => {
-        // Allow requests with no origin (e.g. curl, Postman)
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
@@ -30,17 +40,6 @@ app.use(cors({
 }));
 app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
-
-import placementRoutes from "./routes/placement.routes.js";
-import placementTestRoutes from "./routes/placement-test.routes.js";
-import categoryRoutes from "./routes/category.routes.js";
-import quizRoutes from "./routes/quiz.routes.js";
-import parentRoutes from "./routes/parent.routes.js";
-import childRoutes from "./routes/child.routes.js";
-import gameRoutes from "./routes/game.routes.js";
-import adminUsersRoutes from "./routes/adminUsers.routes.js";
-import adminPerformanceRoutes from "./routes/adminPerformance.routes.js";
-import adminAgeGroupsRoutes from "./routes/adminAgeGroups.routes.js";
 
 // ── Routes ───────────────────────────────────────────────────────────────────
 app.use("/api", healthRoutes);
@@ -56,6 +55,7 @@ app.use("/api/games", gameRoutes);
 app.use("/api/admin/users", adminUsersRoutes);
 app.use("/api/admin/performance", adminPerformanceRoutes);
 app.use("/api/admin/age-groups", adminAgeGroupsRoutes);
+app.use("/api/admin/profile", adminProfileRoutes);
 
 // ── Centralized Error Handler ────────────────────────────────────────────────
 app.use(errorHandler);

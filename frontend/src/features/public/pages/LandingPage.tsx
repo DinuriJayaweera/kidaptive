@@ -265,7 +265,7 @@ export default function LandingPage() {
                     onClick={() => navigate("/auth/child/pin")}
                     sx={{
                       backgroundColor: "#3ab5e6",
-                      color: "var(--landing-bg, #ffffff)",
+                      color: "#ffffff",
                       borderRadius: 5,
                       textAlign: "center",
                       py: 4,
@@ -299,7 +299,7 @@ export default function LandingPage() {
                     onClick={() => navigate("/auth/login")}
                     sx={{
                       backgroundColor: "var(--landing-bg, #ffffff)",
-                      border: "2px solid #e0e0e0",
+                      border: "2px solid var(--border-color, #e0e0e0)",
                       borderRadius: 5,
                       textAlign: "center",
                       py: 4,
@@ -584,7 +584,7 @@ export default function LandingPage() {
           <Box
             ref={statsRef}
             sx={{
-              backgroundColor: "#1a1a2e",
+              backgroundColor: "var(--landing-hero-bg, #1a1a2e)",
               borderRadius: { xs: 4, md: 6 },
               py: { xs: 4, md: 5 },
               px: { xs: 2, md: 6 },

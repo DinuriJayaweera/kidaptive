@@ -1,0 +1,103 @@
+/* ─── Admin Settings Page ─────────────────────────────────── */
+.aps-container { max-width: 1100px; margin: 0 auto; }
+.aps-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; }
+
+.aps-page-header { margin-bottom: 8px; }
+.aps-page-title { font-family: 'Baloo 2', cursive !important; font-weight: 700 !important; color: var(--text-primary, #111827); }
+.aps-page-subtitle { color: var(--text-secondary, #6b7280); font-size: 14px; margin-top: 4px; }
+
+/* Save Bar */
+.aps-save-bar { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.aps-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 24px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.aps-btn-save { background: #25AFF4; color: #fff; }
+.aps-btn-save:hover:not(.aps-btn-disabled) { background: #0fa8ef; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(37, 175, 244, 0.3); }
+.aps-btn-disabled { opacity: 0.5; cursor: not-allowed !important; }
+.aps-btn-outline { background: transparent; color: #25AFF4; border: 1.5px solid #25AFF4; }
+.aps-btn-outline:hover { background: #e0f2fe; }
+
+/* Section Card */
+.aps-section {
+    border-radius: 16px !important;
+    padding: 24px !important;
+    margin-bottom: 20px;
+    background: var(--card-bg, #fff) !important;
+    border: 1px solid var(--border-color, #e8ecf1) !important;
+    transition: box-shadow 0.2s;
+}
+.aps-section:hover { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); }
+.aps-section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-color, #e8ecf1);
+}
+.aps-section-icon { font-size: 22px !important; color: #25AFF4; }
+.aps-section-title { font-weight: 600 !important; font-size: 15px !important; color: var(--text-primary, #111827) !important; }
+
+/* Avatar area */
+.aps-avatar-area { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.aps-avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #25AFF4, #0ea5e9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 28px;
+    font-family: 'Baloo 2', cursive;
+    flex-shrink: 0;
+}
+.aps-avatar-hint { font-size: 12px; color: var(--text-tertiary, #9ca3af); }
+
+/* Fields */
+.aps-fields { display: flex; flex-direction: column; gap: 16px; }
+.aps-field .MuiInputBase-root { border-radius: 12px !important; }
+.aps-field .MuiInputBase-input { color: var(--text-primary, #111827) !important; }
+.aps-field .MuiInputLabel-root { color: var(--text-secondary, #6b7280) !important; }
+.aps-field .MuiOutlinedInput-notchedOutline { border-color: var(--border-color, #e8ecf1) !important; }
+
+/* Toggle rows */
+.aps-toggle-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-light, #f3f4f6);
+}
+.aps-toggle-row:last-child { border-bottom: none; }
+.aps-toggle-label { font-weight: 500; font-size: 14px; color: var(--text-primary, #111827); }
+.aps-toggle-desc { font-size: 12px; color: var(--text-tertiary, #9ca3af); margin-top: 2px; }
+
+/* Security */
+.aps-security-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* Dark Mode */
+[data-theme="dark"] .aps-section { background: var(--card-bg) !important; border-color: var(--border-color) !important; }
+[data-theme="dark"] .aps-section-header { border-bottom-color: var(--border-color); }
+[data-theme="dark"] .aps-toggle-row { border-bottom-color: var(--border-light); }
+[data-theme="dark"] .aps-btn-outline:hover { background: #1e293b; }
+
+@media (max-width: 600px) {
+    .aps-save-bar { justify-content: stretch; }
+    .aps-save-bar .aps-btn { flex: 1; justify-content: center; }
+    .aps-security-actions { flex-direction: column; }
+    .aps-security-actions .aps-btn { width: 100%; justify-content: center; }
+}

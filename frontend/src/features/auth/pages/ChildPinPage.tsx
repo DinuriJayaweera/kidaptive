@@ -64,18 +64,18 @@ export default function ChildPinPage() {
     };
 
     return (
-        <Box sx={{ minHeight: "100vh", background: "linear-gradient(135deg,#deeefe,#e8f4fd,#f0f6ff)", display: "flex", alignItems: { xs: "flex-start", md: "center" }, justifyContent: "center", py: { xs: 10, md: 4 }, position: "relative" }}>
+        <Box sx={{ minHeight: "100vh", background: "var(--landing-hero-bg, linear-gradient(135deg,#deeefe,#e8f4fd,#f0f6ff))", display: "flex", alignItems: { xs: "flex-start", md: "center" }, justifyContent: "center", py: { xs: 10, md: 4 }, position: "relative" }}>
             <AuthHeader />
 
             <Container maxWidth="xs">
                 <AnimatedPage shake={shakeForm}>
-                    <Box sx={{ backgroundColor: "#fff", borderRadius: 5, p: { xs: 3, md: 4 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", textAlign: "center" }}>
+                    <Box sx={{ backgroundColor: "var(--card-bg, #fff)", borderRadius: 5, p: { xs: 3, md: 4 }, boxShadow: "0 8px 40px rgba(0,0,0,0.08)", textAlign: "center" }}>
                         <AnimatedItem index={0}>
                             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1, mb: 0.5 }}>
                                 <DialpadIcon sx={{ color: "#3ab5e6", fontSize: 28 }} />
                                 <Typography variant="h5" sx={{ fontWeight: 800 }}>Welcome, {childName}! 👋</Typography>
                             </Box>
-                            <Typography variant="body2" sx={{ color: "#888", mb: 3 }}>Tap your secret emoji pattern.</Typography>
+                            <Typography variant="body2" sx={{ color: "var(--text-secondary, #888)", mb: 3 }}>Tap your secret emoji pattern.</Typography>
                         </AnimatedItem>
 
                         {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 3 }}>{error}</Alert>}
@@ -124,7 +124,7 @@ export default function ChildPinPage() {
                             <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.3 }}>
                                     <InfoIcon sx={{ fontSize: 14, color: "#bbb" }} />
-                                    <Typography variant="caption" sx={{ color: "#888", maxWidth: 140, textAlign: "left", lineHeight: 1.2 }}>Forget your password? Ask a parent to reset it.</Typography>
+                                    <Typography variant="caption" sx={{ color: "var(--text-secondary, #888)", maxWidth: 140, textAlign: "left", lineHeight: 1.2 }}>Forget your password? Ask a parent to reset it.</Typography>
                                 </Box>
                                 {selectedChild ? (
                                     <Box component={Link} to="/auth/child/select" sx={{ display: "flex", alignItems: "center", gap: 0.3, fontSize: "0.75rem", color: "#3ab5e6", textDecoration: "none", fontWeight: 600, transition: "all 0.2s", "&:hover": { textDecoration: "underline" } }}>
