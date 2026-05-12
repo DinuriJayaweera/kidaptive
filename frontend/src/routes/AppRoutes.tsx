@@ -49,6 +49,7 @@ import UserManagementPage from "../features/admin/pages/UserManagementPage";
 import PerformancePage from "../features/admin/pages/PerformancePage";
 import SettingsPage from "../features/admin/pages/SettingsPage";
 import AdminProfilePage from "../features/admin/pages/AdminProfilePage";
+import DailyQuestQuestionsPage from "../features/admin/pages/DailyQuestQuestionsPage";
 
 export default function AppRoutes() {
     return (
@@ -115,6 +116,7 @@ export default function AppRoutes() {
                 <Route path="/admin/age-groups" element={<AgeGroupsPage />} />
                 <Route path="/admin/placement-tests" element={<PlacementTestsPage />} />
                 <Route path="/admin/quizzes" element={<QuizzesPage />} />
+                <Route path="/admin/daily-quests" element={<DailyQuestQuestionsPage />} />
                 <Route path="/admin/categories" element={<CategoriesPage />} />
                 <Route path="/admin/users" element={<UserManagementPage />} />
                 <Route path="/admin/performance" element={<PerformancePage />} />

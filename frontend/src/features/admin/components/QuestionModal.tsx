@@ -11,6 +11,9 @@ import {
   Typography,
   IconButton,
   FormHelperText,
+  FormControl,
+  InputLabel,
+  Select,
   Zoom,
   Radio,
   RadioGroup,
@@ -257,7 +260,6 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
       maxWidth="md"
       TransitionComponent={Zoom}
       disableRestoreFocus
-      disableEnforceFocus
       PaperProps={{
         sx: {
           maxWidth: "700px",
@@ -320,6 +322,7 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
 
           {/* ── Question Text ── */}
           <TextField
+            id="qm-question-text"
             label="Question Text"
             name="questionText"
             value={formData.questionText}
@@ -334,45 +337,66 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
 
           {/* ── Age Group + Category row ── */}
           <Box sx={{ display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" }, borderBottom: "1px solid var(--border-light)", paddingBottom: "16px" }}>
-            <TextField
-              select label="Age Group" name="ageGroup"
-              value={formData.ageGroup || ""} onChange={handleChange} fullWidth
-              InputProps={{ readOnly }} variant="outlined"
-              error={!!errors.ageGroup} helperText={errors.ageGroup}
-              sx={{ pointerEvents: readOnly ? "none" : "auto", "& .MuiInputBase-input": { color: "var(--text-primary) !important" } }}
-            >
-              {AGE_GROUPS.map((a) => <MenuItem key={a} value={a}>{a}</MenuItem>)}
-            </TextField>
+            <FormControl fullWidth variant="outlined" error={!!errors.ageGroup} sx={{ pointerEvents: readOnly ? "none" : "auto" }}>
+              <InputLabel id="qm-age-group-label">Age Group</InputLabel>
+              <Select
+                labelId="qm-age-group-label"
+                id="qm-age-group"
+                name="ageGroup"
+                value={formData.ageGroup || ""}
+                onChange={handleChange as any}
+                label="Age Group"
+                inputProps={{ readOnly }}
+                sx={{ "& .MuiInputBase-input": { color: "var(--text-primary) !important" } }}
+              >
+                {AGE_GROUPS.map((a) => <MenuItem key={a} value={a}>{a}</MenuItem>)}
+              </Select>
+              {errors.ageGroup && <FormHelperText>{errors.ageGroup}</FormHelperText>}
+            </FormControl>
 
-            <TextField
-              select label="Category" name="category"
-              value={formData.category || ""} onChange={handleChange} fullWidth
-              InputProps={{ readOnly }} variant="outlined"
-              error={!!errors.category} helperText={errors.category}
-              sx={{ pointerEvents: readOnly ? "none" : "auto", "& .MuiInputBase-input": { color: "var(--text-primary) !important" } }}
-            >
-              {(currentCategories || []).map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
-            </TextField>
+            <FormControl fullWidth variant="outlined" error={!!errors.category} sx={{ pointerEvents: readOnly ? "none" : "auto" }}>
+              <InputLabel id="qm-category-label">Category</InputLabel>
+              <Select
+                labelId="qm-category-label"
+                id="qm-category"
+                name="category"
+                value={formData.category || ""}
+                onChange={handleChange as any}
+                label="Category"
+                inputProps={{ readOnly }}
+                sx={{ "& .MuiInputBase-input": { color: "var(--text-primary) !important" } }}
+              >
+                {(currentCategories || []).map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+              </Select>
+              {errors.category && <FormHelperText>{errors.category}</FormHelperText>}
+            </FormControl>
           </Box>
 
           {/* ── Question Type selector ── */}
           <Box sx={{ borderBottom: "1px solid var(--border-light)", paddingBottom: "16px" }}>
-            <TextField
-              select label="Question Type" name="type"
-              value={formData.type || ""} onChange={handleChange} fullWidth
-              InputProps={{ readOnly }} variant="outlined"
-              error={!!errors.type} helperText={errors.type}
-              sx={{ pointerEvents: readOnly ? "none" : "auto", "& .MuiInputBase-input": { color: "var(--text-primary) !important" } }}
-            >
-              {QUESTION_TYPES.map((qt) => (
-                <MenuItem key={qt.value} value={qt.value}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <span>{qt.icon}</span>
-                    <span>{qt.label}</span>
-                  </Box>
-                </MenuItem>
-              ))}
-            </TextField>
+            <FormControl fullWidth variant="outlined" error={!!errors.type} sx={{ pointerEvents: readOnly ? "none" : "auto" }}>
+              <InputLabel id="qm-question-type-label">Question Type</InputLabel>
+              <Select
+                labelId="qm-question-type-label"
+                id="qm-question-type"
+                name="type"
+                value={formData.type || ""}
+                onChange={handleChange as any}
+                label="Question Type"
+                inputProps={{ readOnly }}
+                sx={{ "& .MuiInputBase-input": { color: "var(--text-primary) !important" } }}
+              >
+                {QUESTION_TYPES.map((qt) => (
+                  <MenuItem key={qt.value} value={qt.value}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <span>{qt.icon}</span>
+                      <span>{qt.label}</span>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
+              {errors.type && <FormHelperText>{errors.type}</FormHelperText>}
+            </FormControl>
 
             {/* Type helper text */}
             {activeType && !readOnly && (
@@ -476,6 +500,11 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
                         onChange={(e) => handleOptionChange(idx, e.target.value)}
                         fullWidth size="small" placeholder={`Option ${String.fromCharCode(65 + idx)}`}
                         InputProps={{ readOnly }}
+                        inputProps={{
+                          id: `qm-option-${idx}`,
+                          name: `option-${idx}`,
+                          "aria-label": `Option ${String.fromCharCode(65 + idx)}`,
+                        }}
                         sx={{
                           background: readOnly ? "transparent" : "var(--card-bg)",
                           pointerEvents: readOnly ? "none" : "auto",
@@ -575,6 +604,7 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
                 The child's input will be compared case-insensitively with this answer.
               </Typography>
               <TextField
+                id="qm-correct-answer"
                 label="Correct Answer"
                 name="correctAnswer"
                 value={formData.correctAnswer}
@@ -599,6 +629,7 @@ export default function QuestionModal({ open, onClose, onSave, initialData, read
           {/* ── Correct Answer field (for MCQ/Fill — shown as readonly confirmation) ── */}
           {!showInputOnly && !showBooleanSelector && activeType && (
             <TextField
+              id="qm-correct-answer-display"
               label="Correct Answer"
               name="correctAnswer"
               value={formData.correctAnswer}

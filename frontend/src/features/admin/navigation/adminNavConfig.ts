@@ -7,6 +7,7 @@ import {
     People as UserMgmtIcon,
     TrendingUp as PerformanceIcon,
     Settings as SettingsIcon,
+    EmojiEvents as DailyQuestIcon,
 } from "@mui/icons-material";
 
 export interface NavItem {
@@ -27,6 +28,7 @@ export const adminNavSections: NavSection[] = [
             { label: "Age Groups", path: "/admin/age-groups", icon: AgeGroupIcon },
             { label: "Placement Tests", path: "/admin/placement-tests", icon: PlacementIcon },
             { label: "Quizzes", path: "/admin/quizzes", icon: QuizIcon },
+            { label: "Daily Quests", path: "/admin/daily-quests", icon: DailyQuestIcon },
             { label: "Categories/Levels", path: "/admin/categories", icon: CategoryIcon },
             { label: "User Management", path: "/admin/users", icon: UserMgmtIcon },
             { label: "Performance", path: "/admin/performance", icon: PerformanceIcon },
