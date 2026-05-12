@@ -18,6 +18,7 @@ import adminProfileRoutes from "./routes/adminProfile.routes.js";
 import adminDashboardRoutes from "./routes/adminDashboard.routes.js";
 import dailyQuestRoutes from "./routes/dailyQuest.routes.js";
 import childDailyQuestRoutes from "./routes/childDailyQuest.routes.js";
+import childSessionRoutes from "./routes/childSession.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { authenticate, requireRole } from "./middleware/auth.middleware.js";
 import { userPlacementStatus } from "./controllers/placement-test.controller.js";
@@ -62,6 +63,7 @@ app.use("/api/admin/profile", adminProfileRoutes);
 app.use("/api/admin/dashboard", adminDashboardRoutes);
 app.use("/api/daily-quest-questions", dailyQuestRoutes);
 app.use("/api/child/daily-quest", childDailyQuestRoutes);
+app.use("/api/child/session", childSessionRoutes);
 
 // ── Centralized Error Handler ────────────────────────────────────────────────
 app.use(errorHandler);

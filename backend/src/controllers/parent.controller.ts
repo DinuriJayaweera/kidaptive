@@ -4,6 +4,7 @@ import CategoryProgress from "../models/categoryProgress.model.js";
 import PlacementResult from "../models/placementResult.model.js";
 import ActivityLog from "../models/activityLog.model.js";
 import DailyQuestCompletion from "../models/dailyQuestCompletion.model.js";
+import ChildSession from "../models/childSession.model.js";
 import {
     getParentProfile,
     updateParentProfile,
@@ -140,7 +141,7 @@ export const getChildProgress = async (req: Request, res: Response) => {
     const todayDateStr = now.toISOString().split('T')[0];
     const weekStartDateStr = startOfWeek.toISOString().split('T')[0];
 
-    const [todayLogs, weekLogs, recentLogs, todayQuest, weekQuests, totalQuestCount, recentQuests] = await Promise.all([
+    const [todayLogs, weekLogs, recentLogs, todayQuest, weekQuests, totalQuestCount, recentQuests, todaySessions, weekSessions] = await Promise.all([
       ActivityLog.find({ childId: child._id, createdAt: { $gte: startOfToday } }).sort({ createdAt: 1 }),
       ActivityLog.find({ childId: child._id, createdAt: { $gte: startOfWeek } }),
       ActivityLog.find({ childId: child._id }).sort({ createdAt: -1 }).limit(12),
@@ -148,22 +149,34 @@ export const getChildProgress = async (req: Request, res: Response) => {
       DailyQuestCompletion.find({ childId: child._id, date: { $gte: weekStartDateStr }, completed: true }),
       DailyQuestCompletion.countDocuments({ childId: child._id, completed: true }),
       DailyQuestCompletion.find({ childId: child._id, completed: true }).sort({ createdAt: -1 }).limit(10),
+      ChildSession.find({ childId: child._id, date: todayDateStr }).sort({ sessionStart: 1 }),
+      ChildSession.find({ childId: child._id, date: { $gte: weekStartDateStr } }),
     ]);
 
-    const totalLearningSecondsToday = todayLogs.reduce(
-      (sum, log) => sum + (log.durationSeconds || 0),
-      0,
-    );
+    // Screen time from real session data (heartbeat-based)
+    // Grace: count up to 45 s after the last heartbeat to cover the final interval
+    const HEARTBEAT_GRACE_MS = 45_000;
+    const nowMs = Date.now();
+    const sessionSeconds = (session: any) =>
+      Math.max(0, Math.round(
+        (Math.min(session.lastHeartbeat.getTime() + HEARTBEAT_GRACE_MS, nowMs) - session.sessionStart.getTime()) / 1000,
+      ));
+
+    const totalLearningSecondsToday = todaySessions.reduce((sum, s) => sum + sessionSeconds(s), 0);
+    const totalLearningSecondsWeek  = weekSessions.reduce((sum, s) => sum + sessionSeconds(s), 0);
+
+    // Start/end times from sessions (first session start → last heartbeat today)
+    const todayFirstSession = todaySessions[0] ?? null;
+    const todayLastSession  = todaySessions.length ? todaySessions.reduce((latest, s) =>
+      s.lastHeartbeat > latest.lastHeartbeat ? s : latest
+    ) : null;
+
     const quizzesToday = todayLogs.filter((log) => log.type === "quiz_complete").length;
     const xpToday = todayLogs.reduce(
       (sum, log) => sum + (log.type === "xp_earned" ? (log.xp || 0) : 0),
       0,
     );
 
-    const totalLearningSecondsWeek = weekLogs.reduce(
-      (sum, log) => sum + (log.durationSeconds || 0),
-      0,
-    );
     const quizzesWeek = weekLogs.filter((log) => log.type === "quiz_complete").length;
 
     const practiceCounts = weekLogs
@@ -202,8 +215,8 @@ export const getChildProgress = async (req: Request, res: Response) => {
 
     const activitySummary = {
       today: {
-        startTime: todayLogs[0]?.createdAt ? todayLogs[0].createdAt.toISOString() : null,
-        endTime: todayLogs.length ? todayLogs[todayLogs.length - 1].createdAt.toISOString() : null,
+        startTime: todayFirstSession?.sessionStart.toISOString() ?? null,
+        endTime: todayLastSession?.lastHeartbeat.toISOString() ?? null,
         totalLearningSeconds: totalLearningSecondsToday,
         quizzesCompleted: quizzesToday,
         xpEarned: xpToday,
@@ -280,6 +293,7 @@ export const deleteChild = async (req: Request, res: Response) => {
     await PlacementResult.deleteMany({ childId: child._id });
     await ActivityLog.deleteMany({ childId: child._id });
     await DailyQuestCompletion.deleteMany({ childId: child._id });
+    await ChildSession.deleteMany({ childId: child._id });
     await User.deleteOne({ _id: child._id });
 
     res.json({ message: "Child deleted successfully." });
