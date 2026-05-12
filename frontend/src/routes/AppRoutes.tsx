@@ -32,6 +32,8 @@ import PracticePage from "../features/child/pages/PracticePage";
 import MistakesPracticePage from "../features/child/pages/MistakesPracticePage";
 import AchievementsPage from "../features/child/pages/AchievementsPage";
 import GamesPage from "../features/child/pages/GamesPage";
+import DailyQuestPage from "../features/child/pages/DailyQuestPage";
+import QuestsPage from "../features/child/pages/QuestsPage";
 import WordFinderGame from "../features/child/pages/games/WordFinderGame";
 import SpellingChallengeGame from "../features/child/pages/games/SpellingChallengeGame";
 import WordBuilderGame from "../features/child/pages/games/WordBuilderGame";
@@ -104,6 +106,8 @@ export default function AppRoutes() {
             <Route path="/child/practice" element={<ChildRoute><PracticePage /></ChildRoute>} />
             <Route path="/child/practice/mistakes" element={<ChildRoute><MistakesPracticePage /></ChildRoute>} />
             <Route path="/child/achievements" element={<ChildRoute><AchievementsPage /></ChildRoute>} />
+            <Route path="/child/quests" element={<ChildRoute><QuestsPage /></ChildRoute>} />
+            <Route path="/child/daily-quest" element={<ChildRoute><DailyQuestPage /></ChildRoute>} />
             <Route path="/child/games" element={<ChildRoute><GamesPage /></ChildRoute>} />
             <Route path="/child/games/word-finder" element={<ChildRoute><WordFinderGame /></ChildRoute>} />
             <Route path="/child/games/spelling-challenge" element={<ChildRoute><SpellingChallengeGame /></ChildRoute>} />

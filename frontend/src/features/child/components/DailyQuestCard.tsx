@@ -1,84 +1,144 @@
-import { Box, Typography, Button, LinearProgress } from "@mui/material";
-import earnImg from "../../../assets/earn.png";
+import { useState, useEffect } from "react";
+import { Box, Typography, Button, Chip, CircularProgress } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import questImg from "../../../assets/quests.png";
+import xpsImg from "../../../assets/xps.png";
 import gemsImg from "../../../assets/gems.png";
+import { getDailyQuestToday, type DailyQuestTodayStatus } from "../services/childDailyQuestApi";
 
 export default function DailyQuestCard() {
+  const navigate = useNavigate();
+  const [status, setStatus] = useState<DailyQuestTodayStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getDailyQuestToday()
+      .then(setStatus)
+      .catch(() => setStatus({ status: "available" }))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const isCompleted = status?.status === "completed";
+
   return (
     <Box
       sx={{
-        backgroundColor: "#fff",
-        border: "2px solid #E2E8F0",
+        background: isCompleted
+          ? "linear-gradient(135deg, #d4edda 0%, #b8dfc4 100%)"
+          : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         borderRadius: "20px",
         p: 2.5,
         mt: 2,
-        boxShadow: "0 4px 14px rgba(0,0,0,0.03)",
+        boxShadow: isCompleted
+          ? "0 6px 18px rgba(40,167,69,0.18)"
+          : "0 8px 24px rgba(102,126,234,0.30)",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 2 }}>
+      {/* ── Header ── */}
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
+        <Box
+          component="img"
+          src={questImg}
+          alt="Quest"
+          sx={{ width: 30, height: 30, objectFit: "contain" }}
+        />
         <Typography
           sx={{
             fontFamily: "'Baloo 2', sans-serif",
             fontWeight: 800,
-            fontSize: "1.1rem",
-            color: "#1A202C",
+            fontSize: "1.05rem",
+            color: isCompleted ? "#155724" : "#fff",
+            flex: 1,
           }}
         >
-          Daily Quests
+          Daily Challenge
         </Typography>
-        <Button
-          variant="text"
-          sx={{
-            fontWeight: 800,
-            fontSize: "0.75rem",
-            color: "#25AFF4",
-            p: 0,
-            minWidth: "auto",
-            "&:hover": { backgroundColor: "transparent", textDecoration: "underline" },
-          }}
-        >
-          VIEW ALL
-        </Button>
+        {isCompleted && (
+          <Chip
+            label="Done ✓"
+            size="small"
+            sx={{
+              backgroundColor: "#28a745",
+              color: "#fff",
+              fontWeight: 800,
+              fontSize: "0.68rem",
+              height: 22,
+            }}
+          />
+        )}
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
-        <Box
-          component="img"
-          src={earnImg}
-          alt="Earn"
-          sx={{ width: 28, height: 28, mt: 0.5, objectFit: "contain" }}
-        />
-        <Box sx={{ flex: 1 }}>
-          <Typography sx={{ fontSize: "0.9rem", fontWeight: 700, color: "#1A202C", mb: 1 }}>
-            Earn 10 XP
-          </Typography>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Box sx={{ flex: 1 }}>
-              <LinearProgress
-                variant="determinate"
-                value={10}
-                sx={{
-                  height: 10,
-                  borderRadius: 5,
-                  backgroundColor: "#E2E8F0",
-                  "& .MuiLinearProgress-bar": {
-                    backgroundColor: "#F6AD55",
-                    borderRadius: 5,
-                  },
-                }}
-              />
-              <Typography sx={{ fontSize: "0.7rem", color: "#A0AEC0", fontWeight: 700, mt: 0.5 }}>
-                1/10
+      {/* ── Sub-title ── */}
+      <Typography
+        sx={{
+          fontSize: "0.83rem",
+          color: isCompleted ? "#1a5c2a" : "rgba(255,255,255,0.88)",
+          fontWeight: 600,
+          mb: 1.5,
+        }}
+      >
+        Answer 10 mixed questions
+      </Typography>
+
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 1 }}>
+          <CircularProgress size={22} sx={{ color: "rgba(255,255,255,0.7)" }} />
+        </Box>
+      ) : isCompleted ? (
+        /* ── Completed state ── */
+        <Typography
+          sx={{
+            fontWeight: 800,
+            fontSize: "1.1rem",
+            color: "#155724",
+          }}
+        >
+          Completed for today 🎉
+        </Typography>
+      ) : (
+        /* ── Available state ── */
+        <>
+          {/* Reward preview */}
+          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <Box component="img" src={xpsImg} alt="XP" sx={{ width: 16, height: 16 }} />
+              <Typography sx={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.9)", fontWeight: 700 }}>
+                Up to 20 XP
               </Typography>
             </Box>
-            <Box
-              component="img"
-              src={gemsImg}
-              alt="Reward"
-              sx={{ width: 24, height: 24, objectFit: "contain" }}
-            />
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <Box component="img" src={gemsImg} alt="Gems" sx={{ width: 16, height: 16 }} />
+              <Typography sx={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.9)", fontWeight: 700 }}>
+                Up to 150 gems
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-      </Box>
+
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={() => navigate("/child/daily-quest")}
+            sx={{
+              backgroundColor: "#fff",
+              color: "#764ba2",
+              fontWeight: 800,
+              fontSize: "0.88rem",
+              borderRadius: "12px",
+              py: 1,
+              textTransform: "none",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+              "&:hover": {
+                backgroundColor: "#f3ecff",
+                boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
+              },
+            }}
+          >
+            Start Challenge →
+          </Button>
+        </>
+      )}
     </Box>
   );
 }
