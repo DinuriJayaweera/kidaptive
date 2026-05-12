@@ -145,7 +145,8 @@ export default function ChildProgressPage() {
 
     const hasActivityToday = activitySummary.today.totalLearningSeconds > 0
         || activitySummary.today.quizzesCompleted > 0
-        || activitySummary.today.xpEarned > 0;
+        || activitySummary.today.xpEarned > 0
+        || activitySummary.dailyQuestSummary?.todayCompleted === true;
 
     return (
         <Box sx={{ fontFamily: "'Poppins', sans-serif" }}>
@@ -374,6 +375,30 @@ export default function ChildProgressPage() {
                                                     <Box component="span" sx={{ fontWeight: 700, color: "#FFCC35" }}>{activitySummary.today.xpEarned}</Box> XP earned today
                                                 </Typography>
                                             </Box>
+
+                                            {/* Daily Quest today */}
+                                            <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1, mt: 0.5 }}>
+                                                <Typography sx={{ fontSize: 16, lineHeight: 1.3 }}>⭐</Typography>
+                                                <Box>
+                                                    <Typography sx={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 600 }}>
+                                                        Daily Quest:{" "}
+                                                        {activitySummary.dailyQuestSummary?.todayCompleted ? (
+                                                            <Box component="span" sx={{ color: "#16a34a", fontWeight: 700 }}>
+                                                                Completed — {activitySummary.dailyQuestSummary.todayScore}%
+                                                            </Box>
+                                                        ) : (
+                                                            <Box component="span" sx={{ color: "#94A3B8", fontStyle: "italic", fontWeight: 400 }}>
+                                                                Not completed yet
+                                                            </Box>
+                                                        )}
+                                                    </Typography>
+                                                    {activitySummary.dailyQuestSummary?.todayCompleted && (
+                                                        <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)" }}>
+                                                            +{activitySummary.dailyQuestSummary.todayXP} XP · +{activitySummary.dailyQuestSummary.todayGems} Gems
+                                                        </Typography>
+                                                    )}
+                                                </Box>
+                                            </Box>
                                         </>
                                     )}
                                 </Box>
@@ -386,16 +411,23 @@ export default function ChildProgressPage() {
                                         Weekly Activity
                                     </Typography>
                                     <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-                                        <Box sx={{ flex: 1, minWidth: 120, background: "var(--progress-time-bg)", borderRadius: 2, p: 2, textAlign: "center" }}>
+                                        <Box sx={{ flex: 1, minWidth: 100, background: "var(--progress-time-bg)", borderRadius: 2, p: 2, textAlign: "center" }}>
                                             <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>This Week Learning Time</Typography>
                                             <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 20, color: "#2563eb" }}>
                                                 {formatDuration(activitySummary.weekly.totalLearningSeconds)}
                                             </Typography>
                                         </Box>
-                                        <Box sx={{ flex: 1, minWidth: 120, background: "var(--progress-quizzes-bg)", borderRadius: 2, p: 2, textAlign: "center" }}>
+                                        <Box sx={{ flex: 1, minWidth: 100, background: "var(--progress-quizzes-bg)", borderRadius: 2, p: 2, textAlign: "center" }}>
                                             <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>This Week Quizzes</Typography>
                                             <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 20, color: "#16a34a" }}>
                                                 {activitySummary.weekly.quizzesCompleted}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ flex: 1, minWidth: 100, background: "rgba(118,75,162,0.08)", borderRadius: 2, p: 2, textAlign: "center" }}>
+                                            <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Daily Quests</Typography>
+                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 20, color: "#764ba2" }}>
+                                                {activitySummary.dailyQuestSummary?.weeklyCompleted ?? 0}
+                                                <Box component="span" sx={{ fontSize: 13, color: "var(--text-tertiary)", fontWeight: 500 }}>/7</Box>
                                             </Typography>
                                         </Box>
                                     </Box>
@@ -450,6 +482,13 @@ export default function ChildProgressPage() {
                                             <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Avg Daily Learning Time</Typography>
                                             <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#c2410c" }}>
                                                 {formatDuration(activitySummary.insights.averageDailyLearningSeconds)}
+                                            </Typography>
+                                        </Box>
+                                        <Box sx={{ background: "rgba(118,75,162,0.07)", borderRadius: 2, p: 2 }}>
+                                            <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Total Daily Quests</Typography>
+                                            <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, fontSize: 18, color: "#764ba2" }}>
+                                                {activitySummary.dailyQuestSummary?.totalCompleted ?? 0}
+                                                <Box component="span" sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 12, color: "var(--text-tertiary)", fontWeight: 500, ml: 0.5 }}>completed</Box>
                                             </Typography>
                                         </Box>
                                     </Box>

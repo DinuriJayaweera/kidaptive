@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import User from '../models/User.js';
 import DailyQuestQuestion from '../models/dailyQuest.model.js';
 import DailyQuestCompletion from '../models/dailyQuestCompletion.model.js';
+import ActivityLog from '../models/activityLog.model.js';
 
 interface QuizAnswer {
   questionId: string;
@@ -143,6 +144,29 @@ export async function submitDailyQuest(childId: string, answers: QuizAnswer[]) {
     gemsEarned,
     questionIds,
   });
+
+  // Log to ActivityLog so screen time and quiz counts appear in the parent dashboard
+  try {
+    const durationSeconds = answers.reduce((sum, a) => sum + (a.timeTaken || 0), 0);
+    await ActivityLog.create({
+      childId,
+      type: 'quiz_complete',
+      description: 'Completed Daily Quest',
+      quizzes: 1,
+      score,
+      durationSeconds,
+    });
+    if (xpEarned > 0) {
+      await ActivityLog.create({
+        childId,
+        type: 'xp_earned',
+        description: `Earned ${xpEarned} XP from Daily Quest`,
+        xp: xpEarned,
+      });
+    }
+  } catch (logErr) {
+    console.error('Daily quest activity log error (non-fatal):', logErr);
+  }
 
   return {
     score,

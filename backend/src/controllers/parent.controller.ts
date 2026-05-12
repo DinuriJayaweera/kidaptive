@@ -3,6 +3,7 @@ import User, { IUser } from "../models/User.js";
 import CategoryProgress from "../models/categoryProgress.model.js";
 import PlacementResult from "../models/placementResult.model.js";
 import ActivityLog from "../models/activityLog.model.js";
+import DailyQuestCompletion from "../models/dailyQuestCompletion.model.js";
 import {
     getParentProfile,
     updateParentProfile,
@@ -136,10 +137,17 @@ export const getChildProgress = async (req: Request, res: Response) => {
     const startOfWeek = new Date(startOfToday);
     startOfWeek.setDate(startOfWeek.getDate() - 6);
 
-    const [todayLogs, weekLogs, recentLogs] = await Promise.all([
+    const todayDateStr = now.toISOString().split('T')[0];
+    const weekStartDateStr = startOfWeek.toISOString().split('T')[0];
+
+    const [todayLogs, weekLogs, recentLogs, todayQuest, weekQuests, totalQuestCount, recentQuests] = await Promise.all([
       ActivityLog.find({ childId: child._id, createdAt: { $gte: startOfToday } }).sort({ createdAt: 1 }),
       ActivityLog.find({ childId: child._id, createdAt: { $gte: startOfWeek } }),
       ActivityLog.find({ childId: child._id }).sort({ createdAt: -1 }).limit(12),
+      DailyQuestCompletion.findOne({ childId: child._id, date: todayDateStr, completed: true }),
+      DailyQuestCompletion.find({ childId: child._id, date: { $gte: weekStartDateStr }, completed: true }),
+      DailyQuestCompletion.countDocuments({ childId: child._id, completed: true }),
+      DailyQuestCompletion.find({ childId: child._id, completed: true }).sort({ createdAt: -1 }).limit(10),
     ]);
 
     const totalLearningSecondsToday = todayLogs.reduce(
@@ -174,6 +182,24 @@ export const getChildProgress = async (req: Request, res: Response) => {
       .filter((log) => log.type === "quiz_complete" && typeof log.score === "number")
       .reduce((max, log) => Math.max(max, log.score as number), -1);
 
+    // Merge ActivityLog + DailyQuestCompletion entries into a single timeline
+    const questTimelineEntries = recentQuests.map((q) => ({
+      id: `quest-${q._id.toString()}`,
+      time: q.createdAt.toISOString(),
+      description: `Daily Quest completed — Score: ${q.score}%, earned +${q.xpEarned} XP and +${q.gemsEarned} Gems`,
+    }));
+
+    const mergedTimeline = [
+      ...recentLogs.map((log) => ({
+        id: log._id.toString(),
+        time: log.createdAt.toISOString(),
+        description: log.description,
+      })),
+      ...questTimelineEntries,
+    ]
+      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+      .slice(0, 12);
+
     const activitySummary = {
       today: {
         startTime: todayLogs[0]?.createdAt ? todayLogs[0].createdAt.toISOString() : null,
@@ -192,11 +218,15 @@ export const getChildProgress = async (req: Request, res: Response) => {
         bestScoreThisWeek: bestScoreThisWeek >= 0 ? bestScoreThisWeek : null,
         averageDailyLearningSeconds: Math.round(totalLearningSecondsWeek / 7),
       },
-      timeline: recentLogs.map((log) => ({
-        id: log._id.toString(),
-        time: log.createdAt.toISOString(),
-        description: log.description,
-      })),
+      timeline: mergedTimeline,
+      dailyQuestSummary: {
+        todayCompleted: !!todayQuest,
+        todayScore: todayQuest?.score,
+        todayXP: todayQuest?.xpEarned,
+        todayGems: todayQuest?.gemsEarned,
+        weeklyCompleted: weekQuests.length,
+        totalCompleted: totalQuestCount,
+      },
     };
 
     res.json({
@@ -249,6 +279,7 @@ export const deleteChild = async (req: Request, res: Response) => {
     await CategoryProgress.deleteMany({ childId: child._id });
     await PlacementResult.deleteMany({ childId: child._id });
     await ActivityLog.deleteMany({ childId: child._id });
+    await DailyQuestCompletion.deleteMany({ childId: child._id });
     await User.deleteOne({ _id: child._id });
 
     res.json({ message: "Child deleted successfully." });

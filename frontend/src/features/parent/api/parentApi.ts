@@ -39,6 +39,14 @@ export interface ActivitySummary {
         averageDailyLearningSeconds: number;
     };
     timeline: ActivityTimelineItem[];
+    dailyQuestSummary?: {
+        todayCompleted: boolean;
+        todayScore?: number;
+        todayXP?: number;
+        todayGems?: number;
+        weeklyCompleted: number;
+        totalCompleted: number;
+    };
 }
 
 export interface EnhancedChildProfile {
