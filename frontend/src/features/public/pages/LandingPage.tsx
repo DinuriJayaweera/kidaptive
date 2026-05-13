@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import kipImg from "../../../assets/Hi 3.png";
+import landingKipBg from "../../../assets/landing_kip.png";
 import butterfliesImg from "../../../assets/butterflies.png";
 import rocketImg from "../../../assets/rocket.png";
 import duckImg from "../../../assets/duck.png";
@@ -17,6 +18,11 @@ import dino3 from "../../../assets/5.png";
 import dino5 from "../../../assets/6.png";
 import dino6 from "../../../assets/3.png";
 import dino7 from "../../../assets/7.png";
+import dino1Img from "../../../assets/dino_1.png";
+import dino2Img from "../../../assets/dino_2.png";
+import dino3Img from "../../../assets/dino_3.png";
+import dino4Img from "../../../assets/dino_4.png";
+import dino5Img from "../../../assets/dino_5.png";
 import { useRef, useState, useEffect } from "react";
 
 /* ─── Fires once when element enters viewport ─── */
@@ -114,6 +120,127 @@ const Stars = ({ rating }: { rating: number }) => (
   </Box>
 );
 
+/* ─── Floating sparkle dot ─── */
+const Sparkle = ({ char, top, left, right, delay, size = "1.2rem" }: {
+  char: string; top: string; left?: string; right?: string; delay: number; size?: string;
+}) => (
+  <Box
+    aria-hidden
+    sx={{
+      position: "absolute",
+      fontSize: size,
+      top,
+      left,
+      right,
+      pointerEvents: "none",
+      userSelect: "none",
+      opacity: 0.35,
+      animation: `sparkleFloat 3.4s ease-in-out ${delay}s infinite`,
+      "@keyframes sparkleFloat": {
+        "0%, 100%": { transform: "translateY(0) rotate(0deg)", opacity: 0.3 },
+        "50%": { transform: "translateY(-16px) rotate(25deg)", opacity: 0.6 },
+      },
+    }}
+  >
+    {char}
+  </Box>
+);
+
+/* ─── CSS cloud ─── */
+const Cloud = ({ top, left, right, scale = 1, opacity = 0.45, delay = 0 }: {
+  top: string; left?: string; right?: string; scale?: number; opacity?: number; delay?: number;
+}) => (
+  <Box
+    aria-hidden
+    sx={{
+      position: "absolute",
+      top,
+      left,
+      right,
+      width: 100 * scale,
+      height: 40 * scale,
+      borderRadius: "50px",
+      background: "rgba(255,255,255,0.55)",
+      opacity,
+      pointerEvents: "none",
+      backdropFilter: "blur(2px)",
+      animation: `cloudDrift 8s ease-in-out ${delay}s infinite`,
+      "@keyframes cloudDrift": {
+        "0%, 100%": { transform: "translateX(0)" },
+        "50%": { transform: "translateX(10px)" },
+      },
+      "&::before": {
+        content: '""',
+        position: "absolute",
+        width: 50 * scale,
+        height: 50 * scale,
+        borderRadius: "50%",
+        background: "rgba(255,255,255,0.55)",
+        top: -(20 * scale),
+        left: 15 * scale,
+      },
+      "&::after": {
+        content: '""',
+        position: "absolute",
+        width: 35 * scale,
+        height: 35 * scale,
+        borderRadius: "50%",
+        background: "rgba(255,255,255,0.55)",
+        top: -(12 * scale),
+        right: 15 * scale,
+      },
+    }}
+  />
+);
+
+const roadmapSteps = [
+  {
+    num: 1,
+    emoji: "🔍",
+    title: "Placement Test",
+    desc: "We find the perfect starting level for your child.",
+    color: "#5BC8F5",
+    nodeColor: "#0EA5E9",
+    img: dino1Img,
+  },
+  {
+    num: 2,
+    emoji: "📚",
+    title: "Adaptive Lessons",
+    desc: "Lessons adapt to your child's progress and learning speed.",
+    color: "#A78BFA",
+    nodeColor: "#7C3AED",
+    img: dino2Img,
+  },
+  {
+    num: 3,
+    emoji: "🎮",
+    title: "Fun Activities",
+    desc: "Children learn through games, stories, and interactive activities.",
+    color: "#4ADE80",
+    nodeColor: "#16A34A",
+    img: dino3Img,
+  },
+  {
+    num: 4,
+    emoji: "🏆",
+    title: "Rewards & Achievements",
+    desc: "Earn exciting rewards and celebrate every milestone.",
+    color: "#FBBF24",
+    nodeColor: "#D97706",
+    img: dino4Img,
+  },
+  {
+    num: 5,
+    emoji: "🌟",
+    title: "English Champion",
+    desc: "Grow into a confident English learner step by step.",
+    color: "#F472B6",
+    nodeColor: "#DB2777",
+    img: dino5Img,
+  },
+];
+
 export default function LandingPage() {
   const navigate = useNavigate();
   const { ref: whoRef, inView: whoInView } = useInView(0.25);
@@ -121,90 +248,64 @@ export default function LandingPage() {
   const { ref: whyParentsRef, inView: whyParentsInView } = useInView(0.2);
   const { ref: statsRef, inView: statsInView } = useInView(0.3);
   const { ref: testimonialsRef, inView: testimonialsInView } = useInView(0.2);
+  const { ref: howItWorksRef, inView: howItWorksInView } = useInView(0.1);
 
   return (
     <Box>
       {/* ═══════════════ HERO ═══════════════ */}
-      <Box sx={{ backgroundColor: "var(--landing-hero-bg, #c8e6f7)", mt: "-100px", pt: "100px" }}>
-        <Container maxWidth="lg">
-          <Grid container alignItems="center" sx={{ minHeight: { xs: "auto", md: "420px" }, py: { xs: 6, md: 5 } }} spacing={4}>
-            <Grid size={{ xs: 12, md: 6 }}>
+      <Box
+        sx={{
+          mt: "-100px",
+          pt: "100px",
+          position: "relative",
+          backgroundImage: `url(${landingKipBg})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center center",
+          backgroundRepeat: "no-repeat",
+          minHeight: { xs: "480px", sm: "560px", md: "650px" },
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Container maxWidth="lg" sx={{ flex: 1, display: "flex", alignItems: "center" }}>
+          <Box sx={{ width: "100%", display: "flex", alignItems: "center", justifyContent: { xs: "center", md: "space-between" }, flexDirection: { xs: "column-reverse", md: "row" }, gap: { xs: 2, md: 4 } }}>
+            <Box sx={{ textAlign: { xs: "center", md: "left" }, maxWidth: { xs: "100%", md: 520 }, pl: { md: "4%" } }}>
               <Typography
                 variant="h2"
-                sx={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 900, color: "var(--landing-text-main, #1a1a2e)", lineHeight: 1.15, fontSize: { xs: "2.1rem", sm: "2.5rem", md: "3.2rem" }, mb: 2 }}
+                sx={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 900, color: "#1a1a2e", lineHeight: 1.1, fontSize: { xs: "2.8rem", sm: "3.5rem", md: "4.2rem" }, mb: 2, textShadow: "0 2px 12px rgba(255,255,255,0.65)" }}
               >
                 Learn English{" "}
                 <Box component="span" sx={{ display: "block" }}>
                   with{" "}
-                  <Box component="span" sx={{ color: "#86DB8C" }}>Kip!</Box>
+                  <Box component="span" sx={{ color: "#4CAF50" }}>Kip!</Box>
                 </Box>
               </Typography>
-              <Typography variant="body1" sx={{ fontFamily: "'Poppins', sans-serif", color: "var(--landing-text-muted, #444)", mb: 4, maxWidth: 420, lineHeight: 1.8 }}>
+              <Typography variant="body1" sx={{ fontFamily: "'Poppins', sans-serif", color: "#334155", mb: 2, maxWidth: { xs: "100%", md: 440 }, fontSize: { xs: "1rem", md: "1.15rem" }, lineHeight: 1.8, textShadow: "0 1px 6px rgba(255,255,255,0.5)" }}>
                 Fun grammar, writing, and vocabulary lessons designed for young learners. Personalized learning paths that adapt to your child's level and progress.
               </Typography>
-              <Button
-                variant="contained"
-                size="large"
-                onClick={() => {
-                  const el = whoRef.current;
-                  if (el) {
-                    const y = el.getBoundingClientRect().top + window.scrollY - 90;
-                    window.scrollTo({ top: y, behavior: "smooth" });
-                  }
-                }}
-                sx={{
-                  backgroundColor: "#3ab5e6",
-                  borderRadius: "50px",
-                  textTransform: "none",
-                  fontFamily: "'Poppins', sans-serif",
-                  fontWeight: 700,
-                  px: 4,
-                  py: 1.5,
-                  fontSize: "1rem",
-                  boxShadow: "0 4px 20px rgba(58,181,230,0.45)",
-                  transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                  animation: "btnGlow 2.4s ease-in-out infinite",
-                  "@keyframes btnGlow": {
-                    "0%, 100%": { boxShadow: "0 4px 20px rgba(58,181,230,0.45)" },
-                    "50%": { boxShadow: "0 6px 32px rgba(58,181,230,0.75)" },
-                  },
-                  "&:hover": {
-                    backgroundColor: "#1ea0d0",
-                    transform: "scale(1.13) translateY(-4px)",
-                    boxShadow: "0 14px 36px rgba(58,181,230,0.65)",
-                    animation: "none",
-                  },
-                  "&:active": { transform: "scale(0.95)", transition: "all 0.1s" },
-                }}
-              >
-                Get Started!
-              </Button>
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }} sx={{ textAlign: "center" }}>
-              <Box
-                component="img"
-                src={kipImg}
-                alt="Kip the dinosaur"
-                sx={{
-                  width: { xs: 200, sm: 260, md: 380 },
-                  maxWidth: "100%",
-                  filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.15))",
-                  animation: "kipFloat 3.2s ease-in-out infinite",
-                  "@keyframes kipFloat": {
-                    "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
-                    "40%": { transform: "translateY(-18px) rotate(2deg)" },
-                    "70%": { transform: "translateY(-10px) rotate(-1deg)" },
-                  },
-                }}
-              />
-            </Grid>
-          </Grid>
+            </Box>
+            <Box
+              component="img"
+              src={kipImg}
+              alt="Kip waving hello"
+              sx={{
+                width: { xs: 220, sm: 300, md: 400 },
+                maxWidth: "100%",
+                filter: "drop-shadow(0 12px 32px rgba(0,0,0,0.15))",
+                animation: "kipFloat 3.2s ease-in-out infinite",
+                "@keyframes kipFloat": {
+                  "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
+                  "40%": { transform: "translateY(-18px) rotate(2deg)" },
+                  "70%": { transform: "translateY(-10px) rotate(-1deg)" },
+                },
+              }}
+            />
+          </Box>
         </Container>
-        <WaveDown from="var(--landing-hero-bg, #c8e6f7)" to="var(--landing-bg, #ffffff)" />
       </Box>
 
       {/* ═══════════════ WHO ARE YOU? ═══════════════ */}
-      <Box ref={whoRef} sx={{ backgroundColor: "var(--landing-bg, #ffffff)", py: 8 }}>
+      <Box ref={whoRef} sx={{ backgroundColor: "var(--landing-bg, #ffffff)", py: { xs: 5, md: 6 } }}>
         <Container maxWidth="md">
           <Box
             sx={{
@@ -216,7 +317,7 @@ export default function LandingPage() {
             <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "var(--landing-text-main, #1a1a2e)", mb: 0.5 }}>
               WHO ARE YOU?
             </Typography>
-            <Typography variant="body1" sx={{ fontFamily: "'Poppins', sans-serif", textAlign: "center", color: "var(--landing-text-muted, #777)", mb: 5 }}>
+            <Typography variant="body1" sx={{ fontFamily: "'Poppins', sans-serif", textAlign: "center", color: "var(--landing-text-muted, #777)", mb: 3 }}>
               Select your profile to continue your journey
             </Typography>
 
@@ -333,11 +434,320 @@ export default function LandingPage() {
         </Container>
       </Box>
 
+      {/* ═══════════════ HOW IT WORKS ═══════════════ */}
+      <Box id="how-it-works">
+        <WaveUp from="var(--landing-bg, #ffffff)" to="#E0F2FE" />
+        <Box
+          sx={{
+            background: "linear-gradient(160deg, #E0F2FE 0%, #BAE6FD 45%, #E0F7FA 100%)",
+            py: { xs: 7, md: 10 },
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          {/* ── Floating background sparkles ── */}
+          <Sparkle char="✦" top="6%"  left="3%"  delay={0}   size="1.5rem" />
+          <Sparkle char="⭐" top="12%" right="5%" delay={0.8} size="1rem" />
+          <Sparkle char="✧" top="28%" left="7%"  delay={1.4} size="1.2rem" />
+          <Sparkle char="✦" top="45%" right="3%" delay={0.4} size="0.9rem" />
+          <Sparkle char="⭐" top="60%" left="4%"  delay={2.0} size="1.3rem" />
+          <Sparkle char="✧" top="75%" right="7%" delay={0.9} size="1rem" />
+          <Sparkle char="✦" top="88%" left="8%"  delay={1.7} size="0.9rem" />
+          <Sparkle char="⭐" top="92%" right="4%" delay={0.3} size="1.1rem" />
+
+          {/* ── Soft clouds ── */}
+          <Cloud top="4%"  right="12%" scale={1.1} opacity={0.4} delay={0} />
+          <Cloud top="18%" left="2%"   scale={0.8} opacity={0.35} delay={2} />
+          <Cloud top="52%" right="5%"  scale={0.9} opacity={0.3} delay={4} />
+          <Cloud top="78%" left="1%"   scale={1.2} opacity={0.38} delay={1} />
+
+          <Container maxWidth="lg">
+            <Box
+              ref={howItWorksRef}
+              sx={{
+                opacity: howItWorksInView ? 1 : 0,
+                transform: howItWorksInView ? "translateY(0)" : "translateY(40px)",
+                transition: "opacity 0.8s ease, transform 0.8s cubic-bezier(0.34,1.56,0.64,1)",
+              }}
+            >
+              {/* ── Heading ── */}
+              <Typography
+                variant="overline"
+                sx={{
+                  fontFamily: "'Poppins', sans-serif",
+                  display: "block",
+                  textAlign: "center",
+                  color: "#0369a1",
+                  fontWeight: 700,
+                  letterSpacing: 4,
+                  fontSize: "0.68rem",
+                  mb: 0.5,
+                }}
+              >
+                YOUR LEARNING ADVENTURE
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: "'Baloo 2', sans-serif",
+                  textAlign: "center",
+                  fontWeight: 900,
+                  color: "#0c4a6e",
+                  fontSize: { xs: "2rem", md: "2.6rem" },
+                  lineHeight: 1.15,
+                  mb: 1,
+                }}
+              >
+                How Kidaptive Works 🗺️
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: "'Poppins', sans-serif",
+                  textAlign: "center",
+                  color: "#334155",
+                  fontSize: { xs: "0.9rem", md: "1rem" },
+                  mb: { xs: 5, md: 8 },
+                  maxWidth: 500,
+                  mx: "auto",
+                  lineHeight: 1.7,
+                }}
+              >
+                Every child's journey is unique. Here's how we guide yours.
+              </Typography>
+
+              {/* ── Steps ── */}
+              <Box sx={{ position: "relative" }}>
+                {/* Vertical dashed path line — desktop only */}
+                <Box
+                  sx={{
+                    display: { xs: "none", md: "block" },
+                    position: "absolute",
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    top: 40,
+                    bottom: 40,
+                    width: 5,
+                    background:
+                      "repeating-linear-gradient(to bottom, rgba(3,105,161,0.4) 0px, rgba(3,105,161,0.4) 12px, transparent 12px, transparent 24px)",
+                    borderRadius: 4,
+                    zIndex: 0,
+                  }}
+                />
+
+                {roadmapSteps.map((step, i) => (
+                  <Box
+                    key={step.num}
+                    sx={{
+                      display: "flex",
+                      flexDirection: { xs: "column", md: i % 2 === 0 ? "row" : "row-reverse" },
+                      alignItems: "center",
+                      gap: { xs: 2, md: 4 },
+                      mb: i < roadmapSteps.length - 1 ? { xs: 4, md: 6 } : 0,
+                      position: "relative",
+                      zIndex: 1,
+                      opacity: howItWorksInView ? 1 : 0,
+                      transform: howItWorksInView
+                        ? "translateX(0) translateY(0)"
+                        : i % 2 === 0
+                        ? "translateX(-40px) translateY(20px)"
+                        : "translateX(40px) translateY(20px)",
+                      transition: `opacity 0.55s ease ${i * 140}ms, transform 0.65s cubic-bezier(0.34,1.56,0.64,1) ${i * 140}ms`,
+                    }}
+                  >
+                    {/* ── Step card ── */}
+                    <Box
+                      sx={{
+                        flex: 1,
+                        maxWidth: { md: "calc(50% - 60px)" },
+                        background: "#fff",
+                        borderRadius: "28px",
+                        p: { xs: "20px 20px 22px", md: "28px 28px 30px" },
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.07), 0 2px 8px rgba(0,0,0,0.04)",
+                        border: `2.5px solid ${step.color}35`,
+                        position: "relative",
+                        overflow: "hidden",
+                        transition: "all 0.4s cubic-bezier(0.34,1.56,0.64,1)",
+                        cursor: "default",
+                        "&:hover": {
+                          transform: "translateY(-10px) scale(1.015)",
+                          boxShadow: `0 28px 60px ${step.color}28, 0 4px 16px rgba(0,0,0,0.06)`,
+                          borderColor: step.color,
+                          "& .step-img": {
+                            transform: "scale(1.12) translateY(-6px)",
+                            filter: `drop-shadow(0 10px 20px ${step.color}55)`,
+                          },
+                          "& .node-ring": {
+                            opacity: 1,
+                            transform: "scale(1)",
+                          },
+                        },
+                      }}
+                    >
+                      {/* Decorative blob */}
+                      <Box
+                        sx={{
+                          position: "absolute",
+                          top: -40,
+                          ...(i % 2 === 0 ? { right: -40 } : { left: -40 }),
+                          width: 140,
+                          height: 140,
+                          borderRadius: "50%",
+                          background: `${step.color}12`,
+                          pointerEvents: "none",
+                        }}
+                      />
+
+                      <Box sx={{ display: "flex", alignItems: "flex-start", gap: { xs: 2, md: 2.5 } }}>
+                        {/* Illustration */}
+                        <Box
+                          component="img"
+                          src={step.img}
+                          alt={step.title}
+                          className="step-img"
+                          sx={{
+                            width: { xs: 110, md: 140 },
+                            height: { xs: 110, md: 140 },
+                            objectFit: "contain",
+                            flexShrink: 0,
+                            transition: "transform 0.4s cubic-bezier(0.34,1.56,0.64,1), filter 0.4s ease",
+                            filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.1))",
+                            animation: `imgBob${step.num} ${3 + i * 0.3}s ease-in-out ${i * 0.4}s infinite`,
+                            [`@keyframes imgBob${step.num}`]: {
+                              "0%, 100%": { transform: "translateY(0)" },
+                              "50%": { transform: "translateY(-6px)" },
+                            },
+                          }}
+                        />
+
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          {/* Step badge */}
+                          <Box
+                            sx={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 0.5,
+                              background: `${step.color}20`,
+                              color: step.nodeColor,
+                              borderRadius: "999px",
+                              px: 1.4,
+                              py: "3px",
+                              fontSize: "0.68rem",
+                              fontFamily: "'Poppins', sans-serif",
+                              fontWeight: 700,
+                              mb: 0.75,
+                              letterSpacing: 0.6,
+                              textTransform: "uppercase",
+                            }}
+                          >
+                            {step.emoji} Step {step.num}
+                          </Box>
+
+                          {/* Title */}
+                          <Typography
+                            sx={{
+                              fontFamily: "'Baloo 2', sans-serif",
+                              fontWeight: 800,
+                              fontSize: { xs: "1.05rem", md: "1.2rem" },
+                              color: "#1a1a2e",
+                              lineHeight: 1.2,
+                              mb: 0.6,
+                            }}
+                          >
+                            {step.title}
+                          </Typography>
+
+                          {/* Description */}
+                          <Typography
+                            sx={{
+                              fontFamily: "'Poppins', sans-serif",
+                              fontSize: { xs: "0.82rem", md: "0.87rem" },
+                              color: "#64748b",
+                              lineHeight: 1.7,
+                            }}
+                          >
+                            {step.desc}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+
+                    {/* ── Checkpoint node ── */}
+                    <Box
+                      sx={{
+                        flexShrink: 0,
+                        width: { xs: 60, md: 76 },
+                        height: { xs: 60, md: 76 },
+                        borderRadius: "50%",
+                        background: `radial-gradient(circle at 35% 35%, ${step.color}, ${step.nodeColor})`,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: { xs: "1.5rem", md: "1.9rem" },
+                        color: "#fff",
+                        border: "4px solid #fff",
+                        zIndex: 2,
+                        boxShadow: `0 0 0 6px ${step.color}30, 0 8px 28px ${step.nodeColor}55`,
+                        transition: "transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease",
+                        animation: `nodePulse${step.num} 3s ease-in-out ${i * 0.6}s infinite`,
+                        [`@keyframes nodePulse${step.num}`]: {
+                          "0%, 100%": {
+                            boxShadow: `0 0 0 6px ${step.color}30, 0 8px 28px ${step.nodeColor}55`,
+                          },
+                          "50%": {
+                            boxShadow: `0 0 0 14px ${step.color}15, 0 12px 36px ${step.nodeColor}80`,
+                            transform: "scale(1.04)",
+                          },
+                        },
+                        "&:hover": {
+                          transform: "scale(1.14) rotate(6deg)",
+                          boxShadow: `0 0 0 18px ${step.color}12, 0 16px 40px ${step.nodeColor}90`,
+                        },
+                      }}
+                    >
+                      {step.emoji}
+                    </Box>
+
+                    {/* Spacer for zigzag balance */}
+                    <Box sx={{ flex: 1, maxWidth: { md: "calc(50% - 60px)" }, display: { xs: "none", md: "block" } }} />
+                  </Box>
+                ))}
+              </Box>
+
+              {/* ── Bottom CTA ── */}
+              <Box sx={{ textAlign: "center", mt: { xs: 5, md: 7 } }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => navigate("/auth/child/pin")}
+                  sx={{
+                    background: "linear-gradient(135deg, #0284C7, #38BDF8)",
+                    borderRadius: "50px",
+                    textTransform: "none",
+                    fontFamily: "'Poppins', sans-serif",
+                    fontWeight: 700,
+                    px: 5,
+                    py: 1.6,
+                    fontSize: "1rem",
+                    color: "#fff",
+                    boxShadow: "0 6px 24px rgba(2,132,199,0.4)",
+                    transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                    "&:hover": {
+                      transform: "scale(1.08) translateY(-4px)",
+                      boxShadow: "0 16px 40px rgba(2,132,199,0.55)",
+                    },
+                  }}
+                >
+                  Start Your Journey ✨
+                </Button>
+              </Box>
+            </Box>
+          </Container>
+        </Box>
+        <WaveDown from="#E0F7FA" to="var(--landing-feature-bg, #E0F2FE)" />
+      </Box>
+
       {/* ═══════════════ FEATURES ═══════════════ */}
-      <Box>
-        <WaveUp from="var(--landing-bg, #ffffff)" to="var(--landing-feature-bg, #E0F2FE)" />
+      <Box id="features">
         <Box sx={{ backgroundColor: "var(--landing-feature-bg, #E0F2FE)", py: 6 }}>
-          {/* Narrow centered wrapper — stops cards from stretching wall-to-wall */}
           <Box sx={{ maxWidth: 900, mx: "auto", px: { xs: 2, sm: 3 } }}>
             <Box
               ref={featuresRef}
@@ -347,7 +757,6 @@ export default function LandingPage() {
                 transition: "opacity 0.7s ease, transform 0.7s cubic-bezier(0.34,1.56,0.64,1)",
               }}
             >
-              {/* ── Heading ── */}
               <Typography
                 variant="overline"
                 sx={{
@@ -377,7 +786,6 @@ export default function LandingPage() {
                 Everything to master English
               </Typography>
 
-              {/* ── Cards row ── */}
               <Box
                 sx={{
                   display: "flex",
@@ -441,7 +849,6 @@ export default function LandingPage() {
                         height: "100%",
                       }}
                     >
-                      {/* ── Mascot image area (hover targets only the avatar) ── */}
                       <Box
                         sx={{
                           display: "flex",
@@ -452,7 +859,6 @@ export default function LandingPage() {
                           pb: 1.5,
                           height: 190,
                           flexShrink: 0,
-                          /* Avatar-only hover */
                           "&:hover .dino-img": {
                             transform: "translateY(-10px) scale(1.10)",
                             filter: "drop-shadow(0 8px 14px rgba(0,0,0,0.18))",
@@ -476,7 +882,6 @@ export default function LandingPage() {
                         />
                       </Box>
 
-                      {/* ── Text panel ── */}
                       <Box
                         sx={{
                           backgroundColor: f.textBg,

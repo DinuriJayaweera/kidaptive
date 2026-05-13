@@ -9,13 +9,14 @@ import {
   Tooltip,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../../features/auth/context/AuthContext";
 import logoImg from "../../assets/logo.png";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated, user, role } = useAuth();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -30,11 +31,35 @@ export default function Navbar() {
   const dashboardPath =
     role === "parent" ? "/parent/dashboard" : "/child/dashboard";
 
-  const navLinks = [
+  const scrollToSection = (id: string) => {
+    const doScroll = () => {
+      const el = document.getElementById(id);
+      if (el) {
+        const y = el.getBoundingClientRect().top + window.scrollY - 90;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+    };
+    if (location.pathname !== "/") {
+      navigate("/");
+      setTimeout(doScroll, 280);
+    } else {
+      doScroll();
+    }
+  };
+
+  type NavItem = { label: string; path?: string; scrollTo?: string };
+
+  const navLinks: NavItem[] = [
     { label: "Home", path: "/" },
-    { label: "Features", path: "/#features" },
+    { label: "How it Works", scrollTo: "how-it-works" },
+    { label: "Features", scrollTo: "features" },
     ...(!isAuthenticated ? [{ label: "Login", path: "/auth/role" }] : []),
   ];
+
+  const handleNavClick = (item: NavItem) => {
+    if (item.scrollTo) scrollToSection(item.scrollTo);
+    else if (item.path) navigate(item.path);
+  };
 
   return (
     <Box
@@ -43,7 +68,6 @@ export default function Navbar() {
         top: 0,
         zIndex: 1100,
         mt: "14px",
-        /* ── Keyframes ── */
         "@keyframes logoBob": {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-3px)" },
@@ -133,7 +157,7 @@ export default function Navbar() {
           {navLinks.map((item, i) => (
             <Button
               key={item.label}
-              onClick={() => navigate(item.path)}
+              onClick={() => handleNavClick(item)}
               disableRipple
               sx={{
                 color: "#fff",
@@ -157,8 +181,7 @@ export default function Navbar() {
                   backgroundColor: "#FDC700",
                   borderRadius: "2px",
                   transform: "translateX(-50%)",
-                  transition:
-                    "width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  transition: "width 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
                 },
                 "&:hover": {
                   backgroundColor: "transparent",
@@ -198,8 +221,7 @@ export default function Navbar() {
                 px: "24px",
                 boxShadow: "0 3px 12px rgba(253,199,0,0.35)",
                 animation: "slideDown 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both",
-                transition:
-                  "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                transition: "all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
                 "&:hover": {
                   backgroundColor: "#E8B600",
                   transform: "scale(1.04) translateY(-1px)",
@@ -262,12 +284,14 @@ export default function Navbar() {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
             sx={{ display: { xs: "block", md: "none" } }}
-            PaperProps={{
-              sx: {
-                borderRadius: 3,
-                minWidth: 200,
-                mt: 1,
-                boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+            slotProps={{
+              paper: {
+                sx: {
+                  borderRadius: 3,
+                  minWidth: 200,
+                  mt: 1,
+                  boxShadow: "0 8px 30px rgba(0,0,0,0.12)",
+                },
               },
             }}
           >
@@ -281,7 +305,7 @@ export default function Navbar() {
                 key={item.label}
                 onClick={() => {
                   handleMenuClose();
-                  navigate(item.path);
+                  handleNavClick(item);
                 }}
                 sx={{
                   fontFamily: "'Poppins', sans-serif",
