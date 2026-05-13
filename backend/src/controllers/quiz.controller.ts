@@ -7,6 +7,7 @@ import ActivityLog from '../models/activityLog.model.js';
 import type { TokenPayload } from '../utils/jwt.js';
 import { startQuiz, submitQuiz as serviceSubmitQuiz, getCategoryProgress as serviceGetCategoryProgress } from '../services/quiz.service.js';
 import { evaluateAchievements, recordQuizSideEffects } from '../services/achievements.service.js';
+import { createNotification } from '../services/notification.service.js';
 
 type AuthRequest = Request & { user: TokenPayload };
 
@@ -105,6 +106,59 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
             newlyUnlockedAchievements = await evaluateAchievements(userId);
         } catch (achErr) {
             console.error("Achievement evaluation failed (non-fatal):", achErr);
+        }
+
+        // ── Notification triggers (non-fatal) ──────────────────────────────────
+        try {
+            const fmt = (s: string) =>
+                s.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
+            // Level up / Champion
+            if (result.levelUp && result.newLevel) {
+                if (result.newLevel === 'champion') {
+                    await createNotification(userId, 'champion',
+                        '🏆 Champion Unlocked!',
+                        `${child.name} just unlocked Champion level in ${fmt(categoryId)}! What an achievement!`,
+                        '🏆');
+                } else {
+                    await createNotification(userId, 'level_up',
+                        '🌟 Level Up!',
+                        `${child.name} leveled up to ${fmt(result.newLevel)} in ${fmt(categoryId)}!`,
+                        '🌟');
+                }
+            }
+
+            // Streak milestones
+            const STREAK_MILESTONES = [3, 7, 14, 30];
+            if (STREAK_MILESTONES.includes(streak)) {
+                await createNotification(userId, 'streak_milestone',
+                    `🔥 ${streak}-Day Streak!`,
+                    `${child.name} is on a ${streak}-day learning streak! Keep the momentum going!`,
+                    '🔥');
+            }
+
+            // Achievements
+            for (const key of newlyUnlockedAchievements) {
+                await createNotification(userId, 'achievement',
+                    '🎖️ Achievement Unlocked!',
+                    `${child.name} earned the "${fmt(key)}" achievement!`,
+                    '🎖️');
+            }
+
+            // Gems milestones
+            const GEM_MILESTONES = [100, 250, 500, 1000, 2000];
+            const prevGems = (child.gems || 0) - (result.gemsEarned || 0);
+            const newGems  =  child.gems || 0;
+            for (const milestone of GEM_MILESTONES) {
+                if (prevGems < milestone && newGems >= milestone) {
+                    await createNotification(userId, 'gems_milestone',
+                        `💎 ${milestone} Gems Reached!`,
+                        `${child.name} just reached ${milestone} Gems! They're on a roll!`,
+                        '💎');
+                }
+            }
+        } catch (notifErr) {
+            console.error('Notification trigger error (non-fatal):', notifErr);
         }
 
         const totalTimeSeconds = answers.reduce((sum: number, a: any) => sum + (a.timeTaken || 0), 0);

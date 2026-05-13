@@ -5,6 +5,7 @@ import PlacementResult from "../models/placementResult.model.js";
 import ActivityLog from "../models/activityLog.model.js";
 import DailyQuestCompletion from "../models/dailyQuestCompletion.model.js";
 import ChildSession from "../models/childSession.model.js";
+import Notification from "../models/notification.model.js";
 import {
     getParentProfile,
     updateParentProfile,
@@ -294,6 +295,7 @@ export const deleteChild = async (req: Request, res: Response) => {
     await ActivityLog.deleteMany({ childId: child._id });
     await DailyQuestCompletion.deleteMany({ childId: child._id });
     await ChildSession.deleteMany({ childId: child._id });
+    await Notification.deleteMany({ childId: child._id });
     await User.deleteOne({ _id: child._id });
 
     res.json({ message: "Child deleted successfully." });

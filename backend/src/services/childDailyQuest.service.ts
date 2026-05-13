@@ -3,6 +3,7 @@ import User from '../models/User.js';
 import DailyQuestQuestion from '../models/dailyQuest.model.js';
 import DailyQuestCompletion from '../models/dailyQuestCompletion.model.js';
 import ActivityLog from '../models/activityLog.model.js';
+import { createNotification } from './notification.service.js';
 
 interface QuizAnswer {
   questionId: string;
@@ -129,9 +130,11 @@ export async function submitDailyQuest(childId: string, answers: QuizAnswer[]) {
   let gemsEarned = Math.floor((score / 100) * 100);
   if (score === 100) gemsEarned += 50;
 
-  // Update totalXP and gems only — category XP and levels are untouched
-  child.totalXP = (child.totalXP || 0) + xpEarned;
-  child.gems    = (child.gems    || 0) + gemsEarned;
+  // Update totalXP, gems, and lastPlayedDate — category XP and levels are untouched
+  const prevGems    = child.gems || 0;
+  child.totalXP     = (child.totalXP || 0) + xpEarned;
+  child.gems        = prevGems + gemsEarned;
+  child.lastPlayedDate = new Date();
   await child.save();
 
   await DailyQuestCompletion.create({
@@ -144,6 +147,27 @@ export async function submitDailyQuest(childId: string, answers: QuizAnswer[]) {
     gemsEarned,
     questionIds,
   });
+
+  // Parent notifications (non-fatal)
+  try {
+    await createNotification(childId, 'daily_quest',
+      '⭐ Daily Quest Completed!',
+      `${child.name} completed today's Daily Quest with a score of ${score}%! They earned +${xpEarned} XP and +${gemsEarned} Gems.`,
+      '⭐');
+
+    const GEM_MILESTONES = [100, 250, 500, 1000, 2000];
+    const newGems = child.gems;
+    for (const milestone of GEM_MILESTONES) {
+      if (prevGems < milestone && newGems >= milestone) {
+        await createNotification(childId, 'gems_milestone',
+          `💎 ${milestone} Gems Reached!`,
+          `${child.name} just reached ${milestone} Gems! They're on a roll!`,
+          '💎');
+      }
+    }
+  } catch (notifErr) {
+    console.error('Daily quest notification error (non-fatal):', notifErr);
+  }
 
   // Log to ActivityLog so screen time and quiz counts appear in the parent dashboard
   try {

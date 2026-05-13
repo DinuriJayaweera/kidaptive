@@ -3,6 +3,8 @@ import { NotificationsNoneOutlined as BellIcon, Menu as MenuIcon } from "@mui/ic
 import { parentNavSections } from "../navigation/parentNavConfig";
 import { AppBar, Toolbar, IconButton, Box } from "@mui/material";
 import { useAuth } from "../../auth/context/AuthContext";
+import { getUnreadCount } from "../api/notificationsApi";
+import { useEffect, useState } from "react";
 import "../../admin/styles/adminLayout.css";
 
 interface ParentHeaderProps {
@@ -14,6 +16,28 @@ export default function ParentHeader({ userInitials, onDrawerToggle }: ParentHea
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        let cancelled = false;
+        const refresh = async () => {
+            try {
+                const count = await getUnreadCount();
+                if (!cancelled) setUnreadCount(count);
+            } catch {
+                // ignore
+            }
+        };
+        refresh();
+        const interval = setInterval(refresh, 30_000);
+        const onUpdate = () => refresh();
+        window.addEventListener("notifications-updated", onUpdate);
+        return () => {
+            cancelled = true;
+            clearInterval(interval);
+            window.removeEventListener("notifications-updated", onUpdate);
+        };
+    }, []);
 
     // Derive breadcrumb from current path using parent nav sections
     const currentNav = parentNavSections
@@ -65,9 +89,27 @@ export default function ParentHeader({ userInitials, onDrawerToggle }: ParentHea
                 </Box>
 
                 <div className="admin-header__actions">
-                    <button className="admin-header__notification-btn" title="Notifications" aria-label="Notifications">
-                        <BellIcon sx={{ fontSize: 22 }} />
-                        <span className="admin-header__notification-dot" />
+                    <button
+                        className="admin-header__notification-btn"
+                        title="Notifications"
+                        aria-label="Notifications"
+                        onClick={() => navigate("/parent/notifications")}
+                    >
+                        <Box sx={{ position: "relative", display: "inline-flex" }}>
+                            <BellIcon sx={{ fontSize: 22 }} />
+                            {unreadCount > 0 && (
+                                <Box sx={{
+                                    position: "absolute",
+                                    top: -3,
+                                    right: -3,
+                                    width: 9,
+                                    height: 9,
+                                    borderRadius: "50%",
+                                    background: "#25AFF4",
+                                    border: "2px solid #fff",
+                                }} />
+                            )}
+                        </Box>
                     </button>
                     <Box
                         className="admin-header__avatar cursor-pointer"
