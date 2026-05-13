@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
     Box, Typography, Paper, Button, Chip, CircularProgress, IconButton, Tooltip,
 } from "@mui/material";
@@ -52,18 +53,20 @@ function groupByDate(notifications: ParentNotification[]) {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-    level_up:         "#25AFF4",
-    champion:         "#FFCC35",
-    achievement:      "#7c3aed",
-    daily_quest:      "#667eea",
-    streak_milestone: "#f97316",
-    gems_milestone:   "#0d9488",
-    inactive:         "#94a3b8",
+    level_up:               "#25AFF4",
+    champion:               "#FFCC35",
+    achievement:            "#7c3aed",
+    daily_quest:            "#667eea",
+    streak_milestone:       "#f97316",
+    gems_milestone:         "#0d9488",
+    inactive:               "#94a3b8",
+    password_reset_request: "#ef4444",
 };
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function NotificationsPage() {
+    const navigate = useNavigate();
     const [notifications, setNotifications] = useState<ParentNotification[]>([]);
     const [loading, setLoading]             = useState(true);
     const [filter, setFilter]               = useState<"all" | "unread">("all");
@@ -167,7 +170,12 @@ export default function NotificationsPage() {
                                     return (
                                         <Box
                                             key={notif._id}
-                                            onClick={() => { if (!notif.read) handleMarkRead(notif._id); }}
+                                            onClick={() => {
+                                                if (!notif.read) handleMarkRead(notif._id);
+                                                if ((notif.type as string) === "password_reset_request") {
+                                                    navigate(`/parent/reset-child/${notif.childId}`);
+                                                }
+                                            }}
                                             sx={{
                                                 display: "flex",
                                                 alignItems: "flex-start",
@@ -180,7 +188,7 @@ export default function NotificationsPage() {
                                                     : "3px solid #22c55e",
                                                 background: notif.read ? "transparent" : "#22c55e08",
                                                 transition: "border-color 0.5s ease, background 0.5s ease",
-                                                cursor: notif.read ? "default" : "pointer",
+                                                cursor: (notif.type as string) === "password_reset_request" || !notif.read ? "pointer" : "default",
                                             }}
                                         >
                                             {/* Icon */}
@@ -211,6 +219,11 @@ export default function NotificationsPage() {
                                                 <Typography sx={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.5 }}>
                                                     {notif.message}
                                                 </Typography>
+                                                {(notif.type as string) === "password_reset_request" && (
+                                                    <Typography sx={{ fontSize: 11, fontWeight: 700, color: "#ef4444", mt: 0.5 }}>
+                                                        Tap to reset their emoji pattern →
+                                                    </Typography>
+                                                )}
                                                 <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", mt: 0.5 }}>
                                                     {timeAgo(notif.createdAt)}
                                                 </Typography>

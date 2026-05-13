@@ -21,6 +21,7 @@ import childDailyQuestRoutes from "./routes/childDailyQuest.routes.js";
 import childSessionRoutes from "./routes/childSession.routes.js";
 import parentNotificationRoutes from "./routes/parentNotification.routes.js";
 import adminNotificationRoutes from "./routes/adminNotification.routes.js";
+import childPasswordResetRoutes from "./routes/childPasswordReset.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { authenticate, requireRole } from "./middleware/auth.middleware.js";
 import { userPlacementStatus } from "./controllers/placement-test.controller.js";
@@ -68,6 +69,7 @@ app.use("/api/child/daily-quest", childDailyQuestRoutes);
 app.use("/api/child/session", childSessionRoutes);
 app.use("/api/parent/notifications", parentNotificationRoutes);
 app.use("/api/admin/notifications", adminNotificationRoutes);
+app.use("/api/child-password-reset", childPasswordResetRoutes);
 
 // ── Centralized Error Handler ────────────────────────────────────────────────
 app.use(errorHandler);

@@ -7,7 +7,8 @@ export type NotificationType =
   | "daily_quest"
   | "streak_milestone"
   | "gems_milestone"
-  | "inactive";
+  | "inactive"
+  | "password_reset_request";
 
 export interface ParentNotification {
   _id: string;

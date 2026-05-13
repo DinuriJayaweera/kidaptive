@@ -8,6 +8,7 @@ import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
 import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 import ChildSelectPage from "../features/auth/pages/ChildSelectPage";
 import ChildPinPage from "../features/auth/pages/ChildPinPage";
+import ChildForgotPage from "../features/auth/pages/ChildForgotPage";
 import ParentDashboardPage from "../features/parent/pages/ParentDashboardPage";
 import CreateChildPage from "../features/parent/pages/CreateChildPage";
 import ParentChildrenPage from "../features/parent/pages/ParentChildrenPage";
@@ -15,6 +16,7 @@ import ChildProgressPage from "../features/parent/pages/ChildProgressPage";
 import ParentProfilePage from "../features/parent/pages/ParentProfilePage";
 import ParentSettingsPage from "../features/parent/pages/ParentSettingsPage";
 import NotificationsPage from "../features/parent/pages/NotificationsPage";
+import ChildPasswordResetPage from "../features/parent/pages/ChildPasswordResetPage";
 import ParentLayout from "../features/parent/layouts/ParentLayout";
 import ChildDashboardPage from "../features/child/pages/ChildDashboardPage";
 import ChildIntroPage from "../features/child/pages/ChildIntroPage";
@@ -73,6 +75,7 @@ export default function AppRoutes() {
             {/* Child auth */}
             <Route path="/auth/child/select" element={<PublicOnlyRoute><ChildSelectPage /></PublicOnlyRoute>} />
             <Route path="/auth/child/pin" element={<PublicOnlyRoute><ChildPinPage /></PublicOnlyRoute>} />
+            <Route path="/auth/child/forgot" element={<ChildForgotPage />} />
 
             {/* Legacy redirects */}
             <Route path="/choose-role" element={<Navigate to="/auth/role" replace />} />
@@ -90,6 +93,7 @@ export default function AppRoutes() {
                 <Route path="/parent/settings" element={<ParentSettingsPage />} />
                 <Route path="/parent/profile" element={<ParentProfilePage />} />
                 <Route path="/parent/notifications" element={<NotificationsPage />} />
+                <Route path="/parent/reset-child/:childId" element={<ChildPasswordResetPage />} />
             </Route>
 
             {/* Child — protected */}

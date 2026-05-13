@@ -7,7 +7,8 @@ export type NotificationType =
   | 'daily_quest'
   | 'streak_milestone'
   | 'gems_milestone'
-  | 'inactive';
+  | 'inactive'
+  | 'password_reset_request';
 
 export interface INotification extends Document {
   parentId: Types.ObjectId;
@@ -29,7 +30,7 @@ const notificationSchema = new Schema<INotification>(
     childName: { type: String, required: true },
     type: {
       type: String,
-      enum: ['level_up', 'champion', 'achievement', 'daily_quest', 'streak_milestone', 'gems_milestone', 'inactive'],
+      enum: ['level_up', 'champion', 'achievement', 'daily_quest', 'streak_milestone', 'gems_milestone', 'inactive', 'password_reset_request'],
       required: true,
     },
     title:   { type: String, required: true },

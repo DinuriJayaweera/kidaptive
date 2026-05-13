@@ -235,9 +235,15 @@ export default function ChildPinPage() {
                             </Box>
                         )}
                     </Box>
-                    <Typography sx={{ fontSize: "0.65rem", color: "#94A3B8", textAlign: "center", mt: 0.5 }}>
-                        Forgot your pattern? Ask a parent to reset it.
-                    </Typography>
+                    <Box sx={{ textAlign: "center", mt: 0.5 }}>
+                        <Box
+                            component={Link}
+                            to="/auth/child/forgot"
+                            sx={{ fontSize: "0.7rem", color: "#94A3B8", textDecoration: "none", fontWeight: 500, "&:hover": { color: "#7C3AED", textDecoration: "underline" } }}
+                        >
+                            Forgot your pattern?
+                        </Box>
+                    </Box>
                 </Box>
             </AnimatedPage>
         </Box>
