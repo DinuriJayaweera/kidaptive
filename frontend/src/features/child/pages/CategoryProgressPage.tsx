@@ -6,6 +6,7 @@ import LockIcon from "@mui/icons-material/LockRounded";
 import strengthImg from "../../../assets/strength.png";
 import medalImg from "../../../assets/medal.png";
 import crownImg from "../../../assets/crown.png";
+import bgVideo from "../../../assets/Waterfall_flowing_cloud_moving_202604291503.mp4";
 import "./CategoryProgress.css";
 
 // ── Types ──────────────────────────────────────────────────
@@ -167,6 +168,14 @@ export default function CategoryProgressPage() {
 
   return (
     <div className="cp-page">
+      {/* ── Fixed video background ── */}
+      <div className="cp-bg-video-layer">
+        <video className="cp-bg-video" autoPlay loop muted playsInline>
+          <source src={bgVideo} type="video/mp4" />
+        </video>
+        <div className="cp-bg-video-overlay" />
+      </div>
+
       <header className="cp-header">
         <button className="cp-back-btn" onClick={() => navigate("/child/dashboard")}>
           ← Back

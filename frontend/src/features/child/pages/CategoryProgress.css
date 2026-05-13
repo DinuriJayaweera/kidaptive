@@ -44,9 +44,7 @@
 .cp-bg-video-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(224, 242, 254, 0.55);
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
+  background: rgba(224, 242, 254, 0.15);
 }
 
 .cp-page.centered {
