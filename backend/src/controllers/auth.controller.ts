@@ -27,6 +27,7 @@ import {
     googleSignupParent,
 } from "../services/auth.service.js";
 import type { TokenPayload } from "../utils/jwt.js";
+import { createAdminNotification } from "../services/adminNotification.service.js";
 
 // Helper to get the authenticated user from the request
 function getUser(req: Request): TokenPayload {
@@ -42,6 +43,8 @@ const wrap = (fn: (req: Request, res: Response) => Promise<void>) =>
 export const signup = wrap(async (req, res) => {
     const data = parseBody(parentSignupSchema, req.body);
     const result = await signupParent(data, res);
+    createAdminNotification('new_parent', '👤 New Parent Registered',
+        `A new parent (${data.email}) has registered and is pending email verification.`, '👤').catch(() => {});
     res.status(201).json(result);
 });
 
@@ -104,6 +107,8 @@ export const me = wrap(async (req, res) => {
 export const addChild = wrap(async (req, res) => {
     const data = parseBody(createChildSchema, req.body);
     const child = await createChildProfile(getUser(req).userId, data);
+    createAdminNotification('new_child', '🧒 New Child Added',
+        `A new child profile "${data.name}" (age ${data.age}) has been created on the platform.`, '🧒').catch(() => {});
     res.status(201).json(child);
 });
 
@@ -138,5 +143,7 @@ export const googleLoginHandler = wrap(async (req, res) => {
 export const googleSignupHandler = wrap(async (req, res) => {
     const { token } = req.body;
     const result = await googleSignupParent(token, res);
+    createAdminNotification('new_parent', '👤 New Parent Registered via Google',
+        `A new parent has signed up using Google OAuth.`, '👤').catch(() => {});
     res.status(201).json(result);
 });

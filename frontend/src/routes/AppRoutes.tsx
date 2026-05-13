@@ -53,6 +53,7 @@ import PerformancePage from "../features/admin/pages/PerformancePage";
 import SettingsPage from "../features/admin/pages/SettingsPage";
 import AdminProfilePage from "../features/admin/pages/AdminProfilePage";
 import DailyQuestQuestionsPage from "../features/admin/pages/DailyQuestQuestionsPage";
+import AdminNotificationsPage from "../features/admin/pages/AdminNotificationsPage";
 
 export default function AppRoutes() {
     return (
@@ -128,6 +129,7 @@ export default function AppRoutes() {
                 <Route path="/admin/performance" element={<PerformancePage />} />
                 <Route path="/admin/settings" element={<SettingsPage />} />
                 <Route path="/admin/profile" element={<AdminProfilePage />} />
+                <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
             </Route>
 
             {/* Catch-all */}

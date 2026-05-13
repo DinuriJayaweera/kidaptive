@@ -8,6 +8,7 @@ import type { TokenPayload } from '../utils/jwt.js';
 import { startQuiz, submitQuiz as serviceSubmitQuiz, getCategoryProgress as serviceGetCategoryProgress } from '../services/quiz.service.js';
 import { evaluateAchievements, recordQuizSideEffects } from '../services/achievements.service.js';
 import { createNotification } from '../services/notification.service.js';
+import { createAdminNotification } from '../services/adminNotification.service.js';
 
 type AuthRequest = Request & { user: TokenPayload };
 
@@ -120,6 +121,8 @@ export const submitQuiz = async (req: Request, res: Response): Promise<void> => 
                         '🏆 Champion Unlocked!',
                         `${child.name} just unlocked Champion level in ${fmt(categoryId)}! What an achievement!`,
                         '🏆');
+                    createAdminNotification('champion_reached', '🏆 Champion Level Reached!',
+                        `${child.name} has reached Champion level in ${fmt(categoryId)}!`, '🏆').catch(() => {});
                 } else {
                     await createNotification(userId, 'level_up',
                         '🌟 Level Up!',

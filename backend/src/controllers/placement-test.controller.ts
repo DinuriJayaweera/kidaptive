@@ -9,6 +9,7 @@ import {
   resetPlacement,
 } from "../services/placement-test.service.js";
 import { evaluateAchievements } from "../services/achievements.service.js";
+import { createAdminNotification } from "../services/adminNotification.service.js";
 
 type AuthRequest = Request & { user: TokenPayload };
 
@@ -91,6 +92,14 @@ export const submit = async (req: Request, res: Response): Promise<void> => {
       newlyUnlockedAchievements = await evaluateAchievements(userId);
     } catch (achErr) {
       console.error("Achievement evaluation failed (non-fatal):", achErr);
+    }
+
+    if (result.allCompleted) {
+      const child = await User.findById(userId).select('name age');
+      if (child) {
+        createAdminNotification('placement_completed', '📋 Placement Test Completed',
+          `${child.name} (age ${child.age}) has completed the placement test and been assigned to their learning levels.`, '📋').catch(() => {});
+      }
     }
 
     res.json({ ...result, newlyUnlockedAchievements });

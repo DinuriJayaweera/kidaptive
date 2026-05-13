@@ -235,22 +235,12 @@ body, html {
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: visible;
 }
 
 .admin-header__notification-btn:hover {
     background: #e8f7fe;
     color: #25AFF4;
-}
-
-.admin-header__notification-dot {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #f59e0b;
-    border: 1.5px solid #ffffff;
 }
 
 .admin-header__avatar {

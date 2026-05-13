@@ -8,6 +8,7 @@ import {
     TrendingUp as PerformanceIcon,
     Settings as SettingsIcon,
     EmojiEvents as DailyQuestIcon,
+    Notifications as NotificationsIcon,
 } from "@mui/icons-material";
 
 export interface NavItem {
@@ -32,6 +33,7 @@ export const adminNavSections: NavSection[] = [
             { label: "Categories/Levels", path: "/admin/categories", icon: CategoryIcon },
             { label: "User Management", path: "/admin/users", icon: UserMgmtIcon },
             { label: "Performance", path: "/admin/performance", icon: PerformanceIcon },
+            { label: "Notifications", path: "/admin/notifications", icon: NotificationsIcon },
             { label: "Settings", path: "/admin/settings", icon: SettingsIcon },
         ],
     },
