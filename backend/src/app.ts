@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import path from "path";
 import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import placementRoutes from "./routes/placement.routes.js";
@@ -22,6 +23,7 @@ import childSessionRoutes from "./routes/childSession.routes.js";
 import parentNotificationRoutes from "./routes/parentNotification.routes.js";
 import adminNotificationRoutes from "./routes/adminNotification.routes.js";
 import childPasswordResetRoutes from "./routes/childPasswordReset.routes.js";
+import adminStoryRoutes from "./routes/adminStory.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { authenticate, requireRole } from "./middleware/auth.middleware.js";
 import { userPlacementStatus } from "./controllers/placement-test.controller.js";
@@ -70,6 +72,10 @@ app.use("/api/child/session", childSessionRoutes);
 app.use("/api/parent/notifications", parentNotificationRoutes);
 app.use("/api/admin/notifications", adminNotificationRoutes);
 app.use("/api/child-password-reset", childPasswordResetRoutes);
+app.use("/api/admin/stories", adminStoryRoutes);
+
+// ── Static uploads ───────────────────────────────────────────────────────────
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // ── Centralized Error Handler ────────────────────────────────────────────────
 app.use(errorHandler);

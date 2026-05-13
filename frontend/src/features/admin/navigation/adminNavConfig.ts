@@ -9,6 +9,7 @@ import {
     Settings as SettingsIcon,
     EmojiEvents as DailyQuestIcon,
     Notifications as NotificationsIcon,
+    MenuBook as StoriesIcon,
 } from "@mui/icons-material";
 
 export interface NavItem {
@@ -30,6 +31,7 @@ export const adminNavSections: NavSection[] = [
             { label: "Placement Tests", path: "/admin/placement-tests", icon: PlacementIcon },
             { label: "Quizzes", path: "/admin/quizzes", icon: QuizIcon },
             { label: "Daily Quests", path: "/admin/daily-quests", icon: DailyQuestIcon },
+            { label: "Stories", path: "/admin/stories", icon: StoriesIcon },
             { label: "Categories/Levels", path: "/admin/categories", icon: CategoryIcon },
             { label: "User Management", path: "/admin/users", icon: UserMgmtIcon },
             { label: "Performance", path: "/admin/performance", icon: PerformanceIcon },

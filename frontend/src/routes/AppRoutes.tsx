@@ -56,6 +56,7 @@ import SettingsPage from "../features/admin/pages/SettingsPage";
 import AdminProfilePage from "../features/admin/pages/AdminProfilePage";
 import DailyQuestQuestionsPage from "../features/admin/pages/DailyQuestQuestionsPage";
 import AdminNotificationsPage from "../features/admin/pages/AdminNotificationsPage";
+import AdminStoriesPage from "../features/admin/pages/AdminStoriesPage";
 
 export default function AppRoutes() {
     return (
@@ -134,6 +135,7 @@ export default function AppRoutes() {
                 <Route path="/admin/settings" element={<SettingsPage />} />
                 <Route path="/admin/profile" element={<AdminProfilePage />} />
                 <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
+                <Route path="/admin/stories" element={<AdminStoriesPage />} />
             </Route>
 
             {/* Catch-all */}
