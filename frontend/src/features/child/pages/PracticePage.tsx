@@ -216,7 +216,7 @@ export default function PracticePage() {
                             subtitle="Time to tune in! Listen closely to magical sounds and music 🎵"
                             icon={musicImg}
                             bgColor="#FFE4E1" // Light pink
-                            onClick={() => console.log("Listen clicked")}
+                            onClick={() => navigate("/child/music")}
                         />
 
                         <PracticeCard

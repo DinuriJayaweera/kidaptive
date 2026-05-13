@@ -10,6 +10,7 @@ import {
     EmojiEvents as DailyQuestIcon,
     Notifications as NotificationsIcon,
     MenuBook as StoriesIcon,
+    MusicNote as MusicIcon,
 } from "@mui/icons-material";
 
 export interface NavItem {
@@ -32,6 +33,7 @@ export const adminNavSections: NavSection[] = [
             { label: "Quizzes", path: "/admin/quizzes", icon: QuizIcon },
             { label: "Daily Quests", path: "/admin/daily-quests", icon: DailyQuestIcon },
             { label: "Stories", path: "/admin/stories", icon: StoriesIcon },
+            { label: "Music",   path: "/admin/music",   icon: MusicIcon },
             { label: "Categories/Levels", path: "/admin/categories", icon: CategoryIcon },
             { label: "User Management", path: "/admin/users", icon: UserMgmtIcon },
             { label: "Performance", path: "/admin/performance", icon: PerformanceIcon },

@@ -38,6 +38,7 @@ import GamesPage from "../features/child/pages/GamesPage";
 import DailyQuestPage from "../features/child/pages/DailyQuestPage";
 import StoriesPage from "../features/child/pages/StoriesPage";
 import StoryReaderPage from "../features/child/pages/StoryReaderPage";
+import MusicPage from "../features/child/pages/MusicPage";
 import QuestsPage from "../features/child/pages/QuestsPage";
 import WordFinderGame from "../features/child/pages/games/WordFinderGame";
 import SpellingChallengeGame from "../features/child/pages/games/SpellingChallengeGame";
@@ -59,6 +60,7 @@ import AdminProfilePage from "../features/admin/pages/AdminProfilePage";
 import DailyQuestQuestionsPage from "../features/admin/pages/DailyQuestQuestionsPage";
 import AdminNotificationsPage from "../features/admin/pages/AdminNotificationsPage";
 import AdminStoriesPage from "../features/admin/pages/AdminStoriesPage";
+import AdminMusicPage from "../features/admin/pages/AdminMusicPage";
 
 export default function AppRoutes() {
     return (
@@ -124,6 +126,7 @@ export default function AppRoutes() {
             <Route path="/child/games/word-builder" element={<ChildRoute><WordBuilderGame /></ChildRoute>} />
             <Route path="/child/stories" element={<ChildRoute><StoriesPage /></ChildRoute>} />
             <Route path="/child/stories/:storyId" element={<ChildRoute><StoryReaderPage /></ChildRoute>} />
+            <Route path="/child/music" element={<ChildRoute><MusicPage /></ChildRoute>} />
 
 
             {/* Admin — protected (nested routes under layout) */}
@@ -140,6 +143,7 @@ export default function AppRoutes() {
                 <Route path="/admin/profile" element={<AdminProfilePage />} />
                 <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
                 <Route path="/admin/stories" element={<AdminStoriesPage />} />
+                <Route path="/admin/music"   element={<AdminMusicPage />} />
             </Route>
 
             {/* Catch-all */}

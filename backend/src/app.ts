@@ -25,6 +25,8 @@ import adminNotificationRoutes from "./routes/adminNotification.routes.js";
 import childPasswordResetRoutes from "./routes/childPasswordReset.routes.js";
 import adminStoryRoutes from "./routes/adminStory.routes.js";
 import childStoryRoutes from "./routes/childStory.routes.js";
+import adminMusicRoutes from "./routes/adminMusic.routes.js";
+import childMusicRoutes from "./routes/childMusic.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { authenticate, requireRole } from "./middleware/auth.middleware.js";
 import { userPlacementStatus } from "./controllers/placement-test.controller.js";
@@ -75,6 +77,8 @@ app.use("/api/admin/notifications", adminNotificationRoutes);
 app.use("/api/child-password-reset", childPasswordResetRoutes);
 app.use("/api/admin/stories", adminStoryRoutes);
 app.use("/api/child/stories", childStoryRoutes);
+app.use("/api/admin/music",   adminMusicRoutes);
+app.use("/api/child/music",   childMusicRoutes);
 
 // ── Static uploads ───────────────────────────────────────────────────────────
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
