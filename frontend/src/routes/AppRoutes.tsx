@@ -36,6 +36,8 @@ import MistakesPracticePage from "../features/child/pages/MistakesPracticePage";
 import AchievementsPage from "../features/child/pages/AchievementsPage";
 import GamesPage from "../features/child/pages/GamesPage";
 import DailyQuestPage from "../features/child/pages/DailyQuestPage";
+import StoriesPage from "../features/child/pages/StoriesPage";
+import StoryReaderPage from "../features/child/pages/StoryReaderPage";
 import QuestsPage from "../features/child/pages/QuestsPage";
 import WordFinderGame from "../features/child/pages/games/WordFinderGame";
 import SpellingChallengeGame from "../features/child/pages/games/SpellingChallengeGame";
@@ -120,6 +122,8 @@ export default function AppRoutes() {
             <Route path="/child/games/word-finder" element={<ChildRoute><WordFinderGame /></ChildRoute>} />
             <Route path="/child/games/spelling-challenge" element={<ChildRoute><SpellingChallengeGame /></ChildRoute>} />
             <Route path="/child/games/word-builder" element={<ChildRoute><WordBuilderGame /></ChildRoute>} />
+            <Route path="/child/stories" element={<ChildRoute><StoriesPage /></ChildRoute>} />
+            <Route path="/child/stories/:storyId" element={<ChildRoute><StoryReaderPage /></ChildRoute>} />
 
 
             {/* Admin — protected (nested routes under layout) */}

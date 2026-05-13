@@ -232,7 +232,7 @@ export default function PracticePage() {
                             subtitle="Jump into a storybook adventure and read along with friends 📖"
                             icon={readingImg}
                             bgColor="#D9F1FF" // Light blue
-                            onClick={() => console.log("Stories clicked")}
+                            onClick={() => navigate("/child/stories")}
                         />
                     </Box>
 
