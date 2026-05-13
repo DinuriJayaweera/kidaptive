@@ -1,5 +1,5 @@
 import { Box, IconButton } from "@mui/material";
-import { Backspace as BackspaceIcon, Clear as ClearIcon } from "@mui/icons-material";
+import { Backspace as BackspaceIcon } from "@mui/icons-material";
 import { motion } from "framer-motion";
 
 const EMOJIS = ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼", "🐨", "🐯", "🦁", "🐮", "🐷", "🐸", "🐵", "🐧"];
@@ -22,10 +22,6 @@ export default function EmojiKeypad({ value, onChange, maxLength = 4, error }: E
         if (value.length > 0) {
             onChange(value.slice(0, -1));
         }
-    };
-
-    const handleClear = () => {
-        onChange([]);
     };
 
     return (
@@ -61,10 +57,7 @@ export default function EmojiKeypad({ value, onChange, maxLength = 4, error }: E
             </Box>
 
             {/* Actions */}
-            <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2, px: 1 }}>
-                <IconButton onClick={handleClear} disabled={value.length === 0} sx={{ color: "#e74c3c", backgroundColor: "rgba(231,76,60,0.1)", "&:hover": { backgroundColor: "rgba(231,76,60,0.2)" } }}>
-                    <ClearIcon />
-                </IconButton>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2, px: 1 }}>
                 <IconButton onClick={handleBackspace} disabled={value.length === 0} sx={{ color: "#555", backgroundColor: "rgba(0,0,0,0.05)", "&:hover": { backgroundColor: "rgba(0,0,0,0.1)" } }}>
                     <BackspaceIcon />
                 </IconButton>
