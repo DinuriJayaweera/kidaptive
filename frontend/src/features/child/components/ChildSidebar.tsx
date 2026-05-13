@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Box, Typography, Stack, Button, ClickAwayListener, Tooltip, useTheme, useMediaQuery } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/LogoutRounded";
 import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
+import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/context/AuthContext";
 import { logout as logoutApi } from "../../auth/api/authApi";
@@ -87,7 +88,7 @@ export default function ChildSidebar({ activePage = "LEARN" }: ChildSidebarProps
                 flexDirection: "column",
                 py: { xs: 2, md: 4 },
                 px: { xs: 0.5, sm: 1, md: 3 },
-                overflowY: "auto",
+                overflowY: "hidden",
                 overflowX: "hidden",
                 zIndex: 100,
             }}
@@ -188,18 +189,16 @@ export default function ChildSidebar({ activePage = "LEARN" }: ChildSidebarProps
                                             >
                                                 MORE
                                             </Typography>
-                                            <Typography
+                                            <KeyboardArrowDownRoundedIcon
                                                 sx={{
                                                     display: { xs: "none", md: "block" },
                                                     ml: "auto",
                                                     color: (isActive || moreOpen) ? "#25AFF4" : "#94A3B8",
-                                                    fontSize: "0.8rem",
-                                                    transition: "transform 0.2s",
+                                                    fontSize: 20,
+                                                    transition: "transform 0.25s ease",
                                                     transform: moreOpen ? "rotate(180deg)" : "rotate(0deg)",
                                                 }}
-                                            >
-                                                ▾
-                                            </Typography>
+                                            />
                                         </Box>
                                     </Tooltip>
 

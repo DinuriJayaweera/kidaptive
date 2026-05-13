@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import {
   placementTestApi,
   type PlacementQuestion,
@@ -71,6 +72,20 @@ export default function PlacementQuizPage() {
   useEffect(() => {
     timerRef.current = Date.now();
   }, [currentIndex]);
+
+  // Enter key: Check or Continue
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Enter") return;
+      if (!isChecked) {
+        if (selectedAnswer) handleCheck();
+      } else {
+        handleContinue();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isChecked, selectedAnswer]);
 
   // ── Current question ──────────────────────────────────
   const question = questions[currentIndex];
@@ -215,7 +230,7 @@ export default function PlacementQuizPage() {
         {/* Progress bar */}
         <div className="pq-header">
           <button className="pq-exit" onClick={handleExit} aria-label="Exit">
-            ×
+            <CloseRoundedIcon sx={{ fontSize: 22 }} />
           </button>
           <div className="pq-progress-track">
             <Box className="pq-progress-fill" sx={{ width: `${progress}%` }} />

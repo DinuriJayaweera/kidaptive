@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Box } from "@mui/material";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { startQuiz, submitQuiz } from "../services/quizApi";
 import type { PlacementQuestion } from "../services/placementTestApi";
 
@@ -168,6 +169,21 @@ export default function AdaptiveQuizPage() {
   useEffect(() => {
     timerRef.current = Date.now();
   }, [currentIndex]);
+
+  // Enter key: Check or Continue
+  useEffect(() => {
+    if (phase !== "quiz") return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Enter") return;
+      if (!isChecked) {
+        if (selectedAnswer) handleCheck();
+      } else {
+        handleContinue();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [phase, isChecked, selectedAnswer]);
 
   // ── Quiz Handlers ──────────────────────────────────
   const question = questions[currentIndex];
@@ -446,7 +462,7 @@ export default function AdaptiveQuizPage() {
       <div className="pq-page">
         <div className="pq-card">
           <div className="pq-header">
-            <button className="pq-exit" onClick={handleExit} aria-label="Exit">×</button>
+            <button className="pq-exit" onClick={handleExit} aria-label="Exit"><CloseRoundedIcon sx={{ fontSize: 22 }} /></button>
             <div className="pq-progress-track">
               <Box
                 className="pq-progress-fill"

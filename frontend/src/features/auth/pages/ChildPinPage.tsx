@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Typography, Alert, InputAdornment } from "@mui/material";
 import {
-    ArrowBack as ArrowBackIcon,
+    ChevronLeft as ArrowBackIcon,
     Person as PersonIcon,
     LockOutlined as LockIcon,
-    ArrowForward as ArrowForwardIcon,
+    EastRounded as ArrowForwardIcon,
 } from "@mui/icons-material";
 import { useNavigate, Link } from "react-router-dom";
 import { childLogin, type ChildProfile } from "../api/authApi";
@@ -30,6 +30,14 @@ export default function ChildPinPage() {
     const [username, setUsername] = useState(selectedChild?.username || "");
 
     const triggerShake = () => { setShakeForm(true); setTimeout(() => setShakeForm(false), 600); };
+
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Enter" && emojiPassword.length === 4 && !loading) handleSubmit();
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [emojiPassword, loading]);
 
     const handleSubmit = async () => {
         if (!username) { setError("Please enter your username!"); triggerShake(); return; }

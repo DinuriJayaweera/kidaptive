@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import api from "../../../services/apiClient";
 
 import xpsImg from "../../../assets/xps.png";
@@ -82,6 +83,21 @@ export default function MistakesPracticePage() {
             setPhase("empty");
         }
     };
+
+    // Enter key: Check or Continue (only during quiz phase)
+    useEffect(() => {
+        if (phase !== "quiz") return;
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key !== "Enter") return;
+            if (!isChecked) {
+                if (selectedAnswer) handleCheck();
+            } else {
+                handleContinue();
+            }
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [phase, isChecked, selectedAnswer]);
 
     // ── Quiz Handlers ──────────────────────────────────────────
     const question = questions[currentIndex];
@@ -299,7 +315,7 @@ export default function MistakesPracticePage() {
             <div className="pq-page">
                 <div className="pq-card">
                     <div className="pq-header">
-                        <button className="pq-exit" onClick={() => navigate("/child/practice")} aria-label="Exit">×</button>
+                        <button className="pq-exit" onClick={() => navigate("/child/practice")} aria-label="Exit"><CloseRoundedIcon sx={{ fontSize: 22 }} /></button>
                         <div className="pq-progress-track">
                             <Box
                                 className="pq-progress-fill"

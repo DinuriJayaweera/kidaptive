@@ -8,7 +8,6 @@ import {
     TrendingUp as PerformanceIcon,
     Settings as SettingsIcon,
     EmojiEvents as DailyQuestIcon,
-    Notifications as NotificationsIcon,
     MenuBook as StoriesIcon,
     MusicNote as MusicIcon,
 } from "@mui/icons-material";
@@ -26,18 +25,33 @@ export interface NavSection {
 
 export const adminNavSections: NavSection[] = [
     {
+        title: "Overview",
         items: [
             { label: "Dashboard", path: "/admin/dashboard", icon: DashboardIcon },
-            { label: "Age Groups", path: "/admin/age-groups", icon: AgeGroupIcon },
-            { label: "Placement Tests", path: "/admin/placement-tests", icon: PlacementIcon },
-            { label: "Quizzes", path: "/admin/quizzes", icon: QuizIcon },
-            { label: "Daily Quests", path: "/admin/daily-quests", icon: DailyQuestIcon },
-            { label: "Stories", path: "/admin/stories", icon: StoriesIcon },
-            { label: "Music",   path: "/admin/music",   icon: MusicIcon },
-            { label: "Categories/Levels", path: "/admin/categories", icon: CategoryIcon },
-            { label: "User Management", path: "/admin/users", icon: UserMgmtIcon },
-            { label: "Performance", path: "/admin/performance", icon: PerformanceIcon },
-            { label: "Notifications", path: "/admin/notifications", icon: NotificationsIcon },
+        ],
+    },
+    {
+        title: "Content",
+        items: [
+            { label: "Age Groups",        path: "/admin/age-groups",       icon: AgeGroupIcon },
+            { label: "Placement Tests",   path: "/admin/placement-tests",  icon: PlacementIcon },
+            { label: "Quizzes",           path: "/admin/quizzes",          icon: QuizIcon },
+            { label: "Daily Quests",      path: "/admin/daily-quests",     icon: DailyQuestIcon },
+            { label: "Stories",           path: "/admin/stories",          icon: StoriesIcon },
+            { label: "Music",             path: "/admin/music",            icon: MusicIcon },
+            { label: "Categories/Levels", path: "/admin/categories",       icon: CategoryIcon },
+        ],
+    },
+    {
+        title: "Management",
+        items: [
+            { label: "User Management", path: "/admin/users",        icon: UserMgmtIcon },
+            { label: "Performance",     path: "/admin/performance",  icon: PerformanceIcon },
+        ],
+    },
+    {
+        title: "Account",
+        items: [
             { label: "Settings", path: "/admin/settings", icon: SettingsIcon },
         ],
     },

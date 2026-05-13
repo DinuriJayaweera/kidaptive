@@ -375,7 +375,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #E8F4FD 0%, #F0F4F8 50%, #FFF9E6 100%);
+  background: url('../../../assets/Quiz_bg.png') center center / cover no-repeat;
   font-family: 'Poppins', sans-serif;
   padding: 24px;
   animation: aq-fadeIn 0.4s ease;
@@ -634,7 +634,7 @@
   align-items: center;
   justify-content: center;
   gap: 20px;
-  background: linear-gradient(135deg, #E8F4FD 0%, #F0F4F8 50%, #FFF9E6 100%);
+  background: url('../../../assets/Quiz_bg.png') center center / cover no-repeat;
   font-family: 'Poppins', sans-serif;
   color: #64748b;
 }
@@ -662,7 +662,7 @@
   align-items: center;
   justify-content: center;
   gap: 20px;
-  background: linear-gradient(135deg, #E8F4FD 0%, #F0F4F8 50%, #FFF9E6 100%);
+  background: url('../../../assets/Quiz_bg.png') center center / cover no-repeat;
   font-family: 'Poppins', sans-serif;
   text-align: center;
   padding: 24px;
