@@ -25,8 +25,8 @@ import dino3Img from "../../../assets/dino_3.png";
 import dino4Img from "../../../assets/dino_4.png";
 import dino5Img from "../../../assets/dino_5.png";
 import { useRef, useState, useEffect } from "react";
-import { getPublicRatings } from "../../parent/api/ratingApi";
-import type { PublicRating } from "../../parent/api/ratingApi";
+import { getPublicRatings, getPublicStats } from "../../parent/api/ratingApi";
+import type { PublicRating, PublicStats } from "../../parent/api/ratingApi";
 
 /* ─── Fires once when element enters viewport ─── */
 function useInView(threshold = 0.3) {
@@ -255,12 +255,17 @@ export default function LandingPage() {
 
   const [ratings, setRatings] = useState<PublicRating[]>([]);
   const [ratingsLoading, setRatingsLoading] = useState(true);
+  const [stats, setStats] = useState<PublicStats | null>(null);
 
   useEffect(() => {
     getPublicRatings()
       .then((data) => setRatings(data))
       .catch(() => setRatings([]))
       .finally(() => setRatingsLoading(false));
+
+    getPublicStats()
+      .then((data) => setStats(data))
+      .catch(() => {/* keep null — show dashes */});
   }, []);
 
   return (
@@ -1014,11 +1019,11 @@ export default function LandingPage() {
           >
             <Grid container spacing={2} justifyContent="center">
               {([
-                { target: 100, suffix: "+", label: "Kids Learning", delay: 0, decimals: 0 },
-                { target: 50, suffix: "+", label: "Happy Parents", delay: 150, decimals: 0 },
-                { target: 4.8, suffix: "/5", label: "Average Rating", delay: 300, decimals: 1 },
-                { target: 50, suffix: "+", label: "Lessons", delay: 450, decimals: 0 },
-              ] as const).map((stat) => (
+                { target: stats?.kids ?? 0,        suffix: "+",  label: "Kids Learning",  delay: 0,   decimals: 0 },
+                { target: stats?.parents ?? 0,     suffix: "+",  label: "Happy Parents",  delay: 150, decimals: 0 },
+                { target: stats?.avgRating ?? 0,   suffix: "/5", label: "Average Rating", delay: 300, decimals: 1 },
+                { target: stats?.questions ?? 0,   suffix: "+",  label: "Questions",      delay: 450, decimals: 0 },
+              ]).map((stat) => (
                 <Grid size={{ xs: 6, md: 3 }} key={stat.label}>
                   <StatItem
                     target={stat.target}

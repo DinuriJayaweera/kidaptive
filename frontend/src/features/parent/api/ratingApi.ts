@@ -28,3 +28,15 @@ export async function getPublicRatings(): Promise<PublicRating[]> {
     const res = await api.get("/ratings/public");
     return res.data;
 }
+
+export interface PublicStats {
+    kids: number;
+    parents: number;
+    avgRating: number;
+    questions: number;
+}
+
+export async function getPublicStats(): Promise<PublicStats> {
+    const res = await api.get("/ratings/stats");
+    return res.data;
+}

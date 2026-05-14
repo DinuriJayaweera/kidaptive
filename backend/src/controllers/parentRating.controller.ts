@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import type { TokenPayload } from "../utils/jwt.js";
 import User from "../models/User.js";
 import ParentRating from "../models/ParentRating.model.js";
+import PlacementQuestion from "../models/placement.model.js";
+import QuizQuestion from "../models/quizQuestion.model.js";
 
 const wrap = (fn: (req: Request, res: Response) => Promise<void>) =>
     (req: Request, res: Response, next: NextFunction) =>
@@ -117,4 +119,28 @@ export const getPublicRatings = wrap(async (req, res) => {
     }));
 
     res.json(sanitized);
+});
+
+// ── GET /api/stats/public ─────────────────────────────────────────────────────
+export const getPublicStats = wrap(async (_req, res) => {
+    const [kids, parents, avgResult, questions] = await Promise.all([
+        User.countDocuments({ role: "child", isActive: true }),
+        User.countDocuments({ role: "parent", isActive: true }),
+        ParentRating.aggregate([
+            { $group: { _id: null, avg: { $avg: "$rating" } } },
+        ]),
+        Promise.all([
+            PlacementQuestion.countDocuments(),
+            QuizQuestion.countDocuments(),
+        ]).then(([p, q]) => p + q),
+    ]);
+
+    const avgRating = avgResult[0]?.avg ?? 0;
+
+    res.json({
+        kids,
+        parents,
+        avgRating: parseFloat(avgRating.toFixed(1)),
+        questions,
+    });
 });
