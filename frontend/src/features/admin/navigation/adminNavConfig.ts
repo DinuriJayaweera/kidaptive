@@ -10,6 +10,7 @@ import {
     EmojiEvents as DailyQuestIcon,
     MenuBook as StoriesIcon,
     MusicNote as MusicIcon,
+    StarRate as RatingsIcon,
 } from "@mui/icons-material";
 
 export interface NavItem {
@@ -47,6 +48,7 @@ export const adminNavSections: NavSection[] = [
         items: [
             { label: "User Management", path: "/admin/users",        icon: UserMgmtIcon },
             { label: "Performance",     path: "/admin/performance",  icon: PerformanceIcon },
+            { label: "Ratings",         path: "/admin/ratings",      icon: RatingsIcon },
         ],
     },
     {

@@ -9,6 +9,8 @@ import {
 import { useAuth } from "../../auth/context/AuthContext";
 import { getParentChildrenEnriched } from "../api/parentApi";
 import type { EnhancedChildProfile } from "../api/parentApi";
+import { getRatingPromptStatus } from "../api/ratingApi";
+import RatingPromptModal from "../components/RatingPromptModal";
 import {
     BarChart,
     Bar,
@@ -25,12 +27,24 @@ export default function ParentDashboardPage() {
     const [children, setChildren] = useState<EnhancedChildProfile[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [showRating, setShowRating] = useState(false);
 
     useEffect(() => {
         getParentChildrenEnriched()
             .then(setChildren)
             .catch((err) => setError(err.response?.data?.message ?? "Failed to load dashboard data."))
             .finally(() => setLoading(false));
+    }, []);
+
+    // Check rating prompt after a short delay so the dashboard renders first
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+            try {
+                const status = await getRatingPromptStatus();
+                if (status.shouldShow) setShowRating(true);
+            } catch { /* silent */ }
+        }, 2000);
+        return () => clearTimeout(timer);
     }, []);
 
     const totalXp = children.reduce((acc, c) => acc + (c.totalXP || 0), 0);
@@ -138,6 +152,8 @@ export default function ParentDashboardPage() {
                     <Typography sx={{ color: "var(--text-tertiary)", fontSize: 14 }}>Once your children start playing lessons and earning XP, their activity charts will appear here.</Typography>
                 </Paper>
             )}
+
+            <RatingPromptModal open={showRating} onClose={() => setShowRating(false)} />
         </Box>
     );
 }

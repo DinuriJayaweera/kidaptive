@@ -16,6 +16,13 @@ export interface IMonitoringSettings {
     activityAlerts: boolean;
 }
 
+export interface IRatingPrompt {
+    hasRated: boolean;
+    neverAskAgain: boolean;
+    lastPromptedAt?: Date;
+    notNowCount: number;
+}
+
 export interface IUser {
     _id: Types.ObjectId;
     name: string;
@@ -66,6 +73,8 @@ export interface IUser {
     // (kept on User so we don't have to scan ActivityLog every render)
     perfectQuizzes?: number;
     everLeveledUp?: boolean;
+
+    ratingPrompt?: IRatingPrompt;
 
     isActive: boolean;
 
@@ -143,6 +152,13 @@ const userSchema = new Schema<IUser>(
         // Achievement-supporting counters
         perfectQuizzes: { type: Number, default: 0 },
         everLeveledUp: { type: Boolean, default: false },
+
+        ratingPrompt: {
+            hasRated:       { type: Boolean, default: false },
+            neverAskAgain:  { type: Boolean, default: false },
+            lastPromptedAt: { type: Date },
+            notNowCount:    { type: Number, default: 0 },
+        },
 
         isActive: { type: Boolean, default: true },
     },

@@ -61,6 +61,7 @@ import DailyQuestQuestionsPage from "../features/admin/pages/DailyQuestQuestions
 import AdminNotificationsPage from "../features/admin/pages/AdminNotificationsPage";
 import AdminStoriesPage from "../features/admin/pages/AdminStoriesPage";
 import AdminMusicPage from "../features/admin/pages/AdminMusicPage";
+import AdminRatingsPage from "../features/admin/pages/AdminRatingsPage";
 
 export default function AppRoutes() {
     return (
@@ -86,7 +87,6 @@ export default function AppRoutes() {
             <Route path="/choose-role" element={<Navigate to="/auth/role" replace />} />
             <Route path="/login" element={<Navigate to="/auth/login" replace />} />
             <Route path="/admin-dashboard" element={<Navigate to="/admin/dashboard" replace />} />
-            {/* Keep /admin as a legacy redirect to the login page */}
             <Route path="/admin" element={<Navigate to="/auth/admin-login" replace />} />
 
             {/* Parent — protected */}
@@ -128,7 +128,6 @@ export default function AppRoutes() {
             <Route path="/child/stories/:storyId" element={<ChildRoute><StoryReaderPage /></ChildRoute>} />
             <Route path="/child/music" element={<ChildRoute><MusicPage /></ChildRoute>} />
 
-
             {/* Admin — protected (nested routes under layout) */}
             <Route element={<AdminRoute><AdminLayout /></AdminRoute>}>
                 <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
@@ -144,6 +143,7 @@ export default function AppRoutes() {
                 <Route path="/admin/notifications" element={<AdminNotificationsPage />} />
                 <Route path="/admin/stories" element={<AdminStoriesPage />} />
                 <Route path="/admin/music"   element={<AdminMusicPage />} />
+                <Route path="/admin/ratings" element={<AdminRatingsPage />} />
             </Route>
 
             {/* Catch-all */}

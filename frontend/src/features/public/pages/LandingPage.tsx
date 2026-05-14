@@ -7,6 +7,7 @@ import {
   Card,
   CardContent,
   Stack,
+  CircularProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import kipImg from "../../../assets/Hi 3.png";
@@ -24,6 +25,8 @@ import dino3Img from "../../../assets/dino_3.png";
 import dino4Img from "../../../assets/dino_4.png";
 import dino5Img from "../../../assets/dino_5.png";
 import { useRef, useState, useEffect } from "react";
+import { getPublicRatings } from "../../parent/api/ratingApi";
+import type { PublicRating } from "../../parent/api/ratingApi";
 
 /* ─── Fires once when element enters viewport ─── */
 function useInView(threshold = 0.3) {
@@ -249,6 +252,16 @@ export default function LandingPage() {
   const { ref: statsRef, inView: statsInView } = useInView(0.3);
   const { ref: testimonialsRef, inView: testimonialsInView } = useInView(0.2);
   const { ref: howItWorksRef, inView: howItWorksInView } = useInView(0.1);
+
+  const [ratings, setRatings] = useState<PublicRating[]>([]);
+  const [ratingsLoading, setRatingsLoading] = useState(true);
+
+  useEffect(() => {
+    getPublicRatings()
+      .then((data) => setRatings(data))
+      .catch(() => setRatings([]))
+      .finally(() => setRatingsLoading(false));
+  }, []);
 
   return (
     <Box>
@@ -1035,62 +1048,72 @@ export default function LandingPage() {
       </Box>
 
       {/* ═══════════════ TESTIMONIALS ═══════════════ */}
-      <Box>
-        <WaveUp from="var(--landing-bg, #ffffff)" to="var(--landing-testim-bg, #deeefe)" />
-        <Box sx={{ backgroundColor: "var(--landing-testim-bg, #deeefe)", py: 7 }}>
-          <Container maxWidth="lg">
-            <Box
-              ref={testimonialsRef}
-              sx={{
-                opacity: testimonialsInView ? 1 : 0,
-                transform: testimonialsInView ? "translateY(0)" : "translateY(40px)",
-                transition: "opacity 0.7s ease, transform 0.7s cubic-bezier(0.34,1.56,0.64,1)",
-              }}
-            >
-              <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "var(--landing-text-main, #1a1a2e)", mb: 5, fontSize: { xs: "2rem", md: "2.5rem" } }}>
-                Loved By Parents
-              </Typography>
-              <Grid container spacing={3}>
-                {[
-                  { rating: 5, name: "Lorem Ipsum" },
-                  { rating: 4.5, name: "Lorem Ipsum" },
-                  { rating: 4, name: "Lorem Ipsum" },
-                ].map((review, i) => (
-                  <Grid size={{ xs: 12, md: 4 }} key={i}>
-                    <Card sx={{
-                      borderRadius: 4,
-                      p: 1,
-                      height: "100%",
-                      boxShadow: "0 4px 16px rgba(0,0,0,0.07)",
-                      transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                      "&:hover": {
-                        transform: "translateY(-8px) scale(1.02)",
-                        boxShadow: "0 18px 36px rgba(0,0,0,0.13)",
-                      },
-                    }}>
-                      <CardContent>
-                        <Stars rating={review.rating} />
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.7 }}>
-                          Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
-                        </Typography>
-                        <Stack direction="row" alignItems="center" spacing={1.5}>
-                          <Box sx={{ width: 40, height: 40, borderRadius: "50%", backgroundColor: "#ccc", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem" }}>
-                            👤
-                          </Box>
-                          <Typography variant="body2" fontWeight={600} color="text.secondary">
-                            {review.name}
-                          </Typography>
-                        </Stack>
-                      </CardContent>
-                    </Card>
+      {(ratingsLoading || ratings.length > 0) && (
+        <Box>
+          <WaveUp from="var(--landing-bg, #ffffff)" to="var(--landing-testim-bg, #deeefe)" />
+          <Box sx={{ backgroundColor: "var(--landing-testim-bg, #deeefe)", py: 7 }}>
+            <Container maxWidth="lg">
+              <Box
+                ref={testimonialsRef}
+                sx={{
+                  opacity: testimonialsInView ? 1 : 0,
+                  transform: testimonialsInView ? "translateY(0)" : "translateY(40px)",
+                  transition: "opacity 0.7s ease, transform 0.7s cubic-bezier(0.34,1.56,0.64,1)",
+                }}
+              >
+                <Typography variant="h4" sx={{ fontFamily: "'Baloo 2', sans-serif", textAlign: "center", fontWeight: 900, color: "var(--landing-text-main, #1a1a2e)", mb: 5, fontSize: { xs: "2rem", md: "2.5rem" } }}>
+                  Loved By Parents
+                </Typography>
+
+                {ratingsLoading ? (
+                  <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+                    <CircularProgress sx={{ color: "#3ab5e6" }} />
+                  </Box>
+                ) : (
+                  <Grid container spacing={3}>
+                    {ratings.map((review, i) => (
+                      <Grid size={{ xs: 12, md: 4 }} key={i}>
+                        <Card sx={{
+                          borderRadius: 4,
+                          p: 1,
+                          height: "100%",
+                          boxShadow: "0 4px 16px rgba(0,0,0,0.07)",
+                          transition: "all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                          "&:hover": {
+                            transform: "translateY(-8px) scale(1.02)",
+                            boxShadow: "0 18px 36px rgba(0,0,0,0.13)",
+                          },
+                        }}>
+                          <CardContent>
+                            <Stars rating={review.rating} />
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.7 }}>
+                              {review.feedback || "Great experience with Kidaptive!"}
+                            </Typography>
+                            <Stack direction="row" alignItems="center" spacing={1.5}>
+                              <Box sx={{
+                                width: 40, height: 40, borderRadius: "50%",
+                                backgroundColor: "#c7e9f7",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                fontSize: "1.1rem", fontWeight: 700, color: "#0369a1",
+                              }}>
+                                {review.firstName?.[0]?.toUpperCase() ?? "P"}
+                              </Box>
+                              <Typography variant="body2" fontWeight={600} color="text.secondary">
+                                {review.firstName}
+                              </Typography>
+                            </Stack>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
                   </Grid>
-                ))}
-              </Grid>
-            </Box>
-          </Container>
+                )}
+              </Box>
+            </Container>
+          </Box>
+          <WaveDown from="var(--landing-testim-bg, #deeefe)" to="#1a1a2e" />
         </Box>
-        <WaveDown from="var(--landing-testim-bg, #deeefe)" to="#1a1a2e" />
-      </Box>
+      )}
     </Box>
   );
 }

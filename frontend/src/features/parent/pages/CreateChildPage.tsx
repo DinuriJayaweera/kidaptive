@@ -15,6 +15,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { createChild } from "../../auth/api/authApi";
 import EmojiKeypad from "../../auth/components/EmojiKeypad";
+import { getRatingPromptStatus } from "../api/ratingApi";
+import RatingPromptModal from "../components/RatingPromptModal";
 
 const avatarOptions = [
     { id: "default", emoji: "🦖" }, { id: "dino", emoji: "🦕" },
@@ -34,10 +36,11 @@ export default function CreateChildPage() {
         name: "", age: "", username: "", avatar: "🦖",
         emojiPassword: [] as string[],
     });
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [error, setError]               = useState("");
+    const [loading, setLoading]           = useState(false);
+    const [success, setSuccess]           = useState(false);
     const [createdChild, setCreatedChild] = useState<any>(null);
+    const [showRating, setShowRating]     = useState(false);
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const name = e.target.value;
@@ -59,6 +62,12 @@ export default function CreateChildPage() {
             });
             setCreatedChild({ ...result, emojiPassword: form.emojiPassword });
             setSuccess(true);
+
+            // Check if we should prompt the parent for a rating
+            try {
+                const status = await getRatingPromptStatus();
+                if (status.shouldShow) setShowRating(true);
+            } catch { /* silent — don't block success flow */ }
         } catch (err: any) {
             const data = err.response?.data;
             setError(data?.errors?.map((e: { message: string }) => e.message).join(". ") ?? data?.message ?? "Failed to create profile.");
@@ -175,6 +184,12 @@ export default function CreateChildPage() {
                         </>
                     )}
                 </Box>
+
+            {/* Rating prompt — shown after successful child creation */}
+            <RatingPromptModal
+                open={showRating}
+                onClose={() => setShowRating(false)}
+            />
         </Box>
     );
 }

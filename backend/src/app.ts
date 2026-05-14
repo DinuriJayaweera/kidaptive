@@ -27,6 +27,9 @@ import adminStoryRoutes from "./routes/adminStory.routes.js";
 import childStoryRoutes from "./routes/childStory.routes.js";
 import adminMusicRoutes from "./routes/adminMusic.routes.js";
 import childMusicRoutes from "./routes/childMusic.routes.js";
+import parentRatingRoutes from "./routes/parentRating.routes.js";
+import adminRatingsRoutes from "./routes/adminRatings.routes.js";
+import publicRatingsRoutes from "./routes/publicRatings.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { authenticate, requireRole } from "./middleware/auth.middleware.js";
 import { userPlacementStatus } from "./controllers/placement-test.controller.js";
@@ -79,6 +82,9 @@ app.use("/api/admin/stories", adminStoryRoutes);
 app.use("/api/child/stories", childStoryRoutes);
 app.use("/api/admin/music",   adminMusicRoutes);
 app.use("/api/child/music",   childMusicRoutes);
+app.use("/api/parent/rating", parentRatingRoutes);
+app.use("/api/admin/ratings", adminRatingsRoutes);
+app.use("/api/ratings",       publicRatingsRoutes);
 
 // ── Static uploads ───────────────────────────────────────────────────────────
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
