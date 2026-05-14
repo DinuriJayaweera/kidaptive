@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "../features/public/pages/LandingPage";
+import AboutUsPage from "../features/public/pages/AboutUsPage";
 import RoleSelectPage from "../features/auth/pages/RoleSelectPage";
 import ParentSignupPage from "../features/auth/pages/ParentSignupPage";
 import VerifyEmailPage from "../features/auth/pages/VerifyEmailPage";
@@ -68,6 +69,7 @@ export default function AppRoutes() {
         <Routes>
             {/* Public */}
             <Route path="/" element={<LandingPage />} />
+            <Route path="/about" element={<AboutUsPage />} />
 
             {/* Auth — public only */}
             <Route path="/auth/role" element={<PublicOnlyRoute><RoleSelectPage /></PublicOnlyRoute>} />

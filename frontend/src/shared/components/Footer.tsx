@@ -1,4 +1,5 @@
 import { Box, Container, Typography, Grid, Link as MuiLink, Divider } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function Footer() {
   return (
@@ -32,17 +33,25 @@ export default function Footer() {
             <Typography variant="subtitle2" sx={{ color: "#fff", fontWeight: 700, mb: 1.5 }}>
               Company
             </Typography>
-            {["About Us", "Contact Us"].map((text) => (
-              <Box key={text} mb={0.8}>
-                <MuiLink
-                  href="#"
-                  underline="hover"
-                  sx={{ color: "#aaa", fontSize: "0.875rem", "&:hover": { color: "#fff" } }}
-                >
-                  {text}
-                </MuiLink>
-              </Box>
-            ))}
+            <Box mb={0.8}>
+              <MuiLink
+                component={RouterLink}
+                to="/about"
+                underline="hover"
+                sx={{ color: "#aaa", fontSize: "0.875rem", "&:hover": { color: "#fff" } }}
+              >
+                About Us
+              </MuiLink>
+            </Box>
+            <Box mb={0.8}>
+              <MuiLink
+                href="#"
+                underline="hover"
+                sx={{ color: "#aaa", fontSize: "0.875rem", "&:hover": { color: "#fff" } }}
+              >
+                Contact Us
+              </MuiLink>
+            </Box>
           </Grid>
 
           {/* Legal */}
