@@ -3,6 +3,7 @@ import LandingPage from "../features/public/pages/LandingPage";
 import AboutUsPage from "../features/public/pages/AboutUsPage";
 import ContactUsPage from "../features/public/pages/ContactUsPage";
 import PrivacyPolicyPage from "../features/public/pages/PrivacyPolicyPage";
+import TermsOfServicePage from "../features/public/pages/TermsOfServicePage";
 import RoleSelectPage from "../features/auth/pages/RoleSelectPage";
 import ParentSignupPage from "../features/auth/pages/ParentSignupPage";
 import VerifyEmailPage from "../features/auth/pages/VerifyEmailPage";
@@ -74,6 +75,7 @@ export default function AppRoutes() {
             <Route path="/about" element={<AboutUsPage />} />
             <Route path="/contact" element={<ContactUsPage />} />
             <Route path="/privacy" element={<PrivacyPolicyPage />} />
+            <Route path="/terms" element={<TermsOfServicePage />} />
 
             {/* Auth — public only */}
             <Route path="/auth/role" element={<PublicOnlyRoute><RoleSelectPage /></PublicOnlyRoute>} />
