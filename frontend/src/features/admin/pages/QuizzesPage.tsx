@@ -26,8 +26,8 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    Zoom,
 } from "@mui/material";
+import ZoomTransition from "../../../components/ui/ZoomTransition";
 import {
     Add as AddIcon,
     Edit as EditIcon,
@@ -140,7 +140,7 @@ function DeleteDialog({ open, onClose, onConfirm, loading }: DeleteDialogProps) 
             onClose={onClose}
             maxWidth="xs"
             fullWidth
-            TransitionComponent={Zoom as any}
+            TransitionComponent={ZoomTransition}
             PaperProps={{ sx: { borderRadius: "16px" } }}
         >
             <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, color: "var(--text-primary)", pb: 1 }}>

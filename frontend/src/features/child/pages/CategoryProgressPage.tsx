@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCategoryProgress } from "../services/quizApi";
-import kipMascot from "../../../assets/kip.png"; // Fixed asset path
+import kipMascot from "../../../assets/kip.png";
 import LockIcon from "@mui/icons-material/LockRounded";
 import strengthImg from "../../../assets/strength.png";
 import medalImg from "../../../assets/medal.png";

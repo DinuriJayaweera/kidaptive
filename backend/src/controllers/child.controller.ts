@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
+import type { TokenPayload } from "../utils/jwt.js";
 import User from "../models/User.js";
+
+type AuthRequest = Request & { user: TokenPayload };
 
 // ── GET /child/profile ──────────────────────────────────────────────────────
 export const getChildProfile = async (req: Request, res: Response) => {
     try {
-        const userId = (req as any).user.userId;
+        const userId = (req as AuthRequest).user.userId;
         const child = await User.findById(userId).select(
             "name username age avatar totalXP gems streak role"
         );
@@ -30,7 +33,7 @@ export const getChildProfile = async (req: Request, res: Response) => {
 // ── PATCH /child/profile/avatar ─────────────────────────────────────────────
 export const updateChildAvatar = async (req: Request, res: Response) => {
     try {
-        const userId = (req as any).user.userId;
+        const userId = (req as AuthRequest).user.userId;
         const { avatar } = req.body;
 
         if (!avatar || typeof avatar !== "string") {
@@ -65,10 +68,10 @@ export const updateChildAvatar = async (req: Request, res: Response) => {
 // Allows child to update limited fields (only name for now, age is parent-controlled)
 export const updateChildProfile = async (req: Request, res: Response) => {
     try {
-        const userId = (req as any).user.userId;
+        const userId = (req as AuthRequest).user.userId;
         const { avatar } = req.body;
 
-        const updates: Record<string, any> = {};
+        const updates: { avatar?: string } = {};
         if (avatar !== undefined) updates.avatar = avatar;
 
         if (Object.keys(updates).length === 0) {

@@ -4,9 +4,12 @@ import User from '../models/User.js';
 import PasswordResetRequest from '../models/passwordResetRequest.model.js';
 import { createNotification } from '../services/notification.service.js';
 import { generateOtp, hashOtp, compareOtp, sendResetEmail } from '../utils/email.js';
+import type { TokenPayload } from '../utils/jwt.js';
+
+type AuthRequest = Request & { user: TokenPayload };
 
 function pid(req: Request): string {
-  return (req as any).user.userId;
+  return (req as AuthRequest).user.userId;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -165,7 +168,9 @@ export async function sendOtp(req: Request, res: Response) {
     request.status      = 'otp_sent';
     await request.save();
 
-    console.log(`\n🎯 [DEV] Child reset OTP for ${parent.email}: ${otp}\n`);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`\n🎯 [DEV] Child reset OTP for ${parent.email}: ${otp}\n`);
+    }
     sendResetEmail(parent.email, otp, parent.name).catch((e) =>
       console.error('[childPasswordReset] email send error:', e),
     );

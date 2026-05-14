@@ -66,7 +66,7 @@ export const updateCategory = async (req: Request, res: Response): Promise<void>
   try {
     const { id } = req.params;
     const { name, status, ageGroups } = req.body;
-    const updates: Record<string, any> = {};
+    const updates: { name?: string; status?: string; ageGroups?: string[] } = {};
     if (name) updates.name = name.trim();
     if (status) updates.status = status;
     if (Array.isArray(ageGroups)) updates.ageGroups = ageGroups;

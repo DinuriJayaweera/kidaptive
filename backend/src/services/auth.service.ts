@@ -77,7 +77,9 @@ export async function signupParent(
         lastVerificationSentAt: new Date(),
     });
 
-    console.log(`\n\n🎯 [DEV ONLY] OTP for ${data.email} is: ${otp}\n\n`);
+    if (process.env.NODE_ENV !== "production") {
+        console.log(`\n\n🎯 [DEV ONLY] OTP for ${data.email} is: ${otp}\n\n`);
+    }
 
     // 👇 Skip email sending during tests
     if (process.env.NODE_ENV !== "test") {
@@ -174,7 +176,9 @@ export async function resendEmailOtp(data: { email: string }) {
     user.lastVerificationSentAt = new Date();
     await user.save();
 
-    console.log(`\n\n🎯 [DEV ONLY] Resent OTP for ${data.email} is: ${otp}\n\n`);
+    if (process.env.NODE_ENV !== "production") {
+        console.log(`\n\n🎯 [DEV ONLY] Resent OTP for ${data.email} is: ${otp}\n\n`);
+    }
 
     // 👇 Skip email sending during tests
     if (process.env.NODE_ENV !== "test") {
@@ -231,7 +235,9 @@ export async function forgotPassword(data: { email: string }) {
     user.resetOtpAttempts = 0;
     await user.save();
 
-    console.log(`\n\n🎯 [DEV ONLY] Password Reset OTP for ${data.email} is: ${otp}\n\n`);
+    if (process.env.NODE_ENV !== "production") {
+        console.log(`\n\n🎯 [DEV ONLY] Password Reset OTP for ${data.email} is: ${otp}\n\n`);
+    }
 
     // 👇 Skip email sending during tests
     if (process.env.NODE_ENV !== "test") {

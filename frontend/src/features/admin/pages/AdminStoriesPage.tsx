@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import {
     Box, Typography, Paper, Chip, Dialog, DialogTitle, DialogContent,
     DialogActions, TextField, Button, IconButton, CircularProgress, Alert,
-    Select, MenuItem, FormControl, InputLabel, Tooltip, Zoom, Fab,
+    Select, MenuItem, FormControl, InputLabel, Tooltip, Fab,
 } from "@mui/material";
+import ZoomTransition from "../../../components/ui/ZoomTransition";
 import {
     Add as AddIcon,
     Close as CloseIcon,
@@ -63,7 +64,7 @@ function DeleteDialog({ open, title, onClose, onConfirm, loading }: {
 }) {
     return (
         <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth
-            TransitionComponent={Zoom as any}
+            TransitionComponent={ZoomTransition}
             PaperProps={{ sx: { borderRadius: "16px", background: "var(--card-bg)" } }}>
             <DialogTitle sx={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, color: "var(--text-primary)", pb: 1 }}>
                 Delete Story?
@@ -303,7 +304,7 @@ export default function AdminStoriesPage() {
                 ADD / EDIT DIALOG
                 ══════════════════════════════════════════════ */}
             <Dialog open={!!dialogMode} onClose={closeDialog} maxWidth="sm" fullWidth
-                TransitionComponent={Zoom as any}
+                TransitionComponent={ZoomTransition}
                 PaperProps={{ sx: { borderRadius: "16px", background: "var(--card-bg)" } }}>
                 <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", pb: 1 }}>
                     <Typography sx={{ fontFamily: "'Poppins',sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "var(--text-primary)" }}>
@@ -407,7 +408,7 @@ export default function AdminStoriesPage() {
                 PREVIEW DIALOG
                 ══════════════════════════════════════════════ */}
             <Dialog open={!!previewStory} onClose={() => setPreviewStory(null)} maxWidth="lg" fullWidth
-                TransitionComponent={Zoom as any}
+                TransitionComponent={ZoomTransition}
                 PaperProps={{ sx: { borderRadius: "16px", background: "var(--card-bg)", height: "90vh", display: "flex", flexDirection: "column" } }}>
                 {previewStory && (
                     <>
