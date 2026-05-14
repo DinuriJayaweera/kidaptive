@@ -1,4 +1,4 @@
-import express from "express";
+﻿import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
@@ -30,6 +30,7 @@ import childMusicRoutes from "./routes/childMusic.routes.js";
 import parentRatingRoutes from "./routes/parentRating.routes.js";
 import adminRatingsRoutes from "./routes/adminRatings.routes.js";
 import publicRatingsRoutes from "./routes/publicRatings.routes.js";
+import contactRoutes from "./routes/contact.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { authenticate, requireRole } from "./middleware/auth.middleware.js";
 import { userPlacementStatus } from "./controllers/placement-test.controller.js";
@@ -85,6 +86,7 @@ app.use("/api/child/music",   childMusicRoutes);
 app.use("/api/parent/rating", parentRatingRoutes);
 app.use("/api/admin/ratings", adminRatingsRoutes);
 app.use("/api/ratings",       publicRatingsRoutes);
+app.use("/api/contact",       contactRoutes);
 
 // ── Static uploads ───────────────────────────────────────────────────────────
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));

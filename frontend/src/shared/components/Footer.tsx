@@ -45,7 +45,8 @@ export default function Footer() {
             </Box>
             <Box mb={0.8}>
               <MuiLink
-                href="#"
+                component={RouterLink}
+                to="/contact"
                 underline="hover"
                 sx={{ color: "#aaa", fontSize: "0.875rem", "&:hover": { color: "#fff" } }}
               >

@@ -153,3 +153,34 @@ export async function sendResetEmail(
     html,
   });
 }
+
+// ── Send Contact Us Message ──────────────────────────────────────────────────
+export async function sendContactEmail(
+  name: string,
+  userEmail: string,
+  message: string,
+): Promise<void> {
+  const html = `
+    <div style="font-family:'Segoe UI','Poppins',sans-serif;max-width:520px;margin:0 auto;padding:0;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <div style="background:linear-gradient(135deg,#A855F7 0%,#9333EA 100%);padding:32px 24px;text-align:center;">
+        <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;">
+          New Contact Message
+        </h1>
+      </div>
+      <div style="padding:32px 24px;">
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${userEmail}</p>
+        <p><strong>Message:</strong></p>
+        <p style="background:#f8fafc;padding:16px;border-radius:8px;white-space:pre-wrap;">${message}</p>
+      </div>
+    </div>
+  `;
+
+  await transporter.sendMail({
+    from: FROM_ADDRESS,
+    to: process.env.SMTP_USER,
+    replyTo: userEmail,
+    subject: `New Contact Request from ${name}`,
+    html,
+  });
+}
