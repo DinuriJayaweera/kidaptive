@@ -60,17 +60,34 @@ export default function Footer() {
             <Typography variant="subtitle2" sx={{ color: "#fff", fontWeight: 700, mb: 1.5 }}>
               Legal
             </Typography>
-            {["Privacy Policy", "Terms of Service", "Child Safety"].map((text) => (
-              <Box key={text} mb={0.8}>
-                <MuiLink
-                  href="#"
-                  underline="hover"
-                  sx={{ color: "#aaa", fontSize: "0.875rem", "&:hover": { color: "#fff" } }}
-                >
-                  {text}
-                </MuiLink>
-              </Box>
-            ))}
+            <Box mb={0.8}>
+              <MuiLink
+                component={RouterLink}
+                to="/privacy"
+                underline="hover"
+                sx={{ color: "#aaa", fontSize: "0.875rem", "&:hover": { color: "#fff" } }}
+              >
+                Privacy Policy
+              </MuiLink>
+            </Box>
+            <Box mb={0.8}>
+              <MuiLink
+                href="#"
+                underline="hover"
+                sx={{ color: "#aaa", fontSize: "0.875rem", "&:hover": { color: "#fff" } }}
+              >
+                Terms of Service
+              </MuiLink>
+            </Box>
+            <Box mb={0.8}>
+              <MuiLink
+                href="#"
+                underline="hover"
+                sx={{ color: "#aaa", fontSize: "0.875rem", "&:hover": { color: "#fff" } }}
+              >
+                Child Safety
+              </MuiLink>
+            </Box>
           </Grid>
         </Grid>
 
