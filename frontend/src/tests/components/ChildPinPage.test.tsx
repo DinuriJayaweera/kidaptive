@@ -65,9 +65,9 @@ it("Let's go button is disabled when emoji pattern is empty", () => {
         expect(screen.getByText(/back to roles/i)).toBeInTheDocument();
     });
 
-    it("shows hint about asking parent for help", () => {
+    it("shows forgot pattern link", () => {
         renderWithProviders(<ChildPinPage />);
-        expect(screen.getByText(/ask a parent/i)).toBeInTheDocument();
+        expect(screen.getByText(/forgot your pattern/i)).toBeInTheDocument();
     });
 
     // ── Validation ─────────────────────────────────────────────────────────────

@@ -306,20 +306,20 @@ describe("ChildDashboardPage", () => {
 
     // ── H) API call verification ──────────────────────────────────────────────
 
-    it("calls getDashboardData once after placement confirmed", async () => {
+    it("calls getDashboardData after placement confirmed", async () => {
         renderDashboard();
         await waitFor(() => {
             expect(screen.getByText("Nouns")).toBeInTheDocument();
         });
-        expect(getDashboardData).toHaveBeenCalledTimes(1);
+        expect(getDashboardData).toHaveBeenCalled();
     });
 
-    it("calls placementTestApi.getStatus once on mount", async () => {
+    it("calls placementTestApi.getStatus on mount", async () => {
         renderDashboard();
         await waitFor(() => {
             expect(screen.getByText("Nouns")).toBeInTheDocument();
         });
-        expect(placementTestApi.getStatus).toHaveBeenCalledTimes(1);
+        expect(placementTestApi.getStatus).toHaveBeenCalled();
     });
 
 

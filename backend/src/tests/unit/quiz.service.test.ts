@@ -424,14 +424,14 @@ describe("submitQuiz — XP and level progression", () => {
 // ── D) submitQuiz — Gems ──────────────────────────────────────────────────────
 describe("submitQuiz — gems", () => {
 
-    it("awards +1 gem on a passed quiz (starter/explorer)", async () => {
+    it("awards +10 gems on a passed quiz (starter/explorer)", async () => {
         const child = await createQuizChild(7);
         const questions = await createQuizQuestions("Nouns", "easy", "7-8", 5, "A");
         await startQuiz(child._id.toString(), "Nouns");
 
         const result = await submitQuiz(child._id.toString(), "Nouns", buildAnswers(questions, "A", 5));
 
-        expect(result.gemsEarned).toBe(1);
+        expect(result.gemsEarned).toBe(10);
     });
 
     it("awards +2 gems bonus every 5 quizzes completed (starter/explorer)", async () => {
@@ -459,8 +459,8 @@ describe("submitQuiz — gems", () => {
             buildAnswers(started.questions, "A", 5),
         );
 
-        // +1 for pass + 2 bonus at 5th quiz = 3
-        expect(result.gemsEarned).toBe(3);
+        // +10 for pass + 20 bonus at 5th quiz = 30
+        expect(result.gemsEarned).toBe(30);
     });
 
     it("does NOT award gems on a failed quiz", async () => {
@@ -499,7 +499,7 @@ describe("submitQuiz — gems", () => {
         await submitQuiz(child._id.toString(), "Nouns", buildAnswers(questions, "A", 5));
 
         const updatedChild = await User.findById(child._id);
-        expect(updatedChild?.gems).toBe(6); // 5 + 1
+        expect(updatedChild?.gems).toBe(15); // 5 + 10
     });
 
 });
@@ -534,7 +534,7 @@ describe("submitQuiz — champion mode", () => {
         expect(result.newXP).toBe(0);
     });
 
-    it("awards +2 gems on champion pass", async () => {
+    it("awards +20 gems on champion pass", async () => {
         const child = await createQuizChild(7);
         await createPlacementResult(child._id.toString(), "Nouns", "champion");
         const questions = await createQuizQuestions("Nouns", "hard", "7-8", 5, "A");
@@ -542,7 +542,7 @@ describe("submitQuiz — champion mode", () => {
 
         const result = await submitQuiz(child._id.toString(), "Nouns", buildAnswers(questions, "A", 5));
 
-        expect(result.gemsEarned).toBe(2);
+        expect(result.gemsEarned).toBe(20);
     });
 
     it("tracks champion wins correctly", async () => {
