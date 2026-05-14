@@ -313,11 +313,11 @@ export default function SpellingChallengeGame() {
                     </Button>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <Box component="img" src={gameIcon} alt="Spelling Challenge" sx={{ width: 26, height: 26, objectFit: "contain", flexShrink: 0 }} />
-                        <Typography sx={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 800, fontSize: "1.3rem", color: "#1A202C" }}>
+                        <Typography sx={{ fontFamily: "'Baloo 2', sans-serif", fontWeight: 800, fontSize: { xs: "1rem", sm: "1.3rem" }, color: "#1A202C" }}>
                             Spelling — Level {currentLevel}
                         </Typography>
                     </Box>
-                    <Chip label={levelDesc} size="small" sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, backgroundColor: GAME_COLOR + "18", color: GAME_ACCENT }} />
+                    <Chip label={levelDesc} size="small" sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 600, backgroundColor: GAME_COLOR + "18", color: GAME_ACCENT, display: { xs: "none", sm: "inline-flex" } }} />
                     <Box sx={{ ml: "auto" }}>
                         <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: "0.85rem", color: "#64748B" }}>
                             Word {wordIndex + 1} / {roundWords.length}

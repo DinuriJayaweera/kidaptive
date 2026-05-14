@@ -161,7 +161,7 @@ export default function ChildProgressPage() {
             <Grid container spacing={4} sx={{ mt: 1 }}>
                 {/* ── Left Side: Child Card ── */}
                 <Grid size={{ xs: 12, md: 4 }}>
-                    <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "var(--card-bg)", border: "1px solid var(--border-color)", textAlign: "center", position: "sticky", top: 20 }}>
+                    <Paper elevation={0} sx={{ borderRadius: "16px", p: { xs: 2.5, md: 4 }, background: "var(--card-bg)", border: "1px solid var(--border-color)", textAlign: "center", position: { md: "sticky" }, top: 20 }}>
                         <Avatar sx={{ width: 80, height: 80, mx: "auto", mb: 2, fontSize: "2.5rem", backgroundColor: "var(--bg-subtle)" }}>
                             {avatarEmojis[child.avatar || "default"] ?? "🦖"}
                         </Avatar>
@@ -205,7 +205,7 @@ export default function ChildProgressPage() {
 
                     {/* ═══ Section 1: Overall English Progress ═══ */}
                     {child.categories.length > 0 && (
-                        <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "var(--card-bg)", border: "1px solid var(--border-color)", mb: 4 }}>
+                        <Paper elevation={0} sx={{ borderRadius: "16px", p: { xs: 2, md: 4 }, background: "var(--card-bg)", border: "1px solid var(--border-color)", mb: 4 }}>
                             <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "var(--text-secondary)", fontWeight: 600, mb: 3, textTransform: "uppercase" }}>
                                 Overall English Progress
                             </Typography>
@@ -246,25 +246,25 @@ export default function ChildProgressPage() {
                             </Box>
 
                             {/* Summary stats — from real child data */}
-                            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 4 }}>
-                                <Box sx={{ flex: 1, minWidth: 120, background: "var(--summary-xp-bg)", borderRadius: "999px", py: 2, px: 3, textAlign: "center", border: "1px solid var(--border-color)" }}>
-                                    <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Total XP Earned</Typography>
-                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#25AFF4", fontSize: 26 }}>{child.totalXP}</Typography>
+                            <Box sx={{ display: "flex", gap: { xs: 1, sm: 2 }, flexWrap: "wrap", mb: 4 }}>
+                                <Box sx={{ flex: 1, minWidth: { xs: 80, sm: 120 }, background: "var(--summary-xp-bg)", borderRadius: "999px", py: 2, px: { xs: 1.5, sm: 3 }, textAlign: "center", border: "1px solid var(--border-color)" }}>
+                                    <Typography sx={{ fontSize: { xs: 9, sm: 11 }, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Total XP</Typography>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#25AFF4", fontSize: { xs: 20, sm: 26 } }}>{child.totalXP}</Typography>
                                 </Box>
-                                <Box sx={{ flex: 1, minWidth: 120, background: "var(--summary-quizzes-bg)", borderRadius: "999px", py: 2, px: 3, textAlign: "center", border: "1px solid var(--border-color)" }}>
-                                    <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Total Quizzes</Typography>
-                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#8EE870", fontSize: 26 }}>
+                                <Box sx={{ flex: 1, minWidth: { xs: 80, sm: 120 }, background: "var(--summary-quizzes-bg)", borderRadius: "999px", py: 2, px: { xs: 1.5, sm: 3 }, textAlign: "center", border: "1px solid var(--border-color)" }}>
+                                    <Typography sx={{ fontSize: { xs: 9, sm: 11 }, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Quizzes</Typography>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#8EE870", fontSize: { xs: 20, sm: 26 } }}>
                                         {child.categories.reduce((sum, c) => sum + (c.quizzesCompleted || 0), 0)}
                                     </Typography>
                                 </Box>
-                                <Box sx={{ flex: 1, minWidth: 120, background: "var(--summary-categories-bg)", borderRadius: "999px", py: 2, px: 3, textAlign: "center", border: "1px solid var(--border-color)" }}>
-                                    <Typography sx={{ fontSize: 11, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Gems</Typography>
-                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#FFCC35", fontSize: 26 }}>{child.gems}</Typography>
+                                <Box sx={{ flex: 1, minWidth: { xs: 80, sm: 120 }, background: "var(--summary-categories-bg)", borderRadius: "999px", py: 2, px: { xs: 1.5, sm: 3 }, textAlign: "center", border: "1px solid var(--border-color)" }}>
+                                    <Typography sx={{ fontSize: { xs: 9, sm: 11 }, color: "var(--text-tertiary)", fontWeight: 600, textTransform: "uppercase", mb: 0.5 }}>Gems</Typography>
+                                    <Typography sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "#FFCC35", fontSize: { xs: 20, sm: 26 } }}>{child.gems}</Typography>
                                 </Box>
                             </Box>
 
                             {/* Progress Trend Graph */}
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 1, mb: 2 }}>
                                 <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 14, color: "var(--text-primary)", fontWeight: 600 }}>
                                     Progress Trend
                                 </Typography>

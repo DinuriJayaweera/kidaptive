@@ -76,7 +76,7 @@ export default function ParentDashboardPage() {
 
     return (
         <Box sx={{ fontFamily: "'Poppins', sans-serif" }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 1, mb: { xs: 2, md: 4 } }}>
                 <Box>
                     <Typography variant="h5" sx={{ fontFamily: "'Baloo 2', cursive", fontWeight: 700, color: "var(--text-primary)", mb: 0.5 }}>
                         Platform Overview
@@ -113,7 +113,7 @@ export default function ParentDashboardPage() {
                 <Grid container spacing={3}>
                     {/* Child XP & Gems Comparison */}
                     <Grid size={{ xs: 12, md: 6 }}>
-                        <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "var(--card-bg)", border: "1px solid var(--border-color)" }}>
+                        <Paper elevation={0} sx={{ borderRadius: "16px", p: { xs: 2, sm: 4 }, background: "var(--card-bg)", border: "1px solid var(--border-color)" }}>
                             <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "var(--text-secondary)", fontWeight: 600, mb: 3, textTransform: "uppercase" }}>Child Performance Comparison</Typography>
                             <ResponsiveContainer width="100%" height={300}>
                                 <BarChart data={childChartData} margin={{ top: 5, right: 20, left: 0, bottom: 30 }}>
@@ -131,7 +131,7 @@ export default function ParentDashboardPage() {
                     {/* Category XP Breakdown */}
                     {categoryChartData.length > 0 && (
                         <Grid size={{ xs: 12, md: 6 }}>
-                            <Paper elevation={0} sx={{ borderRadius: "16px", p: 4, background: "var(--card-bg)", border: "1px solid var(--border-color)" }}>
+                            <Paper elevation={0} sx={{ borderRadius: "16px", p: { xs: 2, sm: 4 }, background: "var(--card-bg)", border: "1px solid var(--border-color)" }}>
                                 <Typography sx={{ fontFamily: "'Poppins', sans-serif", fontSize: 13, color: "var(--text-secondary)", fontWeight: 600, mb: 3, textTransform: "uppercase" }}>XP by Category</Typography>
                                 <ResponsiveContainer width="100%" height={300}>
                                     <BarChart data={categoryChartData} margin={{ top: 5, right: 20, left: 0, bottom: 45 }}>

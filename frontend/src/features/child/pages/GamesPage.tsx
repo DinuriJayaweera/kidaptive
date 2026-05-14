@@ -40,14 +40,17 @@ function UnlockDialog({
         <Dialog
             open={!!game}
             onClose={onClose}
-            PaperProps={{
-                sx: {
-                    borderRadius: "24px",
-                    p: 1,
-                    maxWidth: 380,
-                    width: "100%",
-                    background: "linear-gradient(135deg, #fff 0%, #F8FAFF 100%)",
-                    border: "2px solid #E8ECF1",
+            slotProps={{
+                paper: {
+                    sx: {
+                        borderRadius: "24px",
+                        p: 1,
+                        maxWidth: 380,
+                        width: "100%",
+                        mx: 2,
+                        background: "linear-gradient(135deg, #fff 0%, #F8FAFF 100%)",
+                        border: "2px solid #E8ECF1",
+                    },
                 },
             }}
         >
@@ -394,7 +397,7 @@ export default function GamesPage() {
                 <Box
                     sx={{
                         display: "grid",
-                        gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(2, 1fr)", lg: "repeat(3, 1fr)" },
+                        gridTemplateColumns: { xs: "repeat(2, 1fr)", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)", lg: "repeat(3, 1fr)" },
                         gap: { xs: 2, sm: 3 },
                     }}
                 >
@@ -434,10 +437,12 @@ export default function GamesPage() {
                         borderRadius: "30px",
                         fontFamily: "'Baloo 2', sans-serif",
                         fontWeight: 700,
-                        fontSize: "1rem",
+                        fontSize: { xs: "0.88rem", sm: "1rem" },
                         boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
                         zIndex: 9999,
-                        whiteSpace: "nowrap",
+                        maxWidth: "calc(100vw - 48px)",
+                        textAlign: "center",
+                        wordBreak: "break-word",
                         animation: "fadeInUp 0.3s ease",
                         "@keyframes fadeInUp": {
                             from: { opacity: 0, transform: "translateX(-50%) translateY(10px)" },

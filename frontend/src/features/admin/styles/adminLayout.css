@@ -240,6 +240,16 @@ body, html {
     padding-right: 28px;
 }
 
+@media (max-width: 600px) {
+    .admin-header__actions {
+        gap: 8px;
+        padding-right: 0;
+    }
+    .admin-content {
+        padding: 16px;
+    }
+}
+
 .admin-header__notification-btn {
     position: relative;
     background: none;

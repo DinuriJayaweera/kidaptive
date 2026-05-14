@@ -88,7 +88,7 @@ export default function ChildSidebar({ activePage = "LEARN" }: ChildSidebarProps
                 flexDirection: "column",
                 py: { xs: 2, md: 4 },
                 px: { xs: 0.5, sm: 1, md: 3 },
-                overflowY: "hidden",
+                overflowY: "auto",
                 overflowX: "hidden",
                 zIndex: 100,
             }}

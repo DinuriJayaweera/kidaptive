@@ -3,7 +3,7 @@ import {
     Box, Typography, Paper, Button, IconButton, Tooltip,
     Dialog, DialogTitle, DialogContent, DialogActions,
     TextField, MenuItem, CircularProgress, Snackbar, Alert,
-    Zoom, Table, TableBody, TableCell, TableContainer,
+    Table, TableBody, TableCell, TableContainer,
     TableHead, TableRow, InputAdornment, Chip, Divider,
     Pagination, Grid,
 } from "@mui/material";
@@ -23,6 +23,7 @@ import {
     getUsers, getUserById, toggleUserStatus, deleteUser, getUserStats,
     type AdminUser, type UserStats,
 } from "../api/adminUsersApi";
+import ZoomTransition from "../../../components/ui/ZoomTransition";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -146,7 +147,7 @@ function UserDetailModal({ userId, open, onClose }: { userId: string | null; ope
     );
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth TransitionComponent={Zoom}
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth TransitionComponent={ZoomTransition}
             PaperProps={{ sx: { borderRadius: "16px", boxShadow: "0 12px 40px rgba(0,0,0,0.1)" } }}>
             <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 17, color: "var(--text-primary)", display: "flex", justifyContent: "space-between", alignItems: "center", pb: 1, borderBottom: "1px solid var(--border-light)" }}>
                 User Details
@@ -586,7 +587,7 @@ export default function UserManagementPage() {
             <UserDetailModal userId={viewUserId} open={!!viewUserId} onClose={() => setViewUserId(null)} />
 
             {/* Suspend / Activate Confirmation */}
-            <Dialog open={!!statusTarget} onClose={() => setStatusTarget(null)} maxWidth="xs" fullWidth TransitionComponent={Zoom}
+            <Dialog open={!!statusTarget} onClose={() => setStatusTarget(null)} maxWidth="xs" fullWidth TransitionComponent={ZoomTransition}
                 PaperProps={{ sx: { borderRadius: "16px", boxShadow: "0 12px 40px rgba(0,0,0,0.1)" } }}>
                 <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 17, color: "var(--text-primary)", pb: 1, borderBottom: "1px solid var(--border-light)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     {(statusTarget?.isActive !== false) ? "Suspend User" : "Activate User"}
@@ -612,7 +613,7 @@ export default function UserManagementPage() {
             </Dialog>
 
             {/* Delete Confirmation */}
-            <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} maxWidth="xs" fullWidth TransitionComponent={Zoom}
+            <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)} maxWidth="xs" fullWidth TransitionComponent={ZoomTransition}
                 PaperProps={{ sx: { borderRadius: "16px", boxShadow: "0 12px 40px rgba(0,0,0,0.1)" } }}>
                 <DialogTitle sx={{ fontFamily: "'Poppins', sans-serif", fontWeight: 700, fontSize: 17, color: "var(--text-primary)", pb: 1, borderBottom: "1px solid var(--border-light)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     Delete User

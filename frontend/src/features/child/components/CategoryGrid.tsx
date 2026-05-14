@@ -50,9 +50,10 @@ export default function CategoryGrid({ categories, onCategoryClick }: Props) {
         gridTemplateColumns: {
           xs: "repeat(2, 1fr)",
           sm: "repeat(2, 1fr)",
+          md: "repeat(3, 1fr)",
           lg: "repeat(3, 1fr)",
         },
-        gap: { xs: 2, sm: 3, lg: 4 },
+        gap: { xs: 2, sm: 3, md: 3, lg: 4 },
       }}
     >
       {sortedCategories.map((cat) => (

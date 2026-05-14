@@ -124,6 +124,25 @@ function cellKey(r: number, c: number) {
     return `${r}-${c}`;
 }
 
+function getCellsInLine(start: [number, number], end: [number, number]): [number, number][] {
+    const [r1, c1] = start;
+    const [r2, c2] = end;
+    const dr = r2 - r1;
+    const dc = c2 - c1;
+    const absDr = Math.abs(dr);
+    const absDc = Math.abs(dc);
+    if (absDr !== 0 && absDc !== 0 && absDr !== absDc) return [];
+    const steps = Math.max(absDr, absDc);
+    if (steps === 0) return [start];
+    const stepR = dr === 0 ? 0 : dr / absDr;
+    const stepC = dc === 0 ? 0 : dc / absDc;
+    const cells: [number, number][] = [];
+    for (let i = 0; i <= steps; i++) {
+        cells.push([r1 + stepR * i, c1 + stepC * i]);
+    }
+    return cells;
+}
+
 // ── Game ─────────────────────────────────────────────────────────────────────
 
 const GAME_ID = "word-finder";
@@ -157,6 +176,7 @@ export default function WordFinderGame() {
     const [selectionStart, setSelectionStart] = useState<[number, number] | null>(null);
     const [wrongFlash, setWrongFlash] = useState(false);
     const gridRef = useRef<HTMLDivElement>(null);
+    const handleMouseUpRef = useRef<() => void>(() => {});
     // Refs mirror drag state to avoid stale closures in mouseup handler
     const selectingRef = useRef(false);
     const selectedRef = useRef<Set<string>>(new Set());
@@ -179,6 +199,63 @@ export default function WordFinderGame() {
             }
         });
     }, []);
+
+    // Touch support: re-attach whenever the grid mounts (phase=playing, loading done)
+    useEffect(() => {
+        if (phase !== "playing" || loadingLevel) return;
+        const el = gridRef.current;
+        if (!el) return;
+
+        const getCellAt = (x: number, y: number): [number, number] | null => {
+            const target = document.elementFromPoint(x, y) as HTMLElement | null;
+            const cell = target?.closest("[data-row]") as HTMLElement | null;
+            if (!cell || !cell.dataset.row || !cell.dataset.col) return null;
+            return [Number(cell.dataset.row), Number(cell.dataset.col)];
+        };
+
+        const onTouchStart = (e: TouchEvent) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const pos = getCellAt(touch.clientX, touch.clientY);
+            if (!pos) return;
+            const [r, c] = pos;
+            const start: [number, number] = [r, c];
+            const initial = new Set([cellKey(r, c)]);
+            selectingRef.current = true;
+            selectionStartRef.current = start;
+            selectedRef.current = initial;
+            setSelecting(true);
+            setSelectionStart(start);
+            setSelected(initial);
+        };
+
+        const onTouchMove = (e: TouchEvent) => {
+            e.preventDefault();
+            if (!selectingRef.current || !selectionStartRef.current) return;
+            const touch = e.touches[0];
+            const pos = getCellAt(touch.clientX, touch.clientY);
+            if (!pos) return;
+            const line = getCellsInLine(selectionStartRef.current, pos);
+            const newSelected = new Set(line.map(([lr, lc]) => cellKey(lr, lc)));
+            selectedRef.current = newSelected;
+            setSelected(newSelected);
+        };
+
+        const onTouchEnd = (e: TouchEvent) => {
+            e.preventDefault();
+            handleMouseUpRef.current();
+        };
+
+        el.addEventListener("touchstart", onTouchStart, { passive: false });
+        el.addEventListener("touchmove", onTouchMove, { passive: false });
+        el.addEventListener("touchend", onTouchEnd, { passive: false });
+
+        return () => {
+            el.removeEventListener("touchstart", onTouchStart);
+            el.removeEventListener("touchmove", onTouchMove);
+            el.removeEventListener("touchend", onTouchEnd);
+        };
+    }, [phase, loadingLevel]);
 
     const loadLevel = useCallback(async (level: number) => {
         setLoadingLevel(true);
@@ -209,30 +286,6 @@ export default function WordFinderGame() {
     const startLevel = (level: number) => {
         setCurrentLevel(level);
         loadLevel(level);
-    };
-
-    // Compute cells along a straight line from start to end
-    const getCellsInLine = (start: [number, number], end: [number, number]): [number, number][] => {
-        const [r1, c1] = start;
-        const [r2, c2] = end;
-        const dr = r2 - r1;
-        const dc = c2 - c1;
-
-        // Must be straight line (horizontal, vertical, or exact diagonal)
-        const absDr = Math.abs(dr);
-        const absDc = Math.abs(dc);
-        if (absDr !== 0 && absDc !== 0 && absDr !== absDc) return [];
-
-        const steps = Math.max(absDr, absDc);
-        if (steps === 0) return [start];
-
-        const stepR = dr === 0 ? 0 : dr / absDr;
-        const stepC = dc === 0 ? 0 : dc / absDc;
-        const cells: [number, number][] = [];
-        for (let i = 0; i <= steps; i++) {
-            cells.push([r1 + stepR * i, c1 + stepC * i]);
-        }
-        return cells;
     };
 
     const handleCellMouseDown = (r: number, c: number) => {
@@ -320,6 +373,7 @@ export default function WordFinderGame() {
     // Keep refs in sync with state for use in mouseup handler
     placementsRef.current = placements;
     foundWordsRef.current = foundWords;
+    handleMouseUpRef.current = handleMouseUp;
 
     // Cell state helpers
     const isCellFound = (r: number, c: number) => {
@@ -491,11 +545,16 @@ export default function WordFinderGame() {
     }
 
     // ── Render: Playing ───────────────────────────────────────────────────────
-    // Responsive cell size: fits within available width on any screen
+    // Responsive cell size — accounts for sidebar, page padding, grid inner padding, and cell margins
+    const gridSize = grid.length || 5;
     const sidebarW = window.innerWidth < 900 ? (window.innerWidth < 600 ? 64 : 72) : 250;
-    const padding = window.innerWidth < 600 ? 32 : 48;
-    const availableW = Math.min(window.innerWidth - sidebarW - padding, 400);
-    const cellSize = Math.max(28, Math.min(52, Math.floor(availableW / (grid.length || 5))));
+    const outerPad = window.innerWidth < 600 ? 24 : 48; // page p:{xs:1.5,sm:3} * 2
+    const gridInnerPad = 32; // grid p:2 = 16px per side * 2
+    const availableForCells = Math.min(
+        window.innerWidth - sidebarW - outerPad - gridInnerPad,
+        400 - gridInnerPad,
+    );
+    const cellSize = Math.max(28, Math.min(52, Math.floor((availableForCells - gridSize * 4) / gridSize)));
 
     return (
         <Box sx={{ minHeight: "100vh", backgroundColor: "#F4F8FB", display: "flex", alignItems: "flex-start" }}>
@@ -554,6 +613,8 @@ export default function WordFinderGame() {
                                         return (
                                             <Box
                                                 key={c}
+                                                data-row={r}
+                                                data-col={c}
                                                 onMouseDown={() => handleCellMouseDown(r, c)}
                                                 onMouseEnter={() => handleCellMouseEnter(r, c)}
                                                 sx={{
