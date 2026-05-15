@@ -11,7 +11,6 @@ import gemsImg from "../../../assets/gems.png";
 import winsImg from "../../../assets/wins.png";
 import medalImg from "../../../assets/medal.png";
 import crownImg from "../../../assets/crown.png";
-import rocketImg from "../../../assets/rocket.png";
 import starImg from "../../../assets/star.png";
 import bronzeImg from "../../../assets/bronze.png";
 import silverImg from "../../../assets/silver.png";
