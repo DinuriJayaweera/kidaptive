@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import { useAuth } from "../../auth/context/AuthContext";
 import { placementTestApi, type CategoryResult } from "../services/placementTestApi";
-import kipImg from "../../../assets/kip.png";
+import kipImg from "../../../assets/Holding cup.png";
 import "./PlacementResults.css";
 
 const ENCOURAGEMENT = [

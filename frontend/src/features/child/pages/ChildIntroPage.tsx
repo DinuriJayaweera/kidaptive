@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/context/AuthContext";
-import kipImg from "../../../assets/Hi 3.png";
+import kipImg from "../../../assets/Bye.png";
 import "./ChildIntroPage.css";
 
 export default function ChildIntroPage() {

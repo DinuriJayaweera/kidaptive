@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import kipImg from "../../../assets/kip_b.png";
+import kipImg from "../../../assets/Teacher.png";
 import "./ChildIntroPage.css";
 
 export default function ChildIntroPlacement() {

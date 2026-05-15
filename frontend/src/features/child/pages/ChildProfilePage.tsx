@@ -763,7 +763,7 @@ export default function ChildProfilePage() {
                                             color: "#1A202C",
                                         }}
                                     >
-                                        My Learning Progress
+                                        My Learning Progress 🚀🎯✨
                                     </Typography>
                                 </Box>
                                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -798,14 +798,20 @@ export default function ChildProfilePage() {
                                                     },
                                                 }}
                                             >
-                                                {cat.icon && (
-                                                    <Box
-                                                        component="img"
-                                                        src={cat.icon}
-                                                        alt={cat.name}
-                                                        sx={{ width: 36, height: 36, objectFit: "contain", flexShrink: 0 }}
-                                                    />
-                                                )}
+                                                <Typography sx={{ fontSize: "2rem", width: 36, textAlign: "center", flexShrink: 0 }}>
+                                                    {{
+                                                        "Alphabet": "🔤",
+                                                        "Articles": "📰",
+                                                        "Pronouns": "👤",
+                                                        "Nouns": "🍎",
+                                                        "Verbs": "🏃",
+                                                        "Adjectives": "🎨",
+                                                        "Adverbs": "⚡",
+                                                        "Prepositions": "📦",
+                                                        "Conjunctions": "🔗",
+                                                        "Interjections": "😲"
+                                                    }[cat.name as string] || "📘"}
+                                                </Typography>
                                                 <Box sx={{ flex: 1, minWidth: 0 }}>
                                                     <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
                                                         <Typography

@@ -16,7 +16,9 @@ import starImg from "../../../assets/star.png";
 import bronzeImg from "../../../assets/bronze.png";
 import silverImg from "../../../assets/silver.png";
 import goldImg from "../../../assets/gold.png";
-
+import tryAgainImg from "../../../assets/Try again.png";
+import starHoldImg from "../../../assets/Star hold.png";
+import winVibeImg from "../../../assets/Win vibe.png";
 import "./AdaptiveQuiz.css";
 import "./PlacementQuiz.css";
 
@@ -284,10 +286,10 @@ export default function AdaptiveQuizPage() {
 
   // ── RESULT SCREEN ──────────────────────────────────
   if (phase === "result" && result) {
-    const getResultEmojiSrc = (passed: boolean, isChamp: boolean, isRep: boolean) => {
-      if (isRep) return passed ? rocketImg : strengthImg;
-      if (isChamp) return passed ? winsImg : strengthImg;
-      return passed ? starImg : strengthImg;
+    const getResultEmojiSrc = (score: number) => {
+      if (score < 50) return tryAgainImg;
+      if (score < 75) return starHoldImg;
+      return winVibeImg;
     };
 
     if (isReplay) {
@@ -295,7 +297,7 @@ export default function AdaptiveQuizPage() {
         <div className="aq-result">
           <div className="aq-result-card">
             <div className="aq-result-emoji">
-              <img src={getResultEmojiSrc(result.passed, false, true)} alt="Result" className="aq-img-80" />
+              <img src={getResultEmojiSrc(result.score)} alt="Result" className="aq-img-140" />
             </div>
             <h1 className={`aq-result-title ${result.passed ? "pass" : "fail"}`}>
               {result.passed ? "Great Practice!" : "Good Try!"}
@@ -324,7 +326,7 @@ export default function AdaptiveQuizPage() {
       <div className="aq-result">
         <div className={`aq-result-card ${resultIsChampion ? "champion-result" : ""}`}>
           <div className="aq-result-emoji">
-            <img src={getResultEmojiSrc(result.passed, resultIsChampion || false, false)} alt="Result" className="aq-img-80" />
+            <img src={getResultEmojiSrc(result.score)} alt="Result" className="aq-img-140" />
           </div>
 
           <h1 className={`aq-result-title ${result.passed ? "pass" : "fail"}`}>

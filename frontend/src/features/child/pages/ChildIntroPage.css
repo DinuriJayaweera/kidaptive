@@ -42,7 +42,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  background: #e8ecef;
+  background: url("../../../assets/Quiz_bg.png") center/cover no-repeat;
   font-family: 'Baloo 2', cursive;
   opacity: 0;
   transition: opacity 0.4s ease;
@@ -57,7 +57,7 @@
   flex: 1;
   margin: 24px;
   margin-bottom: 0;
-  background: #dce3ea;
+  background: transparent;
   border-radius: 20px;
   display: flex;
   flex-direction: column;
@@ -307,7 +307,7 @@
 .intro-card--placement {
   justify-content: flex-start;
   padding: 24px 32px;
-  background: #e8f0f8;
+  background: transparent;
 }
 
 .intro-placement-content {
@@ -397,7 +397,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #eef2f5;
+  background: url("../../../assets/Quiz_bg.png") center/cover no-repeat;
   animation: fadeIn 0.4s ease both;
 }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import kipImg from "../../../assets/kip.png";
+import kipImg from "../../../assets/Teacher.png";
 import "./ChildIntroPage.css";
 
 export default function ChildIntroFindLevel() {
@@ -35,7 +35,7 @@ export default function ChildIntroFindLevel() {
 
         {/* Kip + speech bubble row */}
         <div className="intro-achieve-header">
-          <div className="intro-kip intro-kip--small">
+          <div className="intro-kip intro-kip--medium">
             <img src={kipImg} alt="Kip the dinosaur" />
           </div>
           <div className="intro-bubble intro-bubble--left">
